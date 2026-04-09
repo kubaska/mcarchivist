@@ -1,0 +1,62 @@
+{
+    "id": "mantle",
+    "remote_id": "mantle",
+    "project_id": null,
+    "name": "Mantle",
+    "summary": "Base library required for SlimeKnights mods, including Tinkers' Construct, Natura, Inspirations, and Cermaics",
+    "description": "This contains shared code for Forge mods and is used by the SlimeKnights such as Tinkers' Construct, Natura, Tinkers' Mechworks, Inspirations, and Ceramics. Descriptive book code, common inventories, and JSON parsing utilities are here.\n\n\nWhy? For science and slime, why else?",
+    "logo": "https:\/\/cdn.modrinth.com\/data\/Cg6Uc79H\/77b9acc494b0d91e218939a1c14e37ae3c1b4db9.png",
+    "gallery": [],
+    "project_url": "https:\/\/modrinth.com\/mod\/mantle",
+    "downloads": 1587907,
+    "type": "mod",
+    "game_versions": [
+        "1.7.10",
+        "1.12.2",
+        "1.16.5",
+        "1.18.2",
+        "1.19.2",
+        "1.20.1"
+    ],
+    "loaders": [
+        {
+            "id": "forge",
+            "remote_id": "forge",
+            "platform": "local",
+            "name": "forge"
+        },
+        {
+            "id": "neoforge",
+            "remote_id": "neoforge",
+            "platform": "local",
+            "name": "neoforge"
+        }
+    ],
+    "authors": [
+        {
+            "remote_id": "mantledev",
+			"name": "MantleDev",
+			"role": "Author",
+			"avatar": "",
+			"url": "https://mods.net/authors/mantledev"
+        }
+    ],
+    "project_types": [
+        0
+    ],
+    "categories": [
+        {
+            "id": "library",
+            "remote_id": "library",
+            "platform": "local",
+            "name": "Library"
+        },
+        {
+            "id": "utility",
+            "remote_id": "utility",
+            "platform": "local",
+            "name": "Utility"
+        }
+    ],
+    "platform_id": 2
+}

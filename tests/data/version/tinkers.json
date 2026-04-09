@@ -1,0 +1,1856 @@
+[
+    {
+        "id": "FGU09YgL",
+        "remote_id": "FGU09YgL",
+        "remote_project_id": "tinkers",
+        "name": "Traveler's Update for 1.20.1",
+        "version": "3.10.2.92",
+        "components": null,
+        "type": 2,
+        "changelog": null,
+        "downloads": 205682,
+        "files": [
+            {
+                "id": "TConstruct-1.20.1-3.10.2.92.jar",
+                "remote_id": "TConstruct-1.20.1-3.10.2.92.jar",
+                "component": null,
+                "name": "TConstruct-1.20.1-3.10.2.92.jar",
+                "state": [],
+                "url": "https:\/\/mods.net\/dl\/TConstruct-1.20.1-3.10.2.92.jar",
+                "hashes": {
+                    "sha1": "0f91828745eab4eb6e28e74d70e40a40509ae2f4"
+                },
+                "size": 195,
+                "primary": true,
+                "local": false
+            },
+            {
+                "id": "TConstruct-1.20.1-3.10.2.92-sources.jar",
+                "remote_id": "TConstruct-1.20.1-3.10.2.92-sources.jar",
+                "component": null,
+                "name": "TConstruct-1.20.1-3.10.2.92-sources.jar",
+                "state": [],
+                "url": "https:\/\/mods.net\/dl\/TConstruct-1.20.1-3.10.2.92-sources.jar",
+                "hashes": {
+                    "sha1": "b1d3bda9ec7df47baa6ee90d825f9bd60b6d60d4",
+                    "sha512": "35f39dc6b4d8d715ea10bd4a67ab738e4980a2832a30cf057d6252630daabd31421bd4756923262306a73308ac410baf079b89d2240aa2594fca621ec056d1ab"
+                },
+                "size": 2313522,
+                "primary": false,
+                "local": false
+            }
+        ],
+        "game_versions": [
+            {
+                "remote_id": "1.20.1",
+                "name": "1.20.1"
+            }
+        ],
+        "loaders": [
+            {
+                "id": "forge",
+                "remote_id": "forge",
+                "platform": "local",
+                "name": "Forge"
+            },
+            {
+                "id": "neoforge",
+                "remote_id": "neoforge",
+                "platform": "local",
+                "name": "NeoForge"
+            }
+        ],
+        "dependencies": [
+            {
+                "project_id": "mantle",
+                "version_id": null,
+                "file_name": null,
+                "type": "required"
+            },
+            {
+                "project_id": "u6dRKJwZ",
+                "version_id": null,
+                "file_name": null,
+                "type": "optional"
+            }
+        ],
+        "published_at": "2025-07-16T23:54:53.436283Z",
+        "platform": "local",
+        "local": false,
+        "extra": null
+    },
+    {
+        "id": "GhTRZIQu",
+        "remote_id": "GhTRZIQu",
+        "remote_project_id": "tinkers",
+        "name": "Growth Update for 1.20.1",
+        "version": "3.10.1.76",
+        "components": null,
+        "type": 1,
+        "changelog": null,
+        "downloads": 69546,
+        "files": [
+            {
+                "id": "TConstruct-1.20.1-3.10.1.76.jar",
+                "remote_id": "TConstruct-1.20.1-3.10.1.76.jar",
+                "component": null,
+                "name": "TConstruct-1.20.1-3.10.1.76.jar",
+                "state": [],
+                "url": "https:\/\/mods.net\/dl\/TConstruct-1.20.1-3.10.1.76.jar",
+                "hashes": {
+                    "sha1": "d1ab68923ed3afda29fbd08dec9ccafcd1c1d93b"
+                },
+                "size": 191,
+                "primary": true,
+                "local": false
+            },
+            {
+                "id": "TConstruct-1.20.1-3.10.1.76-sources.jar",
+                "remote_id": "TConstruct-1.20.1-3.10.1.76-sources.jar",
+                "component": null,
+                "name": "TConstruct-1.20.1-3.10.1.76-sources.jar",
+                "state": [],
+                "url": "https:\/\/mods.net\/dl\/TConstruct-1.20.1-3.10.1.76-sources.jar",
+                "hashes": {
+                    "sha1": "a2d3cd7fd895a4f521020ea43c771048a96d718e",
+                    "sha512": "18d79db5a758e7652bd877648835b0f2fe1bdd07c83e3f6b317bb027a63ebff1583048345ffa922d89a56e2c0ef4974a42e9c60eb74acf2bcaeea5a79e2800e6"
+                },
+                "size": 2296834,
+                "primary": false,
+                "local": false
+            }
+        ],
+        "game_versions": [
+            {
+                "remote_id": "1.20.1",
+                "name": "1.20.1"
+            }
+        ],
+        "loaders": [
+            {
+                "id": "forge",
+                "remote_id": "forge",
+                "platform": "local",
+                "name": "Forge"
+            },
+            {
+                "id": "neoforge",
+                "remote_id": "neoforge",
+                "platform": "local",
+                "name": "NeoForge"
+            }
+        ],
+        "dependencies": [
+            {
+                "project_id": "mantle",
+                "version_id": null,
+                "file_name": null,
+                "type": "required"
+            },
+            {
+                "project_id": "u6dRKJwZ",
+                "version_id": null,
+                "file_name": null,
+                "type": "optional"
+            }
+        ],
+        "published_at": "2025-06-10T05:50:38.338908Z",
+        "platform": "local",
+        "local": false,
+        "extra": null
+    },
+    {
+        "id": "vUFOf3iH",
+        "remote_id": "vUFOf3iH",
+        "remote_project_id": "tinkers",
+        "name": "Engineering Update for 1.20.1",
+        "version": "3.10.0.67",
+        "components": null,
+        "type": 0,
+        "changelog": null,
+        "downloads": 16724,
+        "files": [
+            {
+                "id": "TConstruct-1.20.1-3.10.0.67.jar",
+                "remote_id": "TConstruct-1.20.1-3.10.0.67.jar",
+                "component": null,
+                "name": "TConstruct-1.20.1-3.10.0.67.jar",
+                "state": [],
+                "url": "https:\/\/mods.net\/dl\/TConstruct-1.20.1-3.10.0.67.jar",
+                "hashes": {
+                    "sha1": "5a11ccc19d6b22e2de314c52882d86e738d309c7"
+                },
+                "size": 196,
+                "primary": true,
+                "local": false
+            },
+            {
+                "id": "TConstruct-1.20.1-3.10.0.67-sources.jar",
+                "remote_id": "TConstruct-1.20.1-3.10.0.67-sources.jar",
+                "component": null,
+                "name": "TConstruct-1.20.1-3.10.0.67-sources.jar",
+                "state": [],
+                "url": "https:\/\/mods.net\/dl\/TConstruct-1.20.1-3.10.0.67-sources.jar",
+                "hashes": {
+                    "sha1": "7496bbcdbee946b320d08e19b2403921867ed50b",
+                    "sha512": "1df27247b869d96358faa95fb68ca0e04b31490b86baa27abae47921e337069aa63ab8a5a78983c32585b3973d2e6026f0785a3f002d1a6edbb9e984331a6ea5"
+                },
+                "size": 2282045,
+                "primary": false,
+                "local": false
+            }
+        ],
+        "game_versions": [
+            {
+                "remote_id": "1.20.1",
+                "name": "1.20.1"
+            }
+        ],
+        "loaders": [
+            {
+                "id": "forge",
+                "remote_id": "forge",
+                "platform": "local",
+                "name": "Forge"
+            },
+            {
+                "id": "neoforge",
+                "remote_id": "neoforge",
+                "platform": "local",
+                "name": "NeoForge"
+            }
+        ],
+        "dependencies": [
+            {
+                "project_id": "u6dRKJwZ",
+                "version_id": null,
+                "file_name": null,
+                "type": "optional"
+            },
+            {
+                "project_id": "mantle",
+                "version_id": null,
+                "file_name": null,
+                "type": "required"
+            }
+        ],
+        "published_at": "2025-06-01T00:25:43.557171Z",
+        "platform": "local",
+        "local": false,
+        "extra": null
+    },
+    {
+        "id": "z61vnfy7",
+        "remote_id": "z61vnfy7",
+        "remote_project_id": "tinkers",
+        "name": "Byproduct Hotfix for 1.20.1",
+        "version": "3.9.2.37",
+        "components": null,
+        "type": 1,
+        "changelog": null,
+        "downloads": 114253,
+        "files": [
+            {
+                "id": "TConstruct-1.20.1-3.9.2.37.jar",
+                "remote_id": "TConstruct-1.20.1-3.9.2.37.jar",
+                "component": null,
+                "name": "TConstruct-1.20.1-3.9.2.37.jar",
+                "state": [],
+                "url": "https:\/\/mods.net\/dl\/TConstruct-1.20.1-3.9.2.37.jar",
+                "hashes": {
+                    "sha1": "8f7c7746e65a2b3d1486db6ea8677219d45a8b1f",
+                    "sha512": "bd3f8d94cb3f1cdb731823fc5c1d202bba5b08ba9c393cfef2645568291b3e5e744394887a9f9f3db51569bf0736d4e131bb85da0818d71416cbd849ba9367dd"
+                },
+                "size": 18658666,
+                "primary": true,
+                "local": false
+            },
+            {
+                "id": "TConstruct-1.20.1-3.9.2.37-sources.jar",
+                "remote_id": "TConstruct-1.20.1-3.9.2.37-sources.jar",
+                "component": null,
+                "name": "TConstruct-1.20.1-3.9.2.37-sources.jar",
+                "state": [],
+                "url": "https:\/\/mods.net\/dl\/TConstruct-1.20.1-3.9.2.37-sources.jar",
+                "hashes": {
+                    "sha1": "d0d99565edba7d175d6e7bb3470324689b289a16",
+                    "sha512": "039428507fbcb8b53e108b6735f46fb4c53a3776613070cc1a97217c9782d6873812ad61a0e51048e4fbaebb1356d09690406dba1a530a2e09660ee06e6e6d97"
+                },
+                "size": 2158140,
+                "primary": false,
+                "local": false
+            }
+        ],
+        "game_versions": [
+            {
+                "remote_id": "1.20.1",
+                "name": "1.20.1"
+            }
+        ],
+        "loaders": [
+            {
+                "id": "forge",
+                "remote_id": "forge",
+                "platform": "local",
+                "name": "Forge"
+            },
+            {
+                "id": "neoforge",
+                "remote_id": "neoforge",
+                "platform": "local",
+                "name": "NeoForge"
+            }
+        ],
+        "dependencies": [
+            {
+                "project_id": "mantle",
+                "version_id": null,
+                "file_name": null,
+                "type": "required"
+            },
+            {
+                "project_id": "u6dRKJwZ",
+                "version_id": null,
+                "file_name": null,
+                "type": "optional"
+            }
+        ],
+        "published_at": "2025-03-05T06:55:50.488130Z",
+        "platform": "local",
+        "local": false,
+        "extra": null
+    },
+    {
+        "id": "6StFiz6V",
+        "remote_id": "6StFiz6V",
+        "remote_project_id": "tinkers",
+        "name": "Byproduct Update for 1.20.1",
+        "version": "3.9.2.34",
+        "components": null,
+        "type": 1,
+        "changelog": null,
+        "downloads": 4438,
+        "files": [
+            {
+                "id": "TConstruct-1.20.1-3.9.2.34.jar",
+                "remote_id": "TConstruct-1.20.1-3.9.2.34.jar",
+                "component": null,
+                "name": "TConstruct-1.20.1-3.9.2.34.jar",
+                "state": [],
+                "url": "https:\/\/mods.net\/dl\/TConstruct-1.20.1-3.9.2.34.jar",
+                "hashes": {
+                    "sha1": "6868bb7939e2c71255fa6a25d7f4241d6d7f7d48",
+                    "sha512": "9ae7163d4f27d803c817ad401b7b9d79f91a33db7f9ac935bed10608748e39fd8e9c9883b182fa7c5893d90ddd916abbc4ae17a210826409489b91848bd0061d"
+                },
+                "size": 18649507,
+                "primary": true,
+                "local": false
+            },
+            {
+                "id": "TConstruct-1.20.1-3.9.2.34-sources.jar",
+                "remote_id": "TConstruct-1.20.1-3.9.2.34-sources.jar",
+                "component": null,
+                "name": "TConstruct-1.20.1-3.9.2.34-sources.jar",
+                "state": [],
+                "url": "https:\/\/mods.net\/dl\/TConstruct-1.20.1-3.9.2.34-sources.jar",
+                "hashes": {
+                    "sha1": "e178f9ce0fbc89fdecc2b3d957e72d1b7a39b034",
+                    "sha512": "bad7a14ab07c76e8d2ad051f445d561a8a1ceaa2980fc952e1fca9ab95b17cf659e54e8dd5027acf8b6d80d1cdc46203801b733ce5a5ef49f603097e843223ab"
+                },
+                "size": 2154984,
+                "primary": false,
+                "local": false
+            }
+        ],
+        "game_versions": [
+            {
+                "remote_id": "1.20.1",
+                "name": "1.20.1"
+            }
+        ],
+        "loaders": [
+            {
+                "id": "forge",
+                "remote_id": "forge",
+                "platform": "local",
+                "name": "Forge"
+            }
+        ],
+        "dependencies": [
+            {
+                "project_id": "u6dRKJwZ",
+                "version_id": null,
+                "file_name": null,
+                "type": "optional"
+            },
+            {
+                "project_id": "mantle",
+                "version_id": null,
+                "file_name": null,
+                "type": "required"
+            }
+        ],
+        "published_at": "2025-03-03T02:49:45.316240Z",
+        "platform": "local",
+        "local": false,
+        "extra": null
+    },
+    {
+        "id": "IFTo0ry1",
+        "remote_id": "IFTo0ry1",
+        "remote_project_id": "tinkers",
+        "name": "Swasher Hotfix for 1.20.1",
+        "version": "3.9.1.19",
+        "components": null,
+        "type": 2,
+        "changelog": null,
+        "downloads": 38538,
+        "files": [
+            {
+                "id": "TConstruct-1.20.1-3.9.1.19.jar",
+                "remote_id": "TConstruct-1.20.1-3.9.1.19.jar",
+                "component": null,
+                "name": "TConstruct-1.20.1-3.9.1.19.jar",
+                "state": [],
+                "url": "https:\/\/mods.net\/dl\/TConstruct-1.20.1-3.9.1.19.jar",
+                "hashes": {
+                    "sha1": "e8698547c1392513b6a6f443fa9db8779b97d903",
+                    "sha512": "7c558e89a7109c25e61d7495e2c169522d174764f9872bbf86eaa73c4faf75f4353e47bc0848f43b811dadb586c5687c0eadbd39a479f51d3e389e00897e292b"
+                },
+                "size": 18509419,
+                "primary": true,
+                "local": false
+            },
+            {
+                "id": "TConstruct-1.20.1-3.9.1.19-sources.jar",
+                "remote_id": "TConstruct-1.20.1-3.9.1.19-sources.jar",
+                "component": null,
+                "name": "TConstruct-1.20.1-3.9.1.19-sources.jar",
+                "state": [],
+                "url": "https:\/\/mods.net\/dl\/TConstruct-1.20.1-3.9.1.19-sources.jar",
+                "hashes": {
+                    "sha1": "b5ddfddc28dea459629f3bb235296e4a971778f1",
+                    "sha512": "3eb4dac3fbe2d1dbc41d1ae951b00321925c6d7f8dd87a379e3367e92df8a37cfadbc8dd89a5e2e634a8249f42077b7feb0b14dd91071deb234403e64090c474"
+                },
+                "size": 2082113,
+                "primary": false,
+                "local": false
+            }
+        ],
+        "game_versions": [
+            {
+                "remote_id": "1.20.1",
+                "name": "1.20.1"
+            }
+        ],
+        "loaders": [
+            {
+                "id": "forge",
+                "remote_id": "forge",
+                "platform": "local",
+                "name": "Forge"
+            },
+            {
+                "id": "neoforge",
+                "remote_id": "neoforge",
+                "platform": "local",
+                "name": "NeoForge"
+            }
+        ],
+        "dependencies": [
+            {
+                "project_id": "u6dRKJwZ",
+                "version_id": null,
+                "file_name": null,
+                "type": "optional"
+            },
+            {
+                "project_id": "mantle",
+                "version_id": null,
+                "file_name": null,
+                "type": "required"
+            }
+        ],
+        "published_at": "2025-01-21T20:08:40.912010Z",
+        "platform": "local",
+        "local": false,
+        "extra": null
+    },
+    {
+        "id": "7XxgiusL",
+        "remote_id": "7XxgiusL",
+        "remote_project_id": "tinkers",
+        "name": "Swasher Update for 1.20.1",
+        "version": "3.9.1.17",
+        "components": null,
+        "type": 2,
+        "changelog": null,
+        "downloads": 2157,
+        "files": [
+            {
+                "id": "TConstruct-1.20.1-3.9.1.17.jar",
+                "remote_id": "TConstruct-1.20.1-3.9.1.17.jar",
+                "component": null,
+                "name": "TConstruct-1.20.1-3.9.1.17.jar",
+                "state": [],
+                "url": "https:\/\/mods.net\/dl\/TConstruct-1.20.1-3.9.1.17.jar",
+                "hashes": {
+                    "sha1": "bd0f7c5b32567aa719a29ad698ee2cdb90d9067a",
+                    "sha512": "68e86db01575bd38b2bf8ddf4aac8e7f6905fedb73d68b84dd786dd6d1838cec236afa7c776d8b4fcc67ab578def94e5939be53f1c8beb3b370e6228a7c262fd"
+                },
+                "size": 18510963,
+                "primary": true,
+                "local": false
+            },
+            {
+                "id": "TConstruct-1.20.1-3.9.1.17-sources.jar",
+                "remote_id": "TConstruct-1.20.1-3.9.1.17-sources.jar",
+                "component": null,
+                "name": "TConstruct-1.20.1-3.9.1.17-sources.jar",
+                "state": [],
+                "url": "https:\/\/mods.net\/dl\/TConstruct-1.20.1-3.9.1.17-sources.jar",
+                "hashes": {
+                    "sha1": "e2edd18129b4e857aea354ccc0c025aacee0cae1",
+                    "sha512": "722a320ea55fd3f63badf57aaee3f64f90214d844a75cefcd9eb7bc53fac4216570ba7d7de5d33c6815dfd2ca38afa496f1742cb5c927d54f2cbdde63dc3151c"
+                },
+                "size": 2082710,
+                "primary": false,
+                "local": false
+            }
+        ],
+        "game_versions": [
+            {
+                "remote_id": "1.20.1",
+                "name": "1.20.1"
+            }
+        ],
+        "loaders": [
+            {
+                "id": "forge",
+                "remote_id": "forge",
+                "platform": "local",
+                "name": "Forge"
+            }
+        ],
+        "dependencies": [
+            {
+                "project_id": "mantle",
+                "version_id": null,
+                "file_name": null,
+                "type": "required"
+            },
+            {
+                "project_id": "u6dRKJwZ",
+                "version_id": null,
+                "file_name": null,
+                "type": "optional"
+            }
+        ],
+        "published_at": "2025-01-20T08:32:45.161856Z",
+        "platform": "local",
+        "local": false,
+        "extra": null
+    },
+    {
+        "id": "JZb7mMLX",
+        "remote_id": "JZb7mMLX",
+        "remote_project_id": "tinkers",
+        "name": "Ancient Tool Update for 1.19.2",
+        "version": "3.8.5.58",
+        "components": null,
+        "type": 0,
+        "changelog": null,
+        "downloads": 21541,
+        "files": [
+            {
+                "id": "TConstruct-1.19.2-3.8.5.58.jar",
+                "remote_id": "TConstruct-1.19.2-3.8.5.58.jar",
+                "component": null,
+                "name": "TConstruct-1.19.2-3.8.5.58.jar",
+                "state": [],
+                "url": "https:\/\/mods.net\/dl\/TConstruct-1.19.2-3.8.5.58.jar",
+                "hashes": {
+                    "sha1": "a6e3aaf96cee2f5f4b29685754e668fc533c38e8",
+                    "sha512": "f2e5b683c80d74cdeb372113169ff473a0fa3c4d967a42b7bb10d31807c327d18b2da083f96187481987e4247a309dc4eb96b057245eef7db6b557c539bd9d3c"
+                },
+                "size": 18199859,
+                "primary": true,
+                "local": false
+            },
+            {
+                "id": "TConstruct-1.19.2-3.8.5.58-sources.jar",
+                "remote_id": "TConstruct-1.19.2-3.8.5.58-sources.jar",
+                "component": null,
+                "name": "TConstruct-1.19.2-3.8.5.58-sources.jar",
+                "state": [],
+                "url": "https:\/\/mods.net\/dl\/TConstruct-1.19.2-3.8.5.58-sources.jar",
+                "hashes": {
+                    "sha1": "23e6a21b077e33d813333a5c01eaa3ad3e110839",
+                    "sha512": "d61824f5a8ece174d42fd5a0ff095735dcfeef68129d6eec7d4ca422344c7243d0d2b5bb1dde1f1a3b5e0a597309047fa2871b6e436e06501b8a5a79907e0d67"
+                },
+                "size": 1968375,
+                "primary": false,
+                "local": false
+            }
+        ],
+        "game_versions": [
+            {
+                "remote_id": "1.19.2",
+                "name": "1.19.2"
+            }
+        ],
+        "loaders": [
+            {
+                "id": "forge",
+                "remote_id": "forge",
+                "platform": "local",
+                "name": "Forge"
+            }
+        ],
+        "dependencies": [],
+        "published_at": "2025-01-02T04:12:25.949008Z",
+        "platform": "local",
+        "local": false,
+        "extra": null
+    },
+    {
+        "id": "vseNIKmt",
+        "remote_id": "vseNIKmt",
+        "remote_project_id": "tinkers",
+        "name": "Ancient Tool Update for 1.20.1",
+        "version": "3.9.0.6",
+        "components": null,
+        "type": 2,
+        "changelog": null,
+        "downloads": 16533,
+        "files": [
+            {
+                "id": "TConstruct-1.20.1-3.9.0.6.jar",
+                "remote_id": "TConstruct-1.20.1-3.9.0.6.jar",
+                "component": null,
+                "name": "TConstruct-1.20.1-3.9.0.6.jar",
+                "state": [],
+                "url": "https:\/\/mods.net\/dl\/TConstruct-1.20.1-3.9.0.6.jar",
+                "hashes": {
+                    "sha1": "80dba7082afa3e0862d327fc509393898f332baf",
+                    "sha512": "caffdf8c6ddb7c9e7c3d86016c5bac5e283765a17eaa0440c216ab3f23c071614842b4628fda6c06910070a933a9df0d592a1977f8955030d9514d467656fcc6"
+                },
+                "size": 18402884,
+                "primary": true,
+                "local": false
+            },
+            {
+                "id": "TConstruct-1.20.1-3.9.0.6-sources.jar",
+                "remote_id": "TConstruct-1.20.1-3.9.0.6-sources.jar",
+                "component": null,
+                "name": "TConstruct-1.20.1-3.9.0.6-sources.jar",
+                "state": [],
+                "url": "https:\/\/mods.net\/dl\/TConstruct-1.20.1-3.9.0.6-sources.jar",
+                "hashes": {
+                    "sha1": "fe09fdf9f32eb112f420dff6831f2154a927a8e9",
+                    "sha512": "12d9495afdba69a63a16bbd42dd2899eb1c44efb1403aada1e1d325f033db0329bd5d61911f4626b91fd8841adbdb48daaadc2e14186125e6d300ff77768b56c"
+                },
+                "size": 15948260,
+                "primary": false,
+                "local": false
+            }
+        ],
+        "game_versions": [
+            {
+                "remote_id": "1.20.1",
+                "name": "1.20.1"
+            }
+        ],
+        "loaders": [
+            {
+                "id": "forge",
+                "remote_id": "forge",
+                "platform": "local",
+                "name": "Forge"
+            },
+            {
+                "id": "neoforge",
+                "remote_id": "neoforge",
+                "platform": "local",
+                "name": "NeoForge"
+            }
+        ],
+        "dependencies": [
+            {
+                "project_id": "mantle",
+                "version_id": null,
+                "file_name": null,
+                "type": "required"
+            },
+            {
+                "project_id": "u6dRKJwZ",
+                "version_id": null,
+                "file_name": null,
+                "type": "optional"
+            }
+        ],
+        "published_at": "2025-01-01T05:29:27.025378Z",
+        "platform": "local",
+        "local": false,
+        "extra": null
+    },
+    {
+        "id": "v6T8o8Ht",
+        "remote_id": "v6T8o8Ht",
+        "remote_project_id": "tinkers",
+        "name": "3.7.2.167 for 1.18.2",
+        "version": "3.7.2.167",
+        "components": null,
+        "type": 0,
+        "changelog": null,
+        "downloads": 43264,
+        "files": [
+            {
+                "id": "TConstruct-1.18.2-3.7.2.167.jar",
+                "remote_id": "TConstruct-1.18.2-3.7.2.167.jar",
+                "component": null,
+                "name": "TConstruct-1.18.2-3.7.2.167.jar",
+                "state": [],
+                "url": "https:\/\/mods.net\/dl\/TConstruct-1.18.2-3.7.2.167.jar",
+                "hashes": {
+                    "sha1": "ec99c6d1609e4fdca4dba2ce0c33a663c2e6ea2f",
+                    "sha512": "e7badfef2e732d4e1f7fecd00311ddf489ad1c2925ed65b8523e103230e189c65f36ca1628ea6515c0e0d26a55313b6c5834a0703467131e6c93c914780ae7d5"
+                },
+                "size": 17490018,
+                "primary": true,
+                "local": false
+            },
+            {
+                "id": "TConstruct-1.18.2-3.7.2.167-sources.jar",
+                "remote_id": "TConstruct-1.18.2-3.7.2.167-sources.jar",
+                "component": null,
+                "name": "TConstruct-1.18.2-3.7.2.167-sources.jar",
+                "state": [],
+                "url": "https:\/\/mods.net\/dl\/TConstruct-1.18.2-3.7.2.167-sources.jar",
+                "hashes": {
+                    "sha1": "d4658a66348bc39ec729b2d1df8a5ff1c2cdf00d",
+                    "sha512": "7a7a1bf3feaa9199f9dfee6aa9b79541a24261dee93fe56076e9fbbb9e5dac22a5cf6a20b4a8c03c8ceccabe56052baf379e6afc76d2ca3936aacadcdec19b89"
+                },
+                "size": 1965366,
+                "primary": false,
+                "local": false
+            }
+        ],
+        "game_versions": [
+            {
+                "remote_id": "1.18.2",
+                "name": "1.18.2"
+            }
+        ],
+        "loaders": [
+            {
+                "id": "forge",
+                "remote_id": "forge",
+                "platform": "local",
+                "name": "Forge"
+            }
+        ],
+        "dependencies": [
+            {
+                "project_id": "u6dRKJwZ",
+                "version_id": null,
+                "file_name": null,
+                "type": "optional"
+            },
+            {
+                "project_id": "mantle",
+                "version_id": null,
+                "file_name": null,
+                "type": "required"
+            }
+        ],
+        "published_at": "2024-09-23T02:57:50.411846Z",
+        "platform": "local",
+        "local": false,
+        "extra": null
+    },
+    {
+        "id": "93Np1BkB",
+        "remote_id": "93Np1BkB",
+        "remote_project_id": "tinkers",
+        "name": "Rebalanced Update for 1.19.2",
+        "version": "3.8.4.50",
+        "components": null,
+        "type": 0,
+        "changelog": null,
+        "downloads": 18091,
+        "files": [
+            {
+                "id": "TConstruct-1.19.2-3.8.4.50.jar",
+                "remote_id": "TConstruct-1.19.2-3.8.4.50.jar",
+                "component": null,
+                "name": "TConstruct-1.19.2-3.8.4.50.jar",
+                "state": [],
+                "url": "https:\/\/mods.net\/dl\/TConstruct-1.19.2-3.8.4.50.jar",
+                "hashes": {
+                    "sha1": "3e8a1fd06f668a98931dbd6982b9b59a32e17e2e",
+                    "sha512": "3f02402b68c8ece08f9475ca9e2e673f0be46d9af5e4e0ab35da98a248fe62cdf480987e945af1abcce6b4c5adc647df670a92000084072e8d4e500b927d27b9"
+                },
+                "size": 17841562,
+                "primary": true,
+                "local": false
+            },
+            {
+                "id": "TConstruct-1.19.2-3.8.4.50-sources.jar",
+                "remote_id": "TConstruct-1.19.2-3.8.4.50-sources.jar",
+                "component": null,
+                "name": "TConstruct-1.19.2-3.8.4.50-sources.jar",
+                "state": [],
+                "url": "https:\/\/mods.net\/dl\/TConstruct-1.19.2-3.8.4.50-sources.jar",
+                "hashes": {
+                    "sha1": "86253ae591a3f186a77d2388f2e0b1927fec2711",
+                    "sha512": "f2839221e8a247d11464592e0fcd932b0125289ba0a0c3f13d49d2cb21cd667e89281dc7fadb2d87bb9faba05e985a615687f8358c2d6b20bdea5063fe9c3fc9"
+                },
+                "size": 1929198,
+                "primary": false,
+                "local": false
+            }
+        ],
+        "game_versions": [
+            {
+                "remote_id": "1.19.2",
+                "name": "1.19.2"
+            }
+        ],
+        "loaders": [
+            {
+                "id": "forge",
+                "remote_id": "forge",
+                "platform": "local",
+                "name": "Forge"
+            }
+        ],
+        "dependencies": [
+            {
+                "project_id": "u6dRKJwZ",
+                "version_id": null,
+                "file_name": null,
+                "type": "optional"
+            },
+            {
+                "project_id": "mantle",
+                "version_id": null,
+                "file_name": null,
+                "type": "required"
+            }
+        ],
+        "published_at": "2024-09-18T18:48:38.624001Z",
+        "platform": "local",
+        "local": false,
+        "extra": null
+    },
+    {
+        "id": "KpNAIJ7D",
+        "remote_id": "KpNAIJ7D",
+        "remote_project_id": "tinkers",
+        "name": "3.8.3.39 for 1.19.2",
+        "version": "3.8.3.39",
+        "components": null,
+        "type": 1,
+        "changelog": null,
+        "downloads": 52506,
+        "files": [
+            {
+                "id": "TConstruct-1.19.2-3.8.3.39.jar",
+                "remote_id": "TConstruct-1.19.2-3.8.3.39.jar",
+                "component": null,
+                "name": "TConstruct-1.19.2-3.8.3.39.jar",
+                "state": [],
+                "url": "https:\/\/mods.net\/dl\/TConstruct-1.19.2-3.8.3.39.jar",
+                "hashes": {
+                    "sha1": "c1fea054078536e0f2bd941e23ee991a4e24f1d9",
+                    "sha512": "aa9831da8a869f57b84a62eb2bd69d6011b3fb682293447a1f967920245027676ebbeae99aaaba76794107359f73dc2e06d121bae2a8036d51a1a0349c554c61"
+                },
+                "size": 17222508,
+                "primary": true,
+                "local": false
+            },
+            {
+                "id": "TConstruct-1.19.2-3.8.3.39-sources.jar",
+                "remote_id": "TConstruct-1.19.2-3.8.3.39-sources.jar",
+                "component": null,
+                "name": "TConstruct-1.19.2-3.8.3.39-sources.jar",
+                "state": [],
+                "url": "https:\/\/mods.net\/dl\/TConstruct-1.19.2-3.8.3.39-sources.jar",
+                "hashes": {
+                    "sha1": "8395cd1644e162aa43089129d73795f2d75420b4",
+                    "sha512": "fb8162202c4e0b7bfdebae0db631849a44ffc408fa34d42965e0199abd51535d347c73940f84abe094515f0e96ae3a08bd29c28f62127e21d55a4ba3bfe8090f"
+                },
+                "size": 1906057,
+                "primary": false,
+                "local": false
+            }
+        ],
+        "game_versions": [
+            {
+                "remote_id": "1.19.2",
+                "name": "1.19.2"
+            }
+        ],
+        "loaders": [
+            {
+                "id": "forge",
+                "remote_id": "forge",
+                "platform": "local",
+                "name": "Forge"
+            }
+        ],
+        "dependencies": [
+            {
+                "project_id": "mantle",
+                "version_id": null,
+                "file_name": null,
+                "type": "required"
+            },
+            {
+                "project_id": "u6dRKJwZ",
+                "version_id": null,
+                "file_name": null,
+                "type": "optional"
+            }
+        ],
+        "published_at": "2024-05-20T08:20:09.808865Z",
+        "platform": "local",
+        "local": false,
+        "extra": null
+    },
+    {
+        "id": "iAPEYj3B",
+        "remote_id": "iAPEYj3B",
+        "remote_project_id": "tinkers",
+        "name": "Plate Update for 1.19.2",
+        "version": "3.8.2.32",
+        "components": null,
+        "type": 2,
+        "changelog": null,
+        "downloads": 1654,
+        "files": [
+            {
+                "id": "TConstruct-1.19.2-3.8.2.32.jar",
+                "remote_id": "TConstruct-1.19.2-3.8.2.32.jar",
+                "component": null,
+                "name": "TConstruct-1.19.2-3.8.2.32.jar",
+                "state": [],
+                "url": "https:\/\/mods.net\/dl\/TConstruct-1.19.2-3.8.2.32.jar",
+                "hashes": {
+                    "sha1": "6c90bca74d40e42158c6c421f33056a4739cecdc",
+                    "sha512": "24e970a6b9569f4e269ce9515ba9c6046ef3634921caa39653b67faf6d0bcd8f5ea3aa9113c2575453184bb21451bd25deb287c7ba0c439d0c01f395870c384f"
+                },
+                "size": 17155251,
+                "primary": true,
+                "local": false
+            },
+            {
+                "id": "TConstruct-1.19.2-3.8.2.32-sources.jar",
+                "remote_id": "TConstruct-1.19.2-3.8.2.32-sources.jar",
+                "component": null,
+                "name": "TConstruct-1.19.2-3.8.2.32-sources.jar",
+                "state": [],
+                "url": "https:\/\/mods.net\/dl\/TConstruct-1.19.2-3.8.2.32-sources.jar",
+                "hashes": {
+                    "sha1": "44f9a90b2caafd1528a171f0d71466028b29eaee",
+                    "sha512": "6a03be0d191bdced8777c3c2b7e33b2599274adbefb0e581064a22bbea8f289d36862f55ba6f3e36be1ce9aaef59e630e90601821fe8fbb738fab18a98814e0b"
+                },
+                "size": 1894101,
+                "primary": false,
+                "local": false
+            }
+        ],
+        "game_versions": [
+            {
+                "remote_id": "1.19.2",
+                "name": "1.19.2"
+            }
+        ],
+        "loaders": [
+            {
+                "id": "forge",
+                "remote_id": "forge",
+                "platform": "local",
+                "name": "Forge"
+            }
+        ],
+        "dependencies": [
+            {
+                "project_id": "u6dRKJwZ",
+                "version_id": null,
+                "file_name": null,
+                "type": "optional"
+            },
+            {
+                "project_id": "mantle",
+                "version_id": null,
+                "file_name": null,
+                "type": "required"
+            }
+        ],
+        "published_at": "2024-05-13T06:45:07.591195Z",
+        "platform": "local",
+        "local": false,
+        "extra": null
+    },
+    {
+        "id": "hlLiDRiB",
+        "remote_id": "hlLiDRiB",
+        "remote_project_id": "tinkers",
+        "name": "3.8.1.16 for 1.19.2",
+        "version": "3.8.1.16",
+        "components": null,
+        "type": 2,
+        "changelog": null,
+        "downloads": 6405,
+        "files": [
+            {
+                "id": "TConstruct-1.19.2-3.8.1.16.jar",
+                "remote_id": "TConstruct-1.19.2-3.8.1.16.jar",
+                "component": null,
+                "name": "TConstruct-1.19.2-3.8.1.16.jar",
+                "state": [],
+                "url": "https:\/\/mods.net\/dl\/TConstruct-1.19.2-3.8.1.16.jar",
+                "hashes": {
+                    "sha1": "fde8b25acd760e20e317bf44d4e62e554bd72838",
+                    "sha512": "92242f2710ec0a87a76796ec89c16b4ae3c9b2933588d5ab2358dd583205222ec9186b3da04a86d602cd5124d543cd9eb325bee4417e298bacb5e6665df7b962"
+                },
+                "size": 16739904,
+                "primary": true,
+                "local": false
+            },
+            {
+                "id": "TConstruct-1.19.2-3.8.1.16-sources.jar",
+                "remote_id": "TConstruct-1.19.2-3.8.1.16-sources.jar",
+                "component": null,
+                "name": "TConstruct-1.19.2-3.8.1.16-sources.jar",
+                "state": [],
+                "url": "https:\/\/mods.net\/dl\/TConstruct-1.19.2-3.8.1.16-sources.jar",
+                "hashes": {
+                    "sha1": "ed87ba2117d11d6b537f09304ec4b0475fcc3875",
+                    "sha512": "18b95f381da5415ab086f4e5d16c1ce17d6a813beb9cc4bfaf7583957a045420445f4f96ec3c802d1391a32a6a112658685be1592227e608f5b5406722fa4de0"
+                },
+                "size": 1863989,
+                "primary": false,
+                "local": false
+            }
+        ],
+        "game_versions": [
+            {
+                "remote_id": "1.19.2",
+                "name": "1.19.2"
+            }
+        ],
+        "loaders": [
+            {
+                "id": "forge",
+                "remote_id": "forge",
+                "platform": "local",
+                "name": "Forge"
+            }
+        ],
+        "dependencies": [
+            {
+                "project_id": "u6dRKJwZ",
+                "version_id": null,
+                "file_name": null,
+                "type": "optional"
+            },
+            {
+                "project_id": "mantle",
+                "version_id": null,
+                "file_name": null,
+                "type": "required"
+            }
+        ],
+        "published_at": "2024-04-08T05:37:03.910495Z",
+        "platform": "local",
+        "local": false,
+        "extra": null
+    },
+    {
+        "id": "XVeaDVaM",
+        "remote_id": "XVeaDVaM",
+        "remote_project_id": "tinkers",
+        "name": "3.8.0.14 for 1.19.2",
+        "version": "3.8.0.14",
+        "components": null,
+        "type": 2,
+        "changelog": null,
+        "downloads": 1175,
+        "files": [
+            {
+                "id": "TConstruct-1.19.2-3.8.0.14.jar",
+                "remote_id": "TConstruct-1.19.2-3.8.0.14.jar",
+                "component": null,
+                "name": "TConstruct-1.19.2-3.8.0.14.jar",
+                "state": [],
+                "url": "https:\/\/mods.net\/dl\/TConstruct-1.19.2-3.8.0.14.jar",
+                "hashes": {
+                    "sha1": "bfe7a2cb26e0921150f2dbb79023f5a76e69a35b",
+                    "sha512": "29b4e507fb23aac0cb43e5bb14280c027742b35c03ec56b7c54d3dbb6431b812764a21ad777c6dc32139ee5b4049da2f279e467142f0f7101b7461e3e51600e3"
+                },
+                "size": 16721567,
+                "primary": true,
+                "local": false
+            },
+            {
+                "id": "TConstruct-1.19.2-3.8.0.14-sources.jar",
+                "remote_id": "TConstruct-1.19.2-3.8.0.14-sources.jar",
+                "component": null,
+                "name": "TConstruct-1.19.2-3.8.0.14-sources.jar",
+                "state": [],
+                "url": "https:\/\/mods.net\/dl\/TConstruct-1.19.2-3.8.0.14-sources.jar",
+                "hashes": {
+                    "sha1": "382b5b519664f655fae8e1e431be2d0761cdf71a",
+                    "sha512": "635107dab9754192e497db78cb3d210f49daa4eb94697370f41a3ee6e9f21cebbaed4f2aa0bef7b98f2ddb565616cbb3497194e50ffdcf589432831b18fa9bde"
+                },
+                "size": 1856208,
+                "primary": false,
+                "local": false
+            }
+        ],
+        "game_versions": [
+            {
+                "remote_id": "1.19.2",
+                "name": "1.19.2"
+            }
+        ],
+        "loaders": [
+            {
+                "id": "forge",
+                "remote_id": "forge",
+                "platform": "local",
+                "name": "Forge"
+            }
+        ],
+        "dependencies": [
+            {
+                "project_id": "u6dRKJwZ",
+                "version_id": null,
+                "file_name": null,
+                "type": "optional"
+            },
+            {
+                "project_id": "mantle",
+                "version_id": null,
+                "file_name": null,
+                "type": "required"
+            }
+        ],
+        "published_at": "2024-04-03T02:32:35.682830Z",
+        "platform": "local",
+        "local": false,
+        "extra": null
+    },
+    {
+        "id": "4U8Td4Sc",
+        "remote_id": "4U8Td4Sc",
+        "remote_project_id": "tinkers",
+        "name": "Staff Update for 1.18.2",
+        "version": "3.7.1.155",
+        "components": null,
+        "type": 1,
+        "changelog": null,
+        "downloads": 29945,
+        "files": [
+            {
+                "id": "TConstruct-1.18.2-3.7.1.155.jar",
+                "remote_id": "TConstruct-1.18.2-3.7.1.155.jar",
+                "component": null,
+                "name": "TConstruct-1.18.2-3.7.1.155.jar",
+                "state": [],
+                "url": "https:\/\/mods.net\/dl\/TConstruct-1.18.2-3.7.1.155.jar",
+                "hashes": {
+                    "sha1": "a611906d107c148075984d7f8e878b51efb29fae",
+                    "sha512": "00a2314bedbf5c607f763327e880471d6bad19d659659d0b6fc968c60cae4d11154159b96ea745e2916678e9020f002c96ded3a2193354496a62a379648df006"
+                },
+                "size": 16879715,
+                "primary": true,
+                "local": false
+            }
+        ],
+        "game_versions": [
+            {
+                "remote_id": "1.18.2",
+                "name": "1.18.2"
+            }
+        ],
+        "loaders": [
+            {
+                "id": "forge",
+                "remote_id": "forge",
+                "platform": "local",
+                "name": "Forge"
+            }
+        ],
+        "dependencies": [
+            {
+                "project_id": "mantle",
+                "version_id": null,
+                "file_name": null,
+                "type": "required"
+            }
+        ],
+        "published_at": "2024-03-01T08:07:27.655188Z",
+        "platform": "local",
+        "local": false,
+        "extra": null
+    },
+    {
+        "id": "5s1u9uN2",
+        "remote_id": "5s1u9uN2",
+        "remote_project_id": "tinkers",
+        "name": "3.7.0.152",
+        "version": "3.7.0.152",
+        "components": null,
+        "type": 1,
+        "changelog": null,
+        "downloads": 385,
+        "files": [
+            {
+                "id": "TConstruct-1.18.2-3.7.0.152.jar",
+                "remote_id": "TConstruct-1.18.2-3.7.0.152.jar",
+                "component": null,
+                "name": "TConstruct-1.18.2-3.7.0.152.jar",
+                "state": [],
+                "url": "https:\/\/mods.net\/dl\/TConstruct-1.18.2-3.7.0.152.jar",
+                "hashes": {
+                    "sha1": "a0918f8d5962db0d489899ab0cdd8750fbc4cc00",
+                    "sha512": "3b1345b98c677f1f75e73670dcfbb1074d6e98170eeacf78051fcd811658ad156b7a9be3fb3652640787ba84f6c735e0d8b21914853a26e57b6994028c673c74"
+                },
+                "size": 16821760,
+                "primary": true,
+                "local": false
+            }
+        ],
+        "game_versions": [
+            {
+                "remote_id": "1.18.2",
+                "name": "1.18.2"
+            }
+        ],
+        "loaders": [
+            {
+                "id": "forge",
+                "remote_id": "forge",
+                "platform": "local",
+                "name": "Forge"
+            }
+        ],
+        "dependencies": [
+            {
+                "project_id": "mantle",
+                "version_id": null,
+                "file_name": null,
+                "type": "required"
+            }
+        ],
+        "published_at": "2024-02-28T19:38:43.048345Z",
+        "platform": "local",
+        "local": false,
+        "extra": null
+    },
+    {
+        "id": "rtqDbRrV",
+        "remote_id": "rtqDbRrV",
+        "remote_project_id": "tinkers",
+        "name": "3.6.4.113",
+        "version": "3.6.4.113",
+        "components": null,
+        "type": 0,
+        "changelog": null,
+        "downloads": 63221,
+        "files": [
+            {
+                "id": "TConstruct-1.18.2-3.6.4.113.jar",
+                "remote_id": "TConstruct-1.18.2-3.6.4.113.jar",
+                "component": null,
+                "name": "TConstruct-1.18.2-3.6.4.113.jar",
+                "state": [],
+                "url": "https:\/\/mods.net\/dl\/TConstruct-1.18.2-3.6.4.113.jar",
+                "hashes": {
+                    "sha1": "c3844dfc6f7cf1f75900e327fda6f1093fae1b89",
+                    "sha512": "f563af18c4351ff99834a1debe0b5846e8ed648e7db2fd3a05b1a8fe34f545aca56a908f05d1384c5f3b66ce51df03dac6fdffdb808acb0e5d6188735c448416"
+                },
+                "size": 16061701,
+                "primary": true,
+                "local": false
+            },
+            {
+                "id": "TConstruct-1.18.2-3.6.4.113-sources.jar",
+                "remote_id": "TConstruct-1.18.2-3.6.4.113-sources.jar",
+                "component": null,
+                "name": "TConstruct-1.18.2-3.6.4.113-sources.jar",
+                "state": [],
+                "url": "https:\/\/mods.net\/dl\/TConstruct-1.18.2-3.6.4.113-sources.jar",
+                "hashes": {
+                    "sha1": "4d174234c5350c58e3ebc32571dc04385824c146",
+                    "sha512": "be6edec238906de434cf1eadf5938aedf47180ab74287fca914d39d01970d7935b0756846d8d80752fc0e792250f5bdfe5cd533cae52b96fa43c91195db1f437"
+                },
+                "size": 1749343,
+                "primary": false,
+                "local": false
+            }
+        ],
+        "game_versions": [
+            {
+                "remote_id": "1.18.2",
+                "name": "1.18.2"
+            }
+        ],
+        "loaders": [
+            {
+                "id": "forge",
+                "remote_id": "forge",
+                "platform": "local",
+                "name": "Forge"
+            }
+        ],
+        "dependencies": [
+            {
+                "project_id": "mantle",
+                "version_id": null,
+                "file_name": null,
+                "type": "required"
+            }
+        ],
+        "published_at": "2023-04-27T08:49:09.944811Z",
+        "platform": "local",
+        "local": false,
+        "extra": null
+    },
+    {
+        "id": "TkJ6nDUK",
+        "remote_id": "TkJ6nDUK",
+        "remote_project_id": "tinkers",
+        "name": "Shield Update 3.6.3.111",
+        "version": "3.6.3.111",
+        "components": null,
+        "type": 0,
+        "changelog": null,
+        "downloads": 2257,
+        "files": [
+            {
+                "id": "TConstruct-1.18.2-3.6.3.111.jar",
+                "remote_id": "TConstruct-1.18.2-3.6.3.111.jar",
+                "component": null,
+                "name": "TConstruct-1.18.2-3.6.3.111.jar",
+                "state": [],
+                "url": "https:\/\/mods.net\/dl\/TConstruct-1.18.2-3.6.3.111.jar",
+                "hashes": {
+                    "sha1": "36ad9014fce958577863309ef0f00ad49f999703",
+                    "sha512": "675319136ce301135d2cefbd64e5191699823853e7a56bf9c0641a35aaf3dea646439d07d4ed925cd6292adab9a12c6d6dba25b7e9f7afec14f7706f31b95f90"
+                },
+                "size": 16043657,
+                "primary": true,
+                "local": false
+            },
+            {
+                "id": "TConstruct-1.18.2-3.6.3.111-sources.jar",
+                "remote_id": "TConstruct-1.18.2-3.6.3.111-sources.jar",
+                "component": null,
+                "name": "TConstruct-1.18.2-3.6.3.111-sources.jar",
+                "state": [],
+                "url": "https:\/\/mods.net\/dl\/TConstruct-1.18.2-3.6.3.111-sources.jar",
+                "hashes": {
+                    "sha1": "2880de007afd7fc6734d53d6fa62c64422d0d2e4",
+                    "sha512": "4e0e1161a104f31a995ed1f24e545a2bb6b5acf02aa0ead24830ef74ac38c6be5bcf927d54de714051c0d2397446e492400e8d655fbd73dc6d852b664c307e0c"
+                },
+                "size": 1748007,
+                "primary": false,
+                "local": false
+            }
+        ],
+        "game_versions": [
+            {
+                "remote_id": "1.18.2",
+                "name": "1.18.2"
+            }
+        ],
+        "loaders": [
+            {
+                "id": "forge",
+                "remote_id": "forge",
+                "platform": "local",
+                "name": "Forge"
+            }
+        ],
+        "dependencies": [
+            {
+                "project_id": "mantle",
+                "version_id": "jFlLXDyR",
+                "file_name": null,
+                "type": "required"
+            }
+        ],
+        "published_at": "2023-02-14T17:34:14.209492Z",
+        "platform": "local",
+        "local": false,
+        "extra": null
+    },
+    {
+        "id": "5x4nQV0E",
+        "remote_id": "5x4nQV0E",
+        "remote_project_id": "tinkers",
+        "name": "3.6.2.92",
+        "version": "3.6.2.92",
+        "components": null,
+        "type": 0,
+        "changelog": null,
+        "downloads": 733,
+        "files": [
+            {
+                "id": "TConstruct-1.18.2-3.6.2.92.jar",
+                "remote_id": "TConstruct-1.18.2-3.6.2.92.jar",
+                "component": null,
+                "name": "TConstruct-1.18.2-3.6.2.92.jar",
+                "state": [],
+                "url": "https:\/\/mods.net\/dl\/TConstruct-1.18.2-3.6.2.92.jar",
+                "hashes": {
+                    "sha1": "6b7a0b515edd654d0ca3a187145667ac0e110a84",
+                    "sha512": "9428ae5ececf1df03d55269230ad046d8869fe1458bdd84a3e58995e97b35c9d7c3997985188db8f1ba4c8e9a8d6a1d4473bb9bfb78ad395089ef477f8ec3187"
+                },
+                "size": 15402807,
+                "primary": true,
+                "local": false
+            },
+            {
+                "id": "TConstruct-1.18.2-3.6.2.92-sources.jar",
+                "remote_id": "TConstruct-1.18.2-3.6.2.92-sources.jar",
+                "component": null,
+                "name": "TConstruct-1.18.2-3.6.2.92-sources.jar",
+                "state": [],
+                "url": "https:\/\/mods.net\/dl\/TConstruct-1.18.2-3.6.2.92-sources.jar",
+                "hashes": {
+                    "sha1": "30d5aa28834ee0b6b1cda74595fdbb5a804c4649",
+                    "sha512": "878fcc538c2ea6f9b0abe1294ff1815433ec227091ff9aeac9202399a5bbef67ef1e0287677531bef6f2cbd5294c5192443f00f61f049150e55e44940f8a28f5"
+                },
+                "size": 1716403,
+                "primary": false,
+                "local": false
+            }
+        ],
+        "game_versions": [
+            {
+                "remote_id": "1.18.2",
+                "name": "1.18.2"
+            }
+        ],
+        "loaders": [
+            {
+                "id": "forge",
+                "remote_id": "forge",
+                "platform": "local",
+                "name": "Forge"
+            }
+        ],
+        "dependencies": [
+            {
+                "project_id": "mantle",
+                "version_id": "jFlLXDyR",
+                "file_name": null,
+                "type": "required"
+            }
+        ],
+        "published_at": "2023-01-22T20:49:52.565467Z",
+        "platform": "local",
+        "local": false,
+        "extra": null
+    },
+    {
+        "id": "3XnE2iWA",
+        "remote_id": "3XnE2iWA",
+        "remote_project_id": "tinkers",
+        "name": "3.6.1.88",
+        "version": "3.6.1.88",
+        "components": null,
+        "type": 0,
+        "changelog": null,
+        "downloads": 310,
+        "files": [
+            {
+                "id": "TConstruct-1.18.2-3.6.1.88.jar",
+                "remote_id": "TConstruct-1.18.2-3.6.1.88.jar",
+                "component": null,
+                "name": "TConstruct-1.18.2-3.6.1.88.jar",
+                "state": [],
+                "url": "https:\/\/mods.net\/dl\/TConstruct-1.18.2-3.6.1.88.jar",
+                "hashes": {
+                    "sha1": "3b12e26be49fdcbfbf0b251e960bdf66129dd801",
+                    "sha512": "9f8376e298a34e5d950f627eb09e9b9ec902182e2a751847e6b741db17b8b3d259d687ca259fdef6bb400700ab7898e134b11ff9cdc4b6116e6299371279b9ff"
+                },
+                "size": 15356430,
+                "primary": true,
+                "local": false
+            },
+            {
+                "id": "TConstruct-1.18.2-3.6.1.88-sources.jar",
+                "remote_id": "TConstruct-1.18.2-3.6.1.88-sources.jar",
+                "component": null,
+                "name": "TConstruct-1.18.2-3.6.1.88-sources.jar",
+                "state": [],
+                "url": "https:\/\/mods.net\/dl\/TConstruct-1.18.2-3.6.1.88-sources.jar",
+                "hashes": {
+                    "sha1": "c10fb55fdacc9c1a86aeed034318872056132e38",
+                    "sha512": "e5c3845fbe9ed25d8a810db2b57444b90dcc5df9d3cda9ff1ab7e03e713b5553d79bcf7ae87bf0ab385b98a5fc03bd6231bbe8ec2f661848ad8f518f241aad27"
+                },
+                "size": 1714670,
+                "primary": false,
+                "local": false
+            }
+        ],
+        "game_versions": [
+            {
+                "remote_id": "1.18.2",
+                "name": "1.18.2"
+            }
+        ],
+        "loaders": [
+            {
+                "id": "forge",
+                "remote_id": "forge",
+                "platform": "local",
+                "name": "Forge"
+            }
+        ],
+        "dependencies": [],
+        "published_at": "2023-01-19T19:29:15.984680Z",
+        "platform": "local",
+        "local": false,
+        "extra": null
+    },
+    {
+        "id": "jUnitpGk",
+        "remote_id": "jUnitpGk",
+        "remote_project_id": "tinkers",
+        "name": "3.6.1.85",
+        "version": "3.6.1.85",
+        "components": null,
+        "type": 0,
+        "changelog": null,
+        "downloads": 376,
+        "files": [
+            {
+                "id": "TConstruct-1.18.2-3.6.1.85.jar",
+                "remote_id": "TConstruct-1.18.2-3.6.1.85.jar",
+                "component": null,
+                "name": "TConstruct-1.18.2-3.6.1.85.jar",
+                "state": [],
+                "url": "https:\/\/mods.net\/dl\/TConstruct-1.18.2-3.6.1.85.jar",
+                "hashes": {
+                    "sha1": "108c0b990f68c72e3dfd05ad7ebded15886b67b4",
+                    "sha512": "d2404d158f85565ff75b0e6a1245202a034631c65cad351a5d2248a2c097a98ca51136bd1ed149503bedee89234745fb6108837b27830f2b7dfeecb857865d79"
+                },
+                "size": 15355410,
+                "primary": true,
+                "local": false
+            },
+            {
+                "id": "TConstruct-1.18.2-3.6.1.85-sources.jar",
+                "remote_id": "TConstruct-1.18.2-3.6.1.85-sources.jar",
+                "component": null,
+                "name": "TConstruct-1.18.2-3.6.1.85-sources.jar",
+                "state": [],
+                "url": "https:\/\/mods.net\/dl\/TConstruct-1.18.2-3.6.1.85-sources.jar",
+                "hashes": {
+                    "sha1": "a71da70a9b73eda9a027f71ea517e32529ce43f4",
+                    "sha512": "a10748f3f7cb8eb4f54a57b07c04c1a0cf0f281603779adaf541118e0f9051ba316abe298ef8c4e970a692243add0a8ed17e576624f0747bbb4e4673254a4c21"
+                },
+                "size": 1714197,
+                "primary": false,
+                "local": false
+            }
+        ],
+        "game_versions": [
+            {
+                "remote_id": "1.18.2",
+                "name": "1.18.2"
+            }
+        ],
+        "loaders": [
+            {
+                "id": "forge",
+                "remote_id": "forge",
+                "platform": "local",
+                "name": "Forge"
+            }
+        ],
+        "dependencies": [
+            {
+                "project_id": "mantle",
+                "version_id": "jFlLXDyR",
+                "file_name": null,
+                "type": "required"
+            }
+        ],
+        "published_at": "2023-01-19T05:41:54.503014Z",
+        "platform": "local",
+        "local": false,
+        "extra": null
+    },
+    {
+        "id": "ADIRkxKS",
+        "remote_id": "ADIRkxKS",
+        "remote_project_id": "tinkers",
+        "name": "1.5.5.7",
+        "version": "1.5.5.7",
+        "components": null,
+        "type": 0,
+        "changelog": null,
+        "downloads": 1242,
+        "files": [
+            {
+                "id": "TConstruct_mc1.6.4_1.5.5.7.jar",
+                "remote_id": "TConstruct_mc1.6.4_1.5.5.7.jar",
+                "component": null,
+                "name": "TConstruct_mc1.6.4_1.5.5.7.jar",
+                "state": [],
+                "url": "https:\/\/mods.net\/dl\/TConstruct_mc1.6.4_1.5.5.7.jar",
+                "hashes": {
+                    "sha1": "e9d7fae134cf2dabfde137f3d6351fef197d2b9e",
+                    "sha512": "0a150ccf3157b8bdff558d86e490b757792ec28c3139548d79185f76a63f2772c1ed47ae3dd36f2aa9b6413697d0cfbc4ed0e1b63bbb109e2310c60664ca7219"
+                },
+                "size": 4735255,
+                "primary": true,
+                "local": false
+            }
+        ],
+        "game_versions": [
+            {
+                "remote_id": "1.6.4",
+                "name": "1.6.4"
+            }
+        ],
+        "loaders": [
+            {
+                "id": "forge",
+                "remote_id": "forge",
+                "platform": "local",
+                "name": "Forge"
+            }
+        ],
+        "dependencies": [],
+        "published_at": "2022-12-28T06:35:45.741927Z",
+        "platform": "local",
+        "local": false,
+        "extra": null
+    },
+    {
+        "id": "qTJGiuCo",
+        "remote_id": "qTJGiuCo",
+        "remote_project_id": "tinkers",
+        "name": "1.8.8",
+        "version": "1.8.8",
+        "components": null,
+        "type": 0,
+        "changelog": null,
+        "downloads": 49766,
+        "files": [
+            {
+                "id": "TConstruct-1.7.10-1.8.8.jar",
+                "remote_id": "TConstruct-1.7.10-1.8.8.jar",
+                "component": null,
+                "name": "TConstruct-1.7.10-1.8.8.jar",
+                "state": [],
+                "url": "https:\/\/mods.net\/dl\/TConstruct-1.7.10-1.8.8.jar",
+                "hashes": {
+                    "sha1": "f41c91344ad8ed5de74b3bbba8c055594887785a",
+                    "sha512": "7fc0efac14ef745cceb96d427a9f6c817de6a1f4c789b2aa39a3d7c0cd50eb482f0af77c2464b860af76471344690df63937426e975b25377aa05e418bb616f8"
+                },
+                "size": 5601409,
+                "primary": true,
+                "local": false
+            }
+        ],
+        "game_versions": [
+            {
+                "remote_id": "1.7.10",
+                "name": "1.7.10"
+            }
+        ],
+        "loaders": [
+            {
+                "id": "forge",
+                "remote_id": "forge",
+                "platform": "local",
+                "name": "Forge"
+            }
+        ],
+        "dependencies": [
+            {
+                "project_id": "mantle",
+                "version_id": null,
+                "file_name": null,
+                "type": "required"
+            }
+        ],
+        "published_at": "2022-12-28T06:24:35.613715Z",
+        "platform": "local",
+        "local": false,
+        "extra": null
+    },
+    {
+        "id": "mNZUIBbe",
+        "remote_id": "mNZUIBbe",
+        "remote_project_id": "tinkers",
+        "name": "2.13.0.183",
+        "version": "2.13.0.183",
+        "components": null,
+        "type": 0,
+        "changelog": null,
+        "downloads": 195575,
+        "files": [
+            {
+                "id": "TConstruct-1.12.2-2.13.0.183.jar",
+                "remote_id": "TConstruct-1.12.2-2.13.0.183.jar",
+                "component": null,
+                "name": "TConstruct-1.12.2-2.13.0.183.jar",
+                "state": [],
+                "url": "https:\/\/mods.net\/dl\/TConstruct-1.12.2-2.13.0.183.jar",
+                "hashes": {
+                    "sha1": "e37e1f05ad0eaf567497ce655bc877dc1778bd0f",
+                    "sha512": "84c41a667b88b991562b005383b211e877c10fc6e442d5d9fff7f771795d71bf69836fa069effa9effea7d079499ec63517a764fa92eaf206c57d3b1406f9f1c"
+                },
+                "size": 4023372,
+                "primary": true,
+                "local": false
+            }
+        ],
+        "game_versions": [
+            {
+                "remote_id": "1.12.2",
+                "name": "1.12.2"
+            }
+        ],
+        "loaders": [
+            {
+                "id": "forge",
+                "remote_id": "forge",
+                "platform": "local",
+                "name": "Forge"
+            }
+        ],
+        "dependencies": [
+            {
+                "project_id": "mantle",
+                "version_id": null,
+                "file_name": null,
+                "type": "required"
+            }
+        ],
+        "published_at": "2022-12-28T06:21:27.749341Z",
+        "platform": "local",
+        "local": false,
+        "extra": null
+    },
+    {
+        "id": "3KJI35bq",
+        "remote_id": "3KJI35bq",
+        "remote_project_id": "tinkers",
+        "name": "3.3.4.335",
+        "version": "3.3.4.335",
+        "components": null,
+        "type": 0,
+        "changelog": null,
+        "downloads": 489238,
+        "files": [
+            {
+                "id": "TConstruct-1.16.5-3.3.4.335.jar",
+                "remote_id": "TConstruct-1.16.5-3.3.4.335.jar",
+                "component": null,
+                "name": "TConstruct-1.16.5-3.3.4.335.jar",
+                "state": [],
+                "url": "https:\/\/mods.net\/dl\/TConstruct-1.16.5-3.3.4.335.jar",
+                "hashes": {
+                    "sha1": "bfccf8cb255bc64101c0ae27cac7f3b386b88078",
+                    "sha512": "e5687d747d5aad9e8f047608702130322a70603457aae2c2bed29f1422bc8650f7cc38e48a76e552f387194a91dedd59d8f3e2dcfa98083920e608716ef62add"
+                },
+                "size": 10927812,
+                "primary": true,
+                "local": false
+            }
+        ],
+        "game_versions": [
+            {
+                "remote_id": "1.16.5",
+                "name": "1.16.5"
+            }
+        ],
+        "loaders": [
+            {
+                "id": "forge",
+                "remote_id": "forge",
+                "platform": "local",
+                "name": "Forge"
+            }
+        ],
+        "dependencies": [
+            {
+                "project_id": "mantle",
+                "version_id": null,
+                "file_name": null,
+                "type": "required"
+            }
+        ],
+        "published_at": "2022-12-28T06:19:26.264614Z",
+        "platform": "local",
+        "local": false,
+        "extra": null
+    },
+    {
+        "id": "HXIzidIf",
+        "remote_id": "HXIzidIf",
+        "remote_project_id": "tinkers",
+        "name": "Bow Update for 1.18.2",
+        "version": "3.6.0.73",
+        "components": null,
+        "type": 1,
+        "changelog": null,
+        "downloads": 716,
+        "files": [
+            {
+                "id": "TConstruct-1.18.2-3.6.0.73.jar",
+                "remote_id": "TConstruct-1.18.2-3.6.0.73.jar",
+                "component": null,
+                "name": "TConstruct-1.18.2-3.6.0.73.jar",
+                "state": [],
+                "url": "https:\/\/mods.net\/dl\/TConstruct-1.18.2-3.6.0.73.jar",
+                "hashes": {
+                    "sha1": "e2c23490a250ef16d7cb20325b02b9a029151e30",
+                    "sha512": "d9a32b642f745bd2556ff2d89c23cc1384a61039a604ad3400d5ef836f2a93bf04ada755816f89b5bfc1fff3b11e8fff4c233a2c0dc1baf5c3cae20b36360b14"
+                },
+                "size": 15131709,
+                "primary": true,
+                "local": false
+            }
+        ],
+        "game_versions": [
+            {
+                "remote_id": "1.18.2",
+                "name": "1.18.2"
+            }
+        ],
+        "loaders": [
+            {
+                "id": "forge",
+                "remote_id": "forge",
+                "platform": "local",
+                "name": "Forge"
+            }
+        ],
+        "dependencies": [
+            {
+                "project_id": "mantle",
+                "version_id": "jFlLXDyR",
+                "file_name": null,
+                "type": "required"
+            }
+        ],
+        "published_at": "2022-12-28T02:28:17.052954Z",
+        "platform": "local",
+        "local": false,
+        "extra": null
+    }
+]

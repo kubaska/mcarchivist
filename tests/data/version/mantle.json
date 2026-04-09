@@ -1,0 +1,138 @@
+[
+    {
+        "id": 20,
+        "remote_id": 20,
+        "remote_project_id": "mantle",
+        "name": "1.11.79 for 1.20.1",
+        "version": "1.11.79",
+        "components": null,
+        "type": 0,
+        "changelog": null,
+        "downloads": 210737,
+        "files": [
+            {
+                "id": "Mantle-1.20.1-1.11.79.jar",
+                "remote_id": "Mantle-1.20.1-1.11.79.jar",
+                "component": null,
+                "name": "Mantle-1.20.1-1.11.79.jar",
+                "state": [],
+                "url": "https:\/\/mods.net\/dl\/Mantle-1.20.1-1.11.79.jar",
+                "size": 175,
+                "hashes": {
+                    "sha1": "7008f7ca8e33f151532401429902468b34a6eaf5",
+                    "sha512": "65042445a59c0c439abd7200f81f4f35b1f700969ff0d2665582e8947c7391880cf1ff349375dbeb8d9ed68c8b19baf3c80c89f72327816b42539a5d0b3a237d"
+                },
+                "primary": true,
+                "local": false
+            },
+            {
+                "id": "Mantle-1.20.1-1.11.79-sources.jar",
+                "remote_id": "Mantle-1.20.1-1.11.79-sources.jar",
+                "component": null,
+                "name": "Mantle-1.20.1-1.11.79-sources.jar",
+                "state": [],
+                "url": "https:\/\/mods.net\/dl\/Mantle-1.20.1-1.11.79-sources.jar",
+                "size": 612032,
+                "hashes": {
+                    "sha1": "d32d5ae8d2eefad6fcae0c84a41be02ac58fb104",
+                    "sha512": "2a2fcf924d62a93d821d031057a8a8d0d27f97b2d89c77f77def56eb7cf7fbd298e58db1eee849188e2bfc69fdbdc02d71d26f38b07b5cfbc4a62863e266a6f9"
+                },
+                "primary": false,
+                "local": false
+            }
+        ],
+        "game_versions": [
+            {
+                "remote_id": "1.20.1",
+                "name": "1.20.1"
+            }
+        ],
+        "loaders": [
+            {
+                "id": "forge",
+                "remote_id": "forge",
+                "platform": "local",
+                "name": "Forge"
+            },
+            {
+                "id": "neoforge",
+                "remote_id": "neoforge",
+                "platform": "local",
+                "name": "NeoForge"
+            }
+        ],
+        "dependencies": [],
+        "published_at": "2025-07-27T22:36:52.448288Z",
+        "platform": "local",
+        "local": false,
+        "extra": null
+    },
+    {
+        "id": 19,
+        "remote_id": 19,
+        "remote_project_id": "mantle",
+        "name": "1.11.71 for 1.20.1",
+        "version": "1.11.71",
+        "components": null,
+        "type": 0,
+        "changelog": null,
+        "downloads": 21875,
+        "files": [
+            {
+                "id": "Mantle-1.20.1-1.11.71.jar",
+                "remote_id": "Mantle-1.20.1-1.11.71.jar",
+                "component": null,
+                "name": "Mantle-1.20.1-1.11.71.jar",
+                "state": [],
+                "url": "https:\/\/mods.net\/dl\/Mantle-1.20.1-1.11.71.jar",
+                "size": 1449484,
+                "hashes": {
+                    "sha1": "ac9e1be007b11946970da45651305fae91563702",
+                    "sha512": "652af06c5877fb8964e895188bc40702886b3d69a9caa8332c3562eeacfd4f9a79b64c644ea6db8b45fad1e679fd834b1c522c32abc19fda9a48a95a282b7cfe"
+                },
+                "primary": true,
+                "local": false
+            },
+            {
+                "id": "Mantle-1.20.1-1.11.71-sources.jar",
+                "remote_id": "Mantle-1.20.1-1.11.71-sources.jar",
+                "component": null,
+                "name": "Mantle-1.20.1-1.11.71-sources.jar",
+                "state": [],
+                "url": "https:\/\/mods.net\/dl\/Mantle-1.20.1-1.11.71-sources.jar",
+                "size": 598172,
+                "hashes": {
+                    "sha1": "31c7e687d97e078a311436c6ff2e1410b584fe98",
+                    "sha512": "1761b50777bc71ca200bb3e86d61d2b640b3e82a4c0fd857986f225131e2d351b4ad7b1804337df2eded5382e7bf49ec25abd1e5839d810c5a6379da5046c5d4"
+                },
+                "primary": false,
+                "local": false
+            }
+        ],
+        "game_versions": [
+            {
+                "remote_id": "1.20.1",
+                "name": "1.20.1"
+            }
+        ],
+        "loaders": [
+            {
+                "id": "forge",
+                "remote_id": "forge",
+                "platform": "local",
+                "name": "Forge"
+            },
+            {
+                "id": "neoforge",
+                "remote_id": "neoforge",
+                "platform": "local",
+                "name": "NeoForge"
+            }
+        ],
+        "dependencies": [],
+        "published_at": "2025-07-16T22:57:23.823139Z",
+        "platform": "local",
+        "local": false,
+        "extra": null
+    }
+]

@@ -1,0 +1,137 @@
+@import "bootstrap/scss/bootstrap";
+@import "bootstrap/scss/_variables.scss";
+
+// Responsive
+.d-contents {
+    display: contents !important;
+}
+@media (min-width: 576px) {
+    .d-sm-contents {
+        display: contents !important;
+    }
+}
+@media (min-width: 768px) {
+    .d-md-contents {
+        display: contents !important;
+    }
+}
+@media (min-width: 992px) {
+    .d-lg-contents {
+        display: contents !important;
+    }
+}
+@media (min-width: 1200px) {
+    .d-xl-contents {
+        display: contents !important;
+    }
+}
+
+// Button Icon
+.btn-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 100%;
+    padding: 0;
+}
+.btn-icon-sm {
+    width: 24px;
+    height: 24px;
+}
+.btn-icon-lg {
+    width: 48px;
+    height: 48px;
+}
+
+// Background
+.bg-light-hover:hover {
+    background-color: rgb(var(--bs-light-rgb)) !important;
+}
+
+// Modal
+.modal.fade.zoom:not(.show) .modal-dialog {
+    transform: scale(0.8);
+}
+
+// Utils
+.w-mc {
+    width: min-content;
+}
+.w-fit-content {
+    width: fit-content !important;
+}
+.w-initial {
+    width: initial !important;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.list-style-reset {
+    list-style: none;
+    padding: 0;
+}
+
+.inset-0 {
+    inset: 0;
+}
+
+.fs-7 {
+    font-size: 0.9rem !important;
+}
+.fs-8 {
+    font-size: 0.8rem !important;
+}
+.fs-9 {
+    font-size: 0.7rem !important;
+}
+
+.lh-md {
+    line-height: 1.35 !important;
+}
+
+.z-4 {
+    z-index: 4 !important;
+}
+
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+}
+
+.text-has-hint {
+    text-decoration: underline;
+    text-decoration-style: dashed;
+}
+
+// Extra colors
+.bg-success-medium {
+    background-color: #{$green-300};
+}
+:root {
+    --mca-bs-bg-primary-accent: #{$blue-300};
+    --mca-bs-bg-success-accent: #{$green-300};
+    --mca-bs-bg-warning-accent: #{$yellow-300};
+    --mca-bs-bg-danger-accent: #{$red-300};
+}
+
+// Animations
+@keyframes fadeInDown {
+    0% {
+        opacity: 0;
+        -webkit-transform: translate3d(0, -100%, 0);
+        -ms-transform: translate3d(0, -100%, 0);
+        transform: translate3d(0, -100%, 0);
+    }
+    100% {
+        opacity: 1;
+        -webkit-transform: none;
+        -ms-transform: none;
+        transform: none;
+    }
+}
+.fadeInDown {
+    animation: fadeInDown 0.3s ease;
+}

@@ -21,6 +21,11 @@ class Handler extends ExceptionHandler
         HttpException::class,
         ModelNotFoundException::class,
         ValidationException::class,
+        McaValidationException::class,
+        NotFoundApiException::class,
+        RateLimitedApiException::class,
+        PlatformNotFoundException::class,
+        UnsupportedApiMethodException::class
     ];
 
     /**

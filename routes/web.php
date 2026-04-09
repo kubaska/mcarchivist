@@ -13,6 +13,5 @@
 |
 */
 
-$router->get('/', function () use ($router) {
-    return $router->app->version();
-});
+$router->get('/download/{id}[/{fileName}]', ['uses' => 'ModController@downloadFile', 'as' => 'download']);
+$router->get('/{any:.*}', 'AppController@index');

@@ -1,0 +1,92 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: ./.docker/nginx/Dockerfile
+    restart: unless-stopped
+    ports:
+      - 25564:80
+    volumes:
+      - public:/var/www/public/build:ro
+      - storage:/var/www/storage:rw
+    networks:
+      - mcarchivist
+    depends_on:
+      - php
+
+  php:
+    build:
+      context: .
+      dockerfile: ./.docker/php/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - IS_APPLICATION=true
+    env_file:
+      - ./.env.prod.example
+    volumes:
+      - public:/var/www/public/build
+      - storage:/var/www/storage:rw
+    networks:
+      - mcarchivist
+
+  scheduler:
+    build:
+      context: .
+      dockerfile: ./.docker/php/Dockerfile
+    command: php artisan schedule:work
+    restart: unless-stopped
+    stop_signal: SIGTERM
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - ./.env.prod.example
+    volumes:
+      - storage:/var/www/storage:rw
+    networks:
+      - mcarchivist
+
+  queue-worker:
+    build:
+      context: .
+      dockerfile: ./.docker/php/Dockerfile
+    command: php artisan queue:work
+    restart: unless-stopped
+    stop_signal: SIGTERM
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - ./.env.prod.example
+    volumes:
+      - storage:/var/www/storage:rw
+    networks:
+      - mcarchivist
+
+  postgres:
+    image: postgres:18
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=mcarchivist
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=p4ssw0rd
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    networks:
+      - mcarchivist
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -h localhost -U $${POSTGRES_USER} -d $${POSTGRES_DB}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  mcarchivist:
+
+volumes:
+  postgres_data:
+  public:
+  storage:

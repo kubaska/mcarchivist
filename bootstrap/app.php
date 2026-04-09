@@ -23,9 +23,9 @@ $app = new Laravel\Lumen\Application(
     dirname(__DIR__)
 );
 
-// $app->withFacades();
+$app->withFacades();
 
-// $app->withEloquent();
+$app->withEloquent();
 
 /*
 |--------------------------------------------------------------------------
@@ -60,6 +60,8 @@ $app->singleton(
 */
 
 $app->configure('app');
+$app->configure('logging');
+$app->configure('queue');
 
 /*
 |--------------------------------------------------------------------------
@@ -91,25 +93,15 @@ $app->configure('app');
 |
 */
 
-// $app->register(App\Providers\AppServiceProvider::class);
+if (env('APP_DEBUG')) {
+    $app->register(Clockwork\Support\Lumen\ClockworkServiceProvider::class);
+}
+$app->register(App\Providers\AppServiceProvider::class);
+$app->register(App\Providers\RouteServiceProvider::class);
+if (env('APP_ENV') !== 'testing') {
+    $app->register(App\Providers\ThirdPartyApiProvider::class);
+}
 // $app->register(App\Providers\AuthServiceProvider::class);
 // $app->register(App\Providers\EventServiceProvider::class);
-
-/*
-|--------------------------------------------------------------------------
-| Load The Application Routes
-|--------------------------------------------------------------------------
-|
-| Next we will include the routes file so that they can all be added to
-| the application. This will provide all of the URLs the application
-| can respond to, as well as the controllers that may handle them.
-|
-*/
-
-$app->router->group([
-    'namespace' => 'App\Http\Controllers',
-], function ($router) {
-    require __DIR__.'/../routes/web.php';
-});
 
 return $app;
