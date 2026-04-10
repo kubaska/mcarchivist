@@ -48,6 +48,7 @@ FROM php:8.4-fpm AS production
 
 # Install only runtime libraries needed in production
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    net-tools \
     libpq-dev \
     libicu-dev \
     libzip-dev \

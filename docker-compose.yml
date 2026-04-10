@@ -12,7 +12,8 @@ services:
     networks:
       - mcarchivist
     depends_on:
-      - php
+      php:
+        condition: service_healthy
 
   php:
     build:
@@ -31,6 +32,12 @@ services:
       - storage:/var/www/storage:rw
     networks:
       - mcarchivist
+    healthcheck:
+      test: [ "CMD-SHELL", "netstat -an | grep :9000" ]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 300s
 
   scheduler:
     build:
@@ -40,7 +47,7 @@ services:
     restart: unless-stopped
     stop_signal: SIGTERM
     depends_on:
-      postgres:
+      php:
         condition: service_healthy
     env_file:
       - ./.env.prod.example
@@ -57,7 +64,7 @@ services:
     restart: unless-stopped
     stop_signal: SIGTERM
     depends_on:
-      postgres:
+      php:
         condition: service_healthy
     env_file:
       - ./.env.prod.example
