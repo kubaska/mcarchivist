@@ -131,11 +131,6 @@ class McaRulesetArchiver
             $gameVersions = $this->gameVersionService->getVersionsBetween($rule->game_version_from, $rule->game_version_to, $rule->with_snapshots);
 
             foreach ($gameVersions as $gameVersion) {
-                // todo remove
-                Log::debug('trying game version '.$gameVersion->name);
-                $versions->filter(fn(VersionDTO $v) => $v->hasGameVersion($gameVersion->name))
-                    ->each(fn(VersionDTO $v) => Log::debug(sprintf('[%s] %s (%s), %s', $v->type->nameShort(), $v->remoteId, $v->name, $v->publishedAt)));
-
                 $remoteLoaderNames = $versions
                     ->map(fn(VersionDTO $v) => $v->loaders->pluck('name'))
                     ->flatten(1)
@@ -160,10 +155,6 @@ class McaRulesetArchiver
                         fn(Collection $c) => $c, // Sorted already.
                         fn(Collection $c) => $c->sortBy('publishedAt', descending: ! $rule->sorting)
                     );
-
-                // todo remove
-                Log::debug('---');
-                $applicableVersions->each(fn(VersionDTO $v) => Log::debug(sprintf('[%s] %s (%s), %s, %s', $v->type->nameShort(), $v->remoteId, $v->name, $v->loaders->pluck('name')->join(','), $v->publishedAt)));
 
                 if ($rule->loader) {
                     $applicableVersions = $applicableVersions->take($rule->count);

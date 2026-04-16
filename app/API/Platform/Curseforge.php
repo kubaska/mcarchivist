@@ -433,7 +433,7 @@ class Curseforge extends BaseThirdPartyApi
                     }
                 }
 
-                $index += $response->getPagination()->per_page;
+                $index += $response->getPagination()->perPage;
                 if ($response->isCached() === false) $cached = false;
                 if (! $response->getPagination()->hasMore()) $keepGoing = false;
             }
