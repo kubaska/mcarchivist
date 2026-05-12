@@ -20,37 +20,42 @@
             </li>
         </ul>
     </nav>
-
 </template>
 
 <script setup>
 import {computed} from "vue";
 import {range} from "lodash-es";
-
-const ON_EACH_SIDE = 2;
+import {breakpointsBootstrapV5, useBreakpoints} from "@vueuse/core";
 
 const props = defineProps({
     current: { type: Number, required: true },
     total: { type: Number, required: true }
 });
 
+const breakpoints = useBreakpoints(breakpointsBootstrapV5);
+const onEachSide = computed(() => {
+    if (breakpoints.smaller('sm').value) return 0;
+    else if (breakpoints.smaller('lg').value) return 1;
+    else return 2;
+});
+
 const emit = defineEmits(['change', 'prev', 'next', 'navigate']);
 
 const steps = computed(() => {
-    const window = ON_EACH_SIDE + 4;
+    const window = onEachSide.value + 4;
 
-    if (props.total <= (ON_EACH_SIDE * 2) + 6) {
+    if (props.total <= (onEachSide.value * 2) + 6) {
         // render all
         return range(1, props.total + 1);
     } else if (props.current <= window) {
         // render 1,2,3,4,5,...,30
-        return [...range(1, window + ON_EACH_SIDE + 1), '...', props.total];
+        return [...range(1, window + onEachSide.value + 1), '...', props.total];
     } else if (props.current > (props.total - window)) {
         // render 1,...,26,27,28,29,30
-        return [1, '...', ...range(props.total - (window + (ON_EACH_SIDE - 1)), props.total + 1)];
+        return [1, '...', ...range(props.total - (window + (onEachSide.value - 1)), props.total + 1)];
     } else {
         // render 1,...,14,15,16,...,30
-        return [1, '...', ...range(props.current - ON_EACH_SIDE, props.current + ON_EACH_SIDE + 1), '...', props.total];
+        return [1, '...', ...range(props.current - onEachSide.value, props.current + onEachSide.value + 1), '...', props.total];
     }
 });
 
