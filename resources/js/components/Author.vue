@@ -1,7 +1,7 @@
 <template>
     <div class="d-flex gap-2">
-        <img :src="author.avatar_url ?? defaultAvatarUrl"
-             :alt="author.avatar_url ? author.name + '\'s avatar' : 'default avatar'"
+        <img :src="author.avatar ?? defaultAvatarUrl"
+             :alt="author.avatar ? author.name + '\'s avatar' : 'default avatar'"
              class="author--avatar"
         >
         <div class="d-flex flex-column">
