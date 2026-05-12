@@ -7,7 +7,7 @@
                     <div class="d-flex flex-column">
                         <div class="d-flex gap-2 align-items-center">
                             <p class="mb-0 fs-5 fw-bold">{{ project.name }}</p>
-                            <a :href="project.project_url" target="_blank">
+                            <a :href="project.project_url" target="_blank" referrerpolicy="no-referrer">
                                 <button class="btn btn-icon">
                                     <fa-icon icon="arrow-up-right-from-square" />
                                 </button>

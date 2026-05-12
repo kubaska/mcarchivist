@@ -10,7 +10,8 @@
                     <li v-else><a class="dropdown-item"
                                   :class="{ disabled: typeof option.disabled === 'function' ? option.disabled(context) : option.disabled }"
                                   :href="option.link ? option.link : '#'"
-                                  :target="option.linkNewTab ? 'blank' : null"
+                                  :target="option.linkNewTab ? '_blank' : null"
+                                  :referrerpolicy="option.linkNewTab ? 'no-referrer' : null"
                                   @click="(e) => { if(! option.link) e.preventDefault(); option.onClick ? option.onClick(context) : null }"
                     ><span>{{ option.name }}</span><fa-icon icon="arrow-up-right-from-square" class="ms-2" v-if="option.linkNewTab" /></a></li>
                 </template>
@@ -35,5 +36,5 @@ const directionCss = computed(() => {
         case 'end': return 'dropend';
         default: return '';
     }
-})
+});
 </script>
