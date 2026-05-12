@@ -32,6 +32,10 @@ class QueueLogHandler extends Handler implements ResettableInterface
     {
         if (! $this->isHandling($record)) return false;
 
+        if (count($this->buffer) > 1000) {
+            array_shift($this->buffer);
+        }
+
         $this->buffer[] = sprintf(
             '[%s] %s: %s',
             $record->datetime->format('Y-m-d H:i:s'),
