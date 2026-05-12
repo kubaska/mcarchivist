@@ -411,4 +411,34 @@ class RulesetArchiverTest extends TestCase
 
         $this->assertSame(2, $result->count());
     }
+
+    /** @test */
+    public function it_uses_global_archive_rules()
+    {
+        $this->setUpTest('tinkers.json');
+        $project = Project::factory()
+            ->create(['name' => 'Tinkers Construct', 'platform' => 'local']);
+        ArchiveRule::factory()->for($project->master_project, 'ruleable')->forGameVersion('1.20.1')->create();
+
+        $archiver = app(McaRulesetArchiver::class);
+        $archiver->archive($project->master_project);
+
+        $this->assertDatabaseCount('versions', 1);
+    }
+
+    /** @test */
+    public function it_prioritizes_project_archive_rules_if_exist()
+    {
+        $this->setUpTest('tinkers.json');
+        $project = Project::factory()
+            ->has(ArchiveRule::factory(null, ['count' => 1])->withReleasePriority()->forGameVersion('1.20.1'), 'archive_rules')
+            ->create(['name' => 'Tinkers Construct', 'platform' => 'local']);
+        ArchiveRule::factory()->for($project->master_project, 'ruleable')->forGameVersion('1.20.1')->create();
+
+        $archiver = app(McaRulesetArchiver::class);
+        $archiver->archive($project->master_project);
+
+        $this->assertDatabaseCount('versions', 1);
+        $this->assertSame(VersionType::RELEASE, Version::first()->type);
+    }
 }

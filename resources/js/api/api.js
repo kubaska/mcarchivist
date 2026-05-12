@@ -90,8 +90,8 @@ export default {
     getRelatedProjects(id, options = {}) {
         return request.post(`/projects/${id}/related`, options);
     },
-    mergeProjects(options) {
-        return request.post(`/projects/merge`, options);
+    mergeProjects(id, options) {
+        return request.post(`/projects/${id}/merge`, options);
     },
     unmergeProject(projectId) {
         return request.post(`/projects/${projectId}/unmerge`);

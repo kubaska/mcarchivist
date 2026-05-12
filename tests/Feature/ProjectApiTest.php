@@ -12,6 +12,7 @@ use App\Models\Category;
 use App\Models\File;
 use App\Models\GameVersion;
 use App\Models\Loader;
+use App\Models\MasterProject;
 use App\Models\Project;
 use App\Models\Ruleset;
 use App\Models\Version;
@@ -159,32 +160,21 @@ class ProjectApiTest extends TestCase
     public function it_archives_the_project()
     {
         $project = Project::factory()->create();
-
-        // New rules
-        $this->post(route('project.archive', ['id' => $project->getKey()]), [
-            'platform_id' => 'local',
-            'archived_only' => true,
-            'rules' => [
-                [
-                    'count' => 1,
-                    'sorting' => false,
-                    'release_type' => '*',
-                    'release_type_priority' => false,
-                    'game_version_from' => '*',
-                    'game_version_to' => null,
-                    'with_snapshots' => false,
-                    'loader_id' => '*',
-                    'dependencies' => 0,
-                    'all_files' => false
-                ]
-            ]
-        ]);
-
-        $this->response->assertOk();
-        $this->assertDatabaseCount('archive_rules', 1);
-        $rule = ArchiveRule::query()->first();
-        $this->assertEquals($ruleRaw = [
-            'count' => 1,
+        $makeRequestRule = fn(int $count, array $extra = []) => [
+            'count' => $count,
+            'sorting' => false,
+            'release_type' => '*',
+            'release_type_priority' => false,
+            'game_version_from' => '*',
+            'game_version_to' => null,
+            'with_snapshots' => false,
+            'loader_id' => '*',
+            'dependencies' => 0,
+            'all_files' => false,
+            ...$extra
+        ];
+        $makeDbRule = fn(int $count, array $extra = []) => [
+            'count' => $count,
             'sorting' => 0,
             'release_type' => null,
             'release_type_priority' => 0,
@@ -193,45 +183,97 @@ class ProjectApiTest extends TestCase
             'with_snapshots' => 0,
             'loader_id' => null,
             'dependencies' => 0,
-            'all_files' => 0
-        ], Arr::only($rule->getAttributes(), array_keys($ruleRaw)));
+            'all_files' => 0,
+            ...$extra
+        ];
 
-        // Update rules
+        // New rules
         $this->post(route('project.archive', ['id' => $project->getKey()]), [
-            'platform_id' => 'local',
+            'platform' => $project->platform,
             'archived_only' => true,
             'rules' => [
-                [
-                    'id' => $rule->getKey(),
-                    'count' => 2,
-                    'sorting' => true,
-                    'release_type' => 1,
-                    'release_type_priority' => true,
-                    'game_version_from' => '*',
-                    'game_version_to' => null,
-                    'with_snapshots' => true,
-                    'loader_id' => '*',
-                    'dependencies' => 1,
-                    'all_files' => true
-                ]
+                $makeRequestRule(1)
             ]
         ]);
 
         $this->response->assertOk();
         $this->assertDatabaseCount('archive_rules', 1);
         $rule = ArchiveRule::query()->first();
-        $this->assertEquals($ruleRaw = [
-            'count' => 2,
-            'sorting' => 1,
-            'release_type' => 1,
-            'release_type_priority' => 1,
-            'game_version_from' => '*',
-            'game_version_to' => null,
-            'with_snapshots' => 1,
-            'loader_id' => null,
-            'dependencies' => 1,
-            'all_files' => 1
-        ], Arr::only($rule->getAttributes(), array_keys($ruleRaw)));
+        $this->assertEquals($makeDbRule(1), Arr::only($rule->getAttributes(), array_keys($makeDbRule(1))));
+
+        // New rules - global
+        $this->post(route('project.archive', ['id' => $project->getKey()]), [
+            'platform' => $project->platform,
+            'archived_only' => true,
+            'for_master_project' => true,
+            'rules' => [
+                $makeRequestRule(5)
+            ]
+        ]);
+
+        $this->response->assertOk();
+        $this->assertDatabaseCount('archive_rules', 2);
+        $ruleGlobal = $project->master_project->archive_rules->first();
+        $this->assertEquals(
+            $makeDbRule(5),
+            Arr::only($ruleGlobal->getAttributes(), array_keys($makeDbRule(5)))
+        );
+
+        // Update rules
+        $this->post(route('project.archive', ['id' => $project->getKey()]), [
+            'platform' => $project->platform,
+            'archived_only' => true,
+            'rules' => [
+                $makeRequestRule(2, ['id' => $rule->getKey()])
+            ]
+        ]);
+
+        $this->response->assertOk();
+        $this->assertDatabaseCount('archive_rules', 2);
+        $rule = ArchiveRule::query()->findOrFail($rule->getKey());
+        $this->assertEquals(
+            $makeDbRule(2),
+            Arr::only($rule->getAttributes(), array_keys($makeDbRule(2)))
+        );
+
+        // Update rules - global
+        $this->post(route('project.archive', ['id' => $project->getKey()]), [
+            'platform' => $project->platform,
+            'archived_only' => true,
+            'for_master_project' => true,
+            'rules' => [
+                $makeRequestRule(10, ['id' => $ruleGlobal->getKey()])
+            ]
+        ]);
+
+        $this->response->assertOk();
+        $this->assertDatabaseCount('archive_rules', 2);
+        $ruleGlobal->refresh();
+        $this->assertEquals(
+            $makeDbRule(10),
+            Arr::only($ruleGlobal->getAttributes(), array_keys($makeDbRule(10)))
+        );
+
+        // Remove rules
+        $this->post(route('project.archive', ['id' => $project->getKey()]), [
+            'platform' => $project->platform,
+            'archived_only' => true,
+            'rules' => []
+        ]);
+
+        $this->response->assertOk();
+        $this->assertDatabaseCount('archive_rules', 1);
+
+        // Remove rules - global
+        $this->post(route('project.archive', ['id' => $project->getKey()]), [
+            'platform' => $project->platform,
+            'archived_only' => true,
+            'for_master_project' => true,
+            'rules' => []
+        ]);
+
+        $this->response->assertOk();
+        $this->assertDatabaseCount('archive_rules', 0);
     }
 
     /** @test */
@@ -242,7 +284,7 @@ class ProjectApiTest extends TestCase
 
         // Copy from ruleset
         $this->post(route('project.archive', ['id' => $project->getKey()]), [
-            'platform_id' => 'local',
+            'platform' => 'local',
             'archived_only' => true,
             'ruleset_id' => $ruleset->getKey()
         ]);
@@ -555,34 +597,40 @@ class ProjectApiTest extends TestCase
         $p2 = Project::factory()->has(Version::factory())->create();
 
         // Merge
-        $this->post(route('project.merge'), [
-            'project_id' => $p1->master_project_id, 'merged_project_id' => $p2->master_project_id,
-            'project_is_remote' => false, 'project_platform' => $p1->platform, 'merge_direction_reverse' => false
+        $this->post(route('project.merge', ['id' => $p1->getKey()]), [
+            'merged_project_id' => $p2->master_project_id, 'merge_direction_reverse' => false
         ]);
         $this->response->assertOk();
         $this->assertSame($p1->refresh()->master_project_id, $p2->refresh()->master_project_id);
         $this->assertSame($p1->getKey(), $p2->master_project->preferred_project_id);
         $this->assertDatabaseCount('master_projects', 1);
+        $this->assertSame($p1->name, MasterProject::first()->name);
 
-        $this->post(route('project.merge'), [
-            'project_id' => 123, 'merged_project_id' => $p2->master_project_id,
-            'project_is_remote' => false, 'project_platform' => $p1->platform, 'merge_direction_reverse' => false
+        $this->post(route('project.merge', ['id' => 123]), [
+            'merged_project_id' => $p2->master_project_id, 'merge_direction_reverse' => false
         ]);
         $this->response->assertNotFound();
 
-        $this->post(route('project.merge'), [
-            'project_id' => $p1->master_project_id, 'merged_project_id' => 123,
-            'project_is_remote' => false, 'project_platform' => $p1->platform, 'merge_direction_reverse' => false
+        $this->post(route('project.merge', ['id' => $p1->getKey()]), [
+            'merged_project_id' => 123, 'merge_direction_reverse' => false
         ]);
         $this->response->assertUnprocessable();
 
         // Related
         $this->post(route('project.related', ['id' => $p1->master_project_id]));
-        $this->response->assertOk()->assertJsonCount(2, 'data');
+        $this->response->assertOk()
+            ->assertJsonCount(2, 'data.projects')
+            ->assertJsonPath('data.name', $p1->name)
+            ->assertJsonPath('data.projects.0.name', $p1->name)
+            ->assertJsonPath('data.projects.1.name', $p2->name);
 
         // Related by remote ID
         $this->post(route('project.related', ['id' => $p1->remote_id, 'platform' => $p1->platform]));
-        $this->response->assertOk()->assertJsonCount(2, 'data');
+        $this->response->assertOk()
+            ->assertJsonCount(2, 'data.projects')
+            ->assertJsonPath('data.name', $p1->name)
+            ->assertJsonPath('data.projects.0.name', $p1->name)
+            ->assertJsonPath('data.projects.1.name', $p2->name);
 
         // Unmerge
         $this->post(route('project.unmerge', ['id' => $p2->getKey()]));
@@ -591,6 +639,10 @@ class ProjectApiTest extends TestCase
         $this->assertNotSame($p1->master_project_id, $p2->master_project_id);
         $this->assertNotSame($p1->master_project->archive_dir, $p2->master_project->archive_dir);
         $this->assertDatabaseCount('master_projects', 2);
+        $this->assertSame($p1->name, $p1->master_project->name);
+        $this->assertSame($p1->getKey(), $p1->master_project->preferred_project_id);
+        $this->assertSame($p2->name, $p2->master_project->name);
+        $this->assertSame($p2->getKey(), $p2->master_project->preferred_project_id);
 
         $this->post(route('project.unmerge', ['id' => 321]));
         $this->response->assertNotFound();
@@ -600,9 +652,8 @@ class ProjectApiTest extends TestCase
         $this->response->assertUnprocessable();
 
         // Reverse direction
-        $this->post(route('project.merge'), [
-            'project_id' => $p1->master_project_id, 'merged_project_id' => $p2->master_project_id,
-            'project_is_remote' => false, 'project_platform' => $p1->platform, 'merge_direction_reverse' => true
+        $this->post(route('project.merge', ['id' => $p1->getKey()]), [
+            'merged_project_id' => $p2->master_project_id, 'merge_direction_reverse' => true
         ]);
         $this->response->assertOk();
         $this->assertSame($p1->refresh()->master_project_id, $p2->refresh()->master_project_id);
@@ -613,6 +664,15 @@ class ProjectApiTest extends TestCase
         $this->post(route('project.set-default', ['id' => $p1->getKey()]));
         $this->response->assertNoContent();
         $this->assertSame($p1->refresh()->getKey(), $p1->master_project->preferred_project_id);
+
+        // Unmerge by second project
+        $this->post(route('project.unmerge', ['id' => $p2->getKey()]));
+        $this->response->assertNoContent();
+        $p1->refresh(); $p2->refresh();
+        $this->assertSame($p1->name, $p1->master_project->name);
+        $this->assertSame($p1->getKey(), $p1->master_project->preferred_project_id);
+        $this->assertSame($p2->name, $p2->master_project->name);
+        $this->assertSame($p2->getKey(), $p2->master_project->preferred_project_id);
     }
 
     /** @test */
@@ -620,9 +680,8 @@ class ProjectApiTest extends TestCase
     {
         $project = Project::factory()->has(Version::factory())->create();
 
-        $this->post(route('project.merge'), [
-            'project_id' => $project->master_project_id, 'merged_project_id' => $project->master_project_id,
-            'project_is_remote' => false, 'project_platform' => $project->platform, 'merge_direction_reverse' => false
+        $this->post(route('project.merge', ['id' => $project->getKey()]), [
+            'merged_project_id' => $project->master_project_id, 'merge_direction_reverse' => false
         ]);
         $this->response->assertUnprocessable();
     }

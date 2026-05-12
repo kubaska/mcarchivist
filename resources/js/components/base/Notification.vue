@@ -30,7 +30,7 @@ const props = defineProps({
         }
     }
 });
-const toast = ref();
+const toast = ref(null);
 const { bsComponent: bsToast } = useBsToast(toast, { delay: props.notification.timeout * 1000 });
 const isInteracting = ref(false);
 const emit = defineEmits(['timeout']);

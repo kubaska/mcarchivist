@@ -94,6 +94,7 @@
     z-index: 4 !important;
 }
 
+// Text
 .line-clamp-2 {
     display: -webkit-box;
     -webkit-box-orient: vertical;
@@ -104,6 +105,13 @@
 .text-has-hint {
     text-decoration: underline;
     text-decoration-style: dashed;
+}
+
+.text-align-start {
+    text-align: left;
+}
+.text-align-end {
+    text-align: right;
 }
 
 // Extra colors

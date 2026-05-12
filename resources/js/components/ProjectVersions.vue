@@ -1,7 +1,7 @@
 <template>
     <div class="my-1">
         <div class="mb-3 d-flex flex-wrap justify-content-between gap-2">
-            <div class="d-flex gap-3 align-items-center">
+            <div class="d-flex gap-3 align-items-center flex-wrap">
                 <VersionSelectDropdown v-if="filterGameVersions && gameVersions.length" :versions="gameVersions" v-model="filters['game_versions']"
                                        track-by="id" display-by="name" close-behavior="outside"
                                        :max="filterInfo?.game_versions?.max ?? 10" @update="onFiltersChange(1)">

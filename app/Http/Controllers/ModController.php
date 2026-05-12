@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\API\DTO\AuthorDTO;
 use App\API\DTO\FileDTO;
 use App\API\DTO\LoaderDTO;
+use App\API\DTO\MasterProjectDTO;
 use App\API\DTO\VersionDTO;
 use App\API\DTO\ProjectDTO;
 use App\API\Requests\GetVersionsRequest;
@@ -25,7 +26,6 @@ use App\Models\Ruleset;
 use App\Models\Version;
 use App\Resources\ArchiveRuleResource;
 use App\Resources\JobStatusResource;
-use App\Rules\PresentWithoutRule;
 use App\Rules\ValidPlatformRule;
 use App\Services\JobService;
 use App\Services\McaArchiver;
@@ -33,6 +33,7 @@ use App\Services\RulesetService;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Enum;
@@ -48,7 +49,7 @@ class ModController extends Controller
         if ($request->boolean('archived_only')) {
             $this->validate($request, [
                 'platform' => ['string', new ValidPlatformRule()],
-                'query' => ['string', 'min:3', 'max:200'],
+                'query' => ['string', 'max:200'],
                 'exclude_ids' => ['array'], // local ids
                 'exclude_ids.*' => ['int'],
                 // exclude a singular record; array must be of shape: [platform, remote_id]
@@ -65,37 +66,45 @@ class ModController extends Controller
             ]);
 
             $projects = MasterProject::query()
-                ->withWhereHas('projects', function (Builder $q) use ($request) {
+                ->whereHas('projects', function (Builder $q) use ($request) {
                     $q->when($request->has('platform'), fn(Builder $q) => $q->where('platform', $request->input('platform')));
-                    $q->with(['archive_rules', 'authors', 'categories', 'project_types'])->limit(1);
                 })
-                ->withCount(['projects', 'versions'])
+                ->with('projects', fn(Builder $q) => $q->with(['archive_rules', 'authors', 'categories', 'project_types']))
+                ->withCount('versions')
                 ->when($request->exists('query'),
                     fn(Builder $q) => $q->whereLike('name', '%'.$request->get('query').'%', false)
                 )
                 ->when($request->exists('exclude_ids'), function (Builder $q) use ($request) {
-                    $q->whereNotIn('id', (array) $request->get('exclude_ids'));
+                    $q->whereNotIn('id', $request->array('exclude_ids'));
                 })
                 ->when($request->exists('exclude_remote'), function (Builder $q) use ($request) {
                     $exclude = (array) $request->get('exclude_remote');
-                    $q->whereDoesntHave('projects', fn(Builder $q) => $q->where('platform', $exclude[0])->where('remote_id', $exclude[1]));
+                    $q->whereDoesntHave('projects', fn(Builder $q) =>
+                        $q->where('platform', $exclude[0])->where('remote_id', $exclude[1])
+                    );
                 })
                 ->when($request->exists('project_type'), function (Builder $q) {
                     $q->whereHas('projects', function (Builder $q) {
-                        $q->whereHas('project_types', fn(Builder $q) => $q->where('type', request()->get('project_type')));
+                        $q->whereHas('project_types', fn(Builder $q) =>
+                            $q->where('type', request()->get('project_type'))
+                        );
                     });
                 })
                 ->when($request->exists('game_versions'), function (Builder $q) {
                     $q->whereHas('projects', function (Builder $q) {
                         $q->whereHas('versions', function (Builder $q) {
-                            $q->whereHas('game_versions', fn(Builder $q) => $q->whereIn('name', request()->array('game_versions')));
+                            $q->whereHas('game_versions', fn(Builder $q) =>
+                                $q->whereIn('name', request()->array('game_versions'))
+                            );
                         });
                     }, '=', count(request()->array('game_versions')));
                 })
                 ->when($request->exists('loaders'), function (Builder $q) {
                     $q->whereHas('projects', function (Builder $q) {
                         $q->whereHas('versions', function (Builder $q) {
-                            $q->whereHas('loaders', fn(Builder $q) => $q->whereIn('id', request()->array('loaders')));
+                            $q->whereHas('loaders', fn(Builder $q) =>
+                                $q->whereIn('id', request()->array('loaders'))
+                            );
                         });
                     }, '=', count(request()->array('loaders')));
                 })
@@ -113,7 +122,9 @@ class ModController extends Controller
                         'name' => $q->orderBy('name'),
                         'downloads' => $q->orderByDesc(
                             Project::query()
-                                ->when($request->has('platform'), fn(Builder $q) => $q->where('platform', $request->input('platform')))
+                                ->when($request->has('platform'), fn(Builder $q) =>
+                                    $q->where('platform', $request->input('platform'))
+                                )
                                 ->selectRaw('SUM(downloads)')
                                 ->whereColumn('master_projects.id', 'projects.master_project_id')
                         ),
@@ -122,55 +133,52 @@ class ModController extends Controller
                 })
                 ->paginate(50);
 
+            $filterProjectsByPlatform = fn(Collection $c) => $c->when(
+                $request->has('platform'),
+                fn(Collection $c) => $c->filter(fn(Project $p) => $p->platform === $request->get('platform'))
+            );
+
             return [
                 'cached' => false,
-                'data' => $projects->map(fn(MasterProject $p) => ProjectDTO::fromLocal($p, $p->projects->first())),
+                'data' => $projects->map(
+                    fn(MasterProject $mp) => ProjectDTO::fromLocal(
+                        $mp,
+                        $filterProjectsByPlatform($mp->projects)->first()
+                    )->setDownloads($filterProjectsByPlatform($mp->projects)->sum('downloads'))
+                ),
                 ...$this->withPaginatorMeta($projects)
             ];
         }
 
         $this->validate($request, ['platform' => ['required', 'string', new ValidPlatformRule()]]);
         $api = $this->apiManager->get($request->get('platform'));
-        $remoteProjects = $api->search(new SearchProjectsRequest($request));
+        $response = $api->search(new SearchProjectsRequest($request));
+        $projects = $this->addLocalMetadataToRemoteProjects($api::id(), $response->getData());
 
-        $localProjects = Project::query()
-            ->where('platform', $api->id())
-            ->whereIn('remote_id', $remoteProjects->getData()->pluck('id'))
-            ->with('archive_rules')
-            ->with('master_project', fn(Builder $q) => $q->withCount('projects'))
-            ->withCount('versions')
-            ->get();
-
-        foreach ($localProjects as $localProject) {
-            /** @var ProjectDTO $apiMod */
-            $apiMod = $remoteProjects->getData()->first(fn(ProjectDTO $m) => $m->id == $localProject->remote_id);
-            if ($apiMod) {
-                $apiMod->setArchiveRules($localProject->archive_rules);
-                $apiMod->localVersionCount = $localProject->versions_count;
-                $apiMod->mergedProjectsCount = $localProject->master_project->projects_count;
-            }
-        }
-
-        return $remoteProjects;
+        return $this->makeResponseFromRemoteData($response, $projects);
     }
 
     public function show($id, Request $request)
     {
         if ($request->boolean('archived_only')) {
+            $this->validate($request, ['platform' => ['string', new ValidPlatformRule()]]);
             $this->validateValues(['id' => $id], ['id' => ['required', 'int']]);
 
             $mp = MasterProject::query()
-                ->when(
-                    $request->has('project_id'),
-                    fn(Builder $q) => $q->with('projects', function (Builder $q) use ($request) {
-                        $q->where('id', $request->get('project_id'))->with('archive_rules');
-                    }),
-                    fn(Builder $q) => $q->with('preferred_project', fn(Builder $q) => $q->with('archive_rules'))
-                )
-                ->withCount('projects')
+                ->with('projects.archive_rules')
                 ->findOrFail($id);
 
-            $project = $mp->relationLoaded('projects') ? $mp->projects->first() : $mp->preferred_project;
+            $project = match (true) {
+                $request->has('project_id') => $mp->projects->first(fn(Project $p) => $p->getKey() === (int)$request->get('project_id')),
+                $request->has('platform') => $mp->projects->first(fn(Project $p) => $p->platform === $request->get('platform')),
+                default => $mp->projects->first(fn(Project $p) => $p->getKey() === $mp->preferred_project_id)
+            };
+
+            if (! $project) {
+                abort(404);
+            }
+
+            $project->load(['authors', 'categories', 'project_types']);
             $gameVersions = GameVersion::query()->hasVersionsFor(Project::class, $project->getKey())->get(['name']);
             $loaders = Loader::query()
                 ->hasVersionsFor(Project::class, $project->getKey())
@@ -188,19 +196,10 @@ class ModController extends Controller
 
         $this->validate($request, ['platform' => ['required', 'string', new ValidPlatformRule()]]);
         $api = $this->apiManager->get($request->get('platform'));
+        $response = $api->getProject($id);
+        $project = $this->addLocalMetadataToRemoteProjects($api::id(), $response->getData());
 
-        $local = Project::with(['archive_rules', 'master_project' => function ($q) {
-            $q->withCount('projects');
-        }])->getRemote($api::id(), $id)->first();
-        $remote = $api->getProject($id);
-
-        $remote->getData()->projectId = $local?->getKey();
-        $remote->getData()->mergedProjectsCount = $local?->master_project?->projects_count;
-        if ($local?->archive_rules) {
-            $remote->getData()->setArchiveRules($local->archive_rules);
-        }
-
-        return $remote;
+        return $this->makeResponseFromRemoteData($response, $project);
     }
 
     public function authors($id, Request $request)
@@ -239,7 +238,7 @@ class ModController extends Controller
                 ->keyBy('dependency_project_id');
 
             $projects = Project::query()
-                ->with('master_project')
+                ->with(['authors', 'categories', 'master_project.projects.archive_rules', 'project_types'])
                 ->findMany($depProjectIds->keys())
                 ->map(fn(Project $p) => ProjectDTO::fromLocal($p->master_project, $p))
                 ->sortBy('name')
@@ -273,7 +272,9 @@ class ModController extends Controller
                 ->where('v.versionable_type', Model::getActualClassNameForMorph(Project::class))
                 ->get();
 
-            $projects = Project::query()->with('master_project')->findMany($depProjectIds->pluck('id'))
+            $projects = Project::query()
+                ->with(['authors', 'categories', 'master_project.projects.archive_rules', 'project_types'])
+                ->findMany($depProjectIds->pluck('id'))
                 ->map(fn(Project $p) => ProjectDTO::fromLocal($p->master_project, $p))
                 ->sortBy('name')
                 ->values();
@@ -312,7 +313,7 @@ class ModController extends Controller
             }
 
             $local = Version::query()
-                ->with(['dependencies', 'files', 'game_versions', 'loaders'])
+                ->with(['dependencies', 'files', 'game_versions', 'loaders.remotes'])
                 ->when($request->boolean('all_platforms'),
                     fn(Builder $q) => $q->whereHasMorph(
                         'versionable', [Project::class], fn(Builder $q) => $q->whereIn('id', $project->master_project->projects->pluck('id'))
@@ -490,7 +491,7 @@ class ModController extends Controller
 
             $version = Version::query()
                 ->with('dependencies', function (Builder $q) {
-                    $q->with(['master_project', 'authors', 'categories', 'project_types']);
+                    $q->with(['master_project.projects.archive_rules', 'authors', 'categories', 'project_types']);
                 })
                 ->with('dependencies_versions')
                 ->findOrFail($versionId);
@@ -545,7 +546,7 @@ class ModController extends Controller
 
             $dependants = Project::query()
                 ->whereIn('id', $version->dependants_versions->pluck('versionable_id')->unique())
-                ->with(['master_project', 'authors', 'categories', 'project_types'])
+                ->with(['master_project.projects.archive_rules', 'authors', 'categories', 'project_types'])
                 ->get()
                 ->map(fn(Project $p) => ProjectDTO::fromLocal($p->master_project, $p));
 
@@ -609,10 +610,8 @@ class ModController extends Controller
     public function archive($id, Request $request, McaArchiver $archiver, RulesetService $rulesetService)
     {
         $this->validate($request, [
-            'platform_id' => ['required', 'string', new ValidPlatformRule()],
-            'ruleset_id' => ['integer', new PresentWithoutRule('rules'), 'exists:rulesets,id'],
-            ...RulesetService::getRuleValidationRules(),
-            'rules' => ['array', new PresentWithoutRule('ruleset_id')],
+            'platform' => ['required', 'string', new ValidPlatformRule()],
+            ...RulesetService::getRuleWithRulesetValidationRules()
         ]);
 
         if ($request->boolean('archived_only')) {
@@ -620,7 +619,11 @@ class ModController extends Controller
 
             $project = Project::query()->findOrFail($id);
         } else {
-            $project = $archiver->archiveProject($request->get('platform_id'), $id);
+            $project = $archiver->archiveProject($request->get('platform'), $id);
+        }
+
+        if ($request->boolean('for_master_project')) {
+            $project = $project->master_project;
         }
 
         if ($request->exists('ruleset_id')) {
@@ -643,61 +646,58 @@ class ModController extends Controller
             'platform' => ['string', new ValidPlatformRule()]
         ]);
 
-        if ($request->has('platform')) {
-            $project = Project::getRemote($request->get('platform'), $id)->first();
+        $mpQuery = MasterProject::query()
+            ->with('archive_rules')
+            ->with('projects', fn(Builder $q) => $q->with(['archive_rules', 'authors', 'categories', 'project_types']));
 
-            // Project not archived yet
-            if (! $project) return ['cached' => false, 'data' => []];
+        if ($request->get('platform')) {
+            $project = Project::getRemote($request->get('platform'), $id)->firstOrFail();
+            $mp = $mpQuery->findOrFail($project->master_project_id);
+        } else {
+            $mp = $mpQuery->findOrFail($id);
         }
 
-        $mp = MasterProject::query()
-            ->with(['projects'])
-            ->findOrFail(isset($project) ? $project->master_project_id : $id);
-
         return [
-            'cached' => false,
-            'data' => $mp->projects->map(fn(Project $project) => ProjectDTO::fromLocal($mp, $project))
+            'data' => MasterProjectDTO::fromLocal($mp)->toArray()
         ];
     }
 
-    public function merge(Request $request, McaArchiver $archiver)
+    public function merge($id, Request $request, McaArchiver $archiver)
     {
         $this->validate($request, [
-            'project_id' => ['required'],
-            'project_is_remote' => ['required', 'boolean'],
-            'project_platform' => ['required', 'string', new ValidPlatformRule()],
+            'platform' => ['string', new ValidPlatformRule()],
             'merged_project_id' => ['required', 'integer', 'exists:master_projects,id'],
             'merge_direction_reverse' => ['required', 'boolean']
         ]);
 
-        if ($request->boolean('project_is_remote')) {
-            if ($p = Project::getRemote($request->get('project_platform'), $request->get('project_id'))->first()) {
-                $project = MasterProject::findOrFail($p->master_project_id);
-            } else {
-                $p = $archiver->archiveProject($request->get('project_platform'), $request->get('project_id'));
-                $project = MasterProject::findOrFail($p->master_project_id);
+        if ($request->has('platform')) {
+            $project = Project::getRemote($request->get('platform'), $id)->first();
+            if (! $project) {
+                $project = $archiver->archiveProject($request->get('platform'), $id);
             }
         } else {
-            $project = MasterProject::query()->findOrFail($request->get('project_id'));
+            $project = Project::query()->findOrFail($id);
         }
 
+        $project->load('master_project');
         $projectToMerge = MasterProject::query()->findOrFail($request->get('merged_project_id'));
 
-        if ($project->getKey() === $projectToMerge->getKey()) {
+        if ($project->master_project->getKey() === $projectToMerge->getKey()) {
             return response(['error' => 'Projects can not be the same!'], 422);
         }
 
         if ($request->boolean('merge_direction_reverse')) {
-            $projectToMerge->mergeProject($project);
+            $projectToMerge->mergeProject($project->master_project);
         } else {
-            $project->mergeProject($projectToMerge);
+            $project->master_project->mergeProject($projectToMerge);
         }
 
-        $project->load('preferred_project');
+        $project->refresh()->load(['authors', 'categories', 'master_project.projects.archive_rules', 'project_types']);
+        $project->master_project->load('archive_rules')->loadCount('projects');
 
         return [
             'cached' => false,
-            'data' => ProjectDTO::fromLocal($project, $project->preferred_project)
+            'data' => ProjectDTO::fromLocal($project->master_project, $project)->toArray()
         ];
     }
 
@@ -736,5 +736,41 @@ class ModController extends Controller
         $file = File::query()->with('version')->findOrFail($id);
 
         return response()->download($file->getAbsoluteFilePath($file->version->getStorageArea()), $file->original_file_name);
+    }
+
+    /**
+     * Add metadata to projects fetched from remote source.
+     *
+     * @param string $platform
+     * @param Collection|ProjectDTO $project
+     * @return Collection|ProjectDTO
+     */
+    protected function addLocalMetadataToRemoteProjects(string $platform, Collection|ProjectDTO $project): Collection|ProjectDTO
+    {
+        $projects = Collection::wrap($project);
+
+        $localProjects = Project::query()
+            ->where('platform', $platform)
+            ->whereIn('remote_id', $projects->pluck('remoteId'))
+            ->with([
+                'archive_rules',
+                'master_project' => fn(Builder $q) => $q->with('projects.archive_rules')
+            ])
+            ->withCount('versions')
+            ->get();
+
+        foreach ($localProjects as $local) {
+            /** @var ProjectDTO $remote */
+            if ($remote = $projects->first(fn(ProjectDTO $p) => $p->id == $local->remote_id)) {
+                $remote->isArchiving = $local->master_project->projects->contains(fn(Project $p) => $p->archive_rules->isNotEmpty());
+                $remote->setArchiveRules($local->archive_rules);
+                $remote->localVersionCount = $local->versions_count;
+                $remote->mergedProjectsCount = $local->master_project->projects->count();
+            }
+        }
+
+        return $project instanceof ProjectDTO
+            ? $projects->first()
+            : $projects;
     }
 }

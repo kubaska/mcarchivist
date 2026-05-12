@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\API\DTO\FileDTO;
+use App\API\Contracts\ThirdPartyApi;
 use App\API\DTO\VersionDTO;
 use App\Enums\FileQualifier;
 use App\Mca\ApiManager;
@@ -25,13 +25,24 @@ class McaRulesetArchiver
     {
     }
 
+    public function getRemoteVersions(ThirdPartyApi $api, Project $project): Collection
+    {
+        return $project->last_version_check
+            ? $api->getProjectVersionsToDate($project->remote_id, $project->last_version_check)
+            : $api->getAllProjectVersions($project->remote_id)->getData();
+    }
+
     public function archive(MasterProject $mp)
     {
-        $mp->load(['projects' => function ($query) {
+        $mp->load(['archive_rules', 'projects' => function ($query) {
             $query->with(['archive_rules' => fn ($q) => $q->with('loader.remotes')]);
         }]);
 
         foreach ($mp->projects as $project) {
+            if ($project->archive_rules->isEmpty() && $mp->archive_rules->isEmpty()) {
+                continue;
+            }
+
             $checkDate = Carbon::now();
 
             try {
@@ -40,12 +51,7 @@ class McaRulesetArchiver
                 continue;
             }
 
-            /** @var Collection $remoteVersions */
-            if ($project->last_version_check) {
-                $remoteVersions = $api->getProjectVersionsToDate($project->remote_id, $project->last_version_check);
-            } else {
-                $remoteVersions = $api->getAllProjectVersions($project->remote_id)->getData();
-            }
+            $remoteVersions = $this->getRemoteVersions($api, $project);
 
             $remoteVersions = $remoteVersions->filter(fn(VersionDTO $v) => $v->getPrimaryFile());
 
@@ -77,7 +83,11 @@ class McaRulesetArchiver
             // Merge remote & local. Local takes precedence
             $versions = $remoteVersions->merge($localVersions);
 
-            $result = $this->findMatchingVersions($project, $project->archive_rules, $versions);
+            $result = $this->findMatchingVersions(
+                $project,
+                $project->archive_rules->isNotEmpty() ? $project->archive_rules : $mp->archive_rules,
+                $versions
+            );
 
             list($localVersions, $remoteVersions) = $result->partition(fn(VersionDTO $v) => $v->extra['local']);
 

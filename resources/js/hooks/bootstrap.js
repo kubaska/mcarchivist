@@ -1,10 +1,16 @@
-import {onUnmounted, ref, toValue, unref, watch} from "vue";
+import {onMounted, onUnmounted, ref, toValue, unref, watch} from "vue";
 import { Carousel, Dropdown, Modal, Toast } from 'bootstrap';
 
-const useBs = (Component, element, options) => {
+const useBs = (Component, element, options = {}) => {
     const bsComponent = ref(null);
 
-    const unloadBsComponent = () => bsComponent.value = null;
+    const unloadBsComponent = () => {
+        if (options.hideOnUnmount) {
+            bsComponent.value.hide();
+        }
+
+        bsComponent.value = null;
+    }
     const loadBsComponent = () => {
         if (! unref(element)) {
             unloadBsComponent();
@@ -14,8 +20,9 @@ const useBs = (Component, element, options) => {
         bsComponent.value = new Component(unref(element), toValue(options));
     }
 
-    watch(element, loadBsComponent, { immediate: true });
+    onMounted(loadBsComponent);
     onUnmounted(unloadBsComponent);
+    watch(element, loadBsComponent);
 
     return { bsComponent };
 }
@@ -28,8 +35,8 @@ export const useBsDropdown = (dropdown) => {
     return useBs(Dropdown, dropdown);
 }
 
-export const useBsModal = (modal) => {
-    return useBs(Modal, modal);
+export const useBsModal = (modal, options = {}) => {
+    return useBs(Modal, modal, { hideOnUnmount: true, ...options });
 };
 
 export const useBsToast = (element, options = {}) => {

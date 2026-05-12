@@ -13,20 +13,26 @@ import ProjectDependenciesView from './views/Project/ProjectDependenciesView.vue
 import {useRouterStore} from "./stores/router";
 
 function makeRoutesForBase(base) {
+    const paths = [
+        // Archive base can browse projects without specifying source
+        base === 'archive' ? `/${base}/projects/:id` : '',
+        `/${base}/:source/projects/:id`
+    ].filter(i => i);
+
     return [
         { path: `/${base}/:source?`, name: `${base}`, component: ProjectsIndex },
-        {
-            path: base === 'browse'
-                ? `/${base}/:source/projects/:id`
-                : `/${base}/projects/:id`,
-            component: ProjectView,
-            children: [
-                { path: '', name: `${base}.project`, component: ProjectDescriptionView },
-                { path: 'versions', name: `${base}.project.versions`, component: ProjectVersionsView },
-                { path: 'dependencies', name: `${base}.project.dependencies`, component: ProjectDependenciesView, props: { mode: 'dependencies' } },
-                { path: 'dependants', name: `${base}.project.dependants`, component: ProjectDependenciesView, props: { mode: 'dependants' } },
-            ]
-        },
+        ...paths.map(path => {
+            return {
+                path,
+                component: ProjectView,
+                children: [
+                    { path: '', name: `${base}.project`, component: ProjectDescriptionView },
+                    { path: 'versions', name: `${base}.project.versions`, component: ProjectVersionsView },
+                    { path: 'dependencies', name: `${base}.project.dependencies`, component: ProjectDependenciesView, props: { mode: 'dependencies' } },
+                    { path: 'dependants', name: `${base}.project.dependants`, component: ProjectDependenciesView, props: { mode: 'dependants' } },
+                ]
+            }
+        })
     ];
 }
 

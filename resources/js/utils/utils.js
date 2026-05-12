@@ -1,16 +1,23 @@
 export const capitalizeString = (str) => str.charAt(0).toUpperCase() + str.slice(1);
 
 /**
- * Check if the provided element, or any parent element, passes test provided by the callback.
+ * Check if the provided element, or any parent element, is a descendant of the target,
+ * or passes test provided by the callback.
  *
  * @param element
- * @param callback
+ * @param targetOrCallback
  * @returns {boolean}
  */
-export const isDescendantOf = (element, callback) => {
+export const isDescendantOf = (element, targetOrCallback) => {
     if (element === null || element.tagName.toLowerCase() === 'body') return false;
-    if (callback(element)) return true;
-    return isDescendantOf(element.parentElement, callback);
+
+    if (targetOrCallback instanceof Function) {
+        if (targetOrCallback(element)) return true;
+    } else {
+        if (element === targetOrCallback) return true;
+    }
+
+    return isDescendantOf(element.parentElement, targetOrCallback);
 }
 
 export const downloadFile = (url) => {
@@ -198,3 +205,15 @@ export const formatBytes = (bytes, decimals = 2) => {
  * @param {array} ids
  */
 export const getProjectTypesById = (ids) => getProjectTypes().filter(type => ids.includes(type.id));
+
+export const getDefaultSearchRequestInfo = () => {
+    return {
+        project_type: { options: getProjectTypes().map(type => type.id) },
+        query: { max: 200 },
+        game_versions: {},
+        loaders: {},
+        categories: {},
+        sort_by: {},
+        page: {}
+    };
+}

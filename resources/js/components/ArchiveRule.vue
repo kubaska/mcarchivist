@@ -4,19 +4,19 @@
             <h2 class="accordion-header">
                 <span class="accordion-button justify-content-between" type="button" data-bs-toggle="collapse" :data-bs-target="'#archive-rule-'+rule.id" aria-expanded="true" :aria-controls="'archive-rule-'+rule.id">
                     <span>{{ ruleTitle }}</span>
-                    <button type="button" class="btn-close" aria-label="Close" @click="onDeleteBtnClick"></button>
+                    <button type="button" class="btn-close" aria-label="Close" v-if="editable" @click="onDeleteBtnClick"></button>
                 </span>
             </h2>
             <div :id="'archive-rule-'+rule.id" class="accordion-collapse collapse show">
                 <div class="accordion-body d-flex flex-column gap-2">
                     <div class="d-flex align-items-center flex-wrap gap-2">
                         <span>Archive</span>
-                        <input class="form-control w-mc" type="number" value="1" size="5" min="1" max="999" v-model="rule['count']">
-                        <select class="form-select w-mc" v-model="rule['sorting']">
+                        <input class="form-control w-mc" type="number" value="1" size="5" min="1" max="999" v-model="rule['count']" :disabled="!editable">
+                        <select class="form-select w-mc" v-model="rule['sorting']" :disabled="!editable">
                             <option :value="false">latest</option>
                             <option :value="true">oldest</option>
                         </select>
-                        <select class="form-select w-mc" v-model="rule['release_type']">
+                        <select class="form-select w-mc" v-model="rule['release_type']" :disabled="!editable">
                             <option value="*">* [any release type]</option>
                             <option value="0">Release</option>
                             <option value="1">Beta</option>
@@ -25,46 +25,46 @@
                     </div>
                     <div class="d-flex align-items-center flex-wrap gap-1 gap-md-3 gap-lg-5">
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" v-model="rule.release_type_priority" :id="'release-priority' + rule.id">
+                            <input class="form-check-input" type="checkbox" v-model="rule.release_type_priority" :id="'release-priority' + rule.id" :disabled="!editable">
                             <label class="form-check-label" :for="'release-priority' + rule.id">Prioritize stable releases</label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" v-model="rule.all_files" :id="'all-files' + rule.id">
+                            <input class="form-check-input" type="checkbox" v-model="rule.all_files" :id="'all-files' + rule.id" :disabled="!editable">
                             <label class="form-check-label" :for="'all-files' + rule.id">Archive optional files</label>
                         </div>
                     </div>
                     <div class="d-flex align-items-center flex-wrap gap-2">
                         <span>for Minecraft</span>
-                        <select class="form-select w-mc" v-model="versionOperand" @change="onVersionOperandChange">
+                        <select class="form-select w-mc" v-model="versionOperand" @change="onVersionOperandChange" :disabled="!editable">
                             <option value="=">=</option>
                             <option value="between">between</option>
                         </select>
-                        <select class="form-select w-mc" v-model="rule['game_version_from']">
+                        <select class="form-select w-mc" v-model="rule['game_version_from']" :disabled="!editable">
                             <option value="*">any</option>
                             <option v-for="version in gameVersions" :value="version.name">{{ version.name }}</option>
                         </select>
                         <template v-if="versionOperand === 'between'">
                             <span>-</span>
-                            <select class="form-select w-mc" v-model="rule['game_version_to']">
+                            <select class="form-select w-mc" v-model="rule['game_version_to']" :disabled="!editable">
                                 <option value="*">any</option>
                                 <option v-for="version in gameVersions" :value="version.name">{{ version.name }}</option>
                             </select>
                         </template>
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" v-model="rule.with_snapshots" :id="'with-snapshots' + rule.id">
+                            <input class="form-check-input" type="checkbox" v-model="rule.with_snapshots" :id="'with-snapshots' + rule.id" :disabled="!editable">
                             <label class="form-check-label" :for="'with-snapshots' + rule.id">Include snapshots</label>
                         </div>
                     </div>
                     <div class="d-flex align-items-center flex-wrap gap-2">
                         <span>for Loader</span>
-                        <select class="form-select w-mc" v-model="rule['loader_id']">
+                        <select class="form-select w-mc" v-model="rule['loader_id']" :disabled="!editable">
                             <option value="*">any</option>
                             <option v-for="loader in loaders" :value="loader.id">{{ loader.name }}</option>
                         </select>
                     </div>
                     <div class="d-flex align-items-center flex-wrap gap-2">
                         <span>Dependencies</span>
-                        <select class="form-select w-mc" v-model="rule.dependencies">
+                        <select class="form-select w-mc" v-model="rule.dependencies" :disabled="!editable">
                             <option value="0">off</option>
                             <option value="1">required only</option>
                             <option value="2">all</option>
@@ -83,6 +83,7 @@ import {VERSION_TYPES} from "../utils/utils";
 
 const props = defineProps({
     rule: { type: Object, required: true },
+    editable: { type: Boolean, required: false, default: true },
     platformId: { type: String, required: false }
 });
 const config = useConfigStore();

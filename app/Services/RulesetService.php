@@ -7,6 +7,7 @@ use App\Enums\VersionType;
 use App\Models\ArchiveRule;
 use App\Models\GameVersion;
 use App\Models\Loader;
+use App\Rules\PresentWithoutRule;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
@@ -32,6 +33,15 @@ class RulesetService
             'rules.*.loader_id' => ['required'],
             'rules.*.dependencies' => ['required', new Enum(DependencyQualifier::class)],
             'rules.*.all_files' => ['required', 'boolean']
+        ];
+    }
+
+    public static function getRuleWithRulesetValidationRules(): array
+    {
+        return [
+            'ruleset_id' => ['integer', new PresentWithoutRule('rules'), 'exists:rulesets,id'],
+            ...self::getRuleValidationRules(),
+            'rules' => ['array', new PresentWithoutRule('ruleset_id')]
         ];
     }
 

@@ -8,6 +8,7 @@
             <div>
                 <label for="platform" class="form-label fw-semibold mb-1">Platform</label>
                 <select id="platform" class="form-select" :value="model.platform" @change="onPlatformChange">
+                    <option value="" v-if="route.isArchive()">All</option>
                     <option :value="platform.id" v-for="platform in config.platforms" :disabled="!!platform.disabled">
                         {{ platform.name }}{{ platform.disabled ? ' (Disabled: '+platform.disabled+')' : '' }}
                     </option>
@@ -50,7 +51,7 @@
             <div v-if="filterInfo.loaders !== undefined && loaders.length">
                 <p class="mb-1 fw-semibold">Mod Loaders</p>
                 <CheckboxList v-model="model.loaders" :options="loaders"
-                              track-by="id" display-by="name" :max="filterInfo.loaders?.max ?? 1"
+                              track-by="id" display-by="name" :max="filterInfo.loaders?.max ?? 10"
                 />
             </div>
 
@@ -78,7 +79,7 @@
 import {computed, ref, watch} from "vue";
 import CheckboxList from "./common/CheckboxList.vue";
 import {useConfigStore} from "../stores/config";
-import {getProjectTypesById} from '../utils/utils';
+import {getDefaultSearchRequestInfo, getProjectTypesById} from '../utils/utils';
 import {debounce} from "lodash-es";
 import {useMcaRoute} from "../hooks/route";
 
@@ -91,8 +92,14 @@ const route = useMcaRoute();
 const emit = defineEmits(['reset']);
 
 const onQueryInput = debounce((e) => model.value.query = e.target.value, 500);
-const filterInfo = computed(() => config.getRequestInfo(model.value.platform, 'search'));
-const loaders = computed(() => config.getLoadersForPlatform(model.value.platform, [model.value.projectType]));
+const filterInfo = computed(() => model.value.platform
+    ? config.getRequestInfo(model.value.platform, 'search')
+    : getDefaultSearchRequestInfo()
+);
+const loaders = computed(() => model.value.platform
+    ? config.getLoadersForPlatform(model.value.platform, [model.value.projectType])
+    : config.loaders
+);
 const gameVersionsSearchQuery = ref('');
 const displayAllGameVersions = ref(false);
 const gameVersions = computed(() => {
@@ -110,18 +117,20 @@ const categorySortBy = (categoryName) => {
 
 function onPlatformChange(e) {
     const platformId = e.target.value;
-    const platform = config.getPlatform(platformId);
-    if (! platform) return;
-    if (!!platform.disabled) return;
+    if (platformId) {
+        const platform = config.getPlatform(platformId);
+        if (! platform) return;
+        if (!!platform.disabled) return;
 
-    const searchRequest = config.getRequestInfo(platformId, 'search');
-    model.value.platform = platformId;
+        const searchRequest = config.getRequestInfo(platformId, 'search');
 
-    // Check if current project type & sorting option exist in platform that we're switching to.
-    if (! searchRequest.project_type?.options?.some(type => type === model.value.platformType)) {
-        model.value.projectType = searchRequest.project_type?.options?.[0];
+        // Check if current project type & sorting option exist in platform that we're switching to.
+        if (! searchRequest.project_type?.options?.some(type => type === model.value.projectType)) {
+            model.value.projectType = searchRequest.project_type?.options?.[0];
+        }
     }
 
+    model.value.platform = platformId;
     model.value.categories = [];
 }
 

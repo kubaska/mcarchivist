@@ -23,7 +23,7 @@ $router->group(['prefix' => 'projects'], function () use ($router) {
     $router->post('/{id}/versions/{versionId}/archive', ['uses' => 'ModController@versionArchive', 'as' => 'project.version.archive']);
     $router->post('/{id}/versions/{versionId}/revalidate', ['uses' => 'ModController@versionRevalidate', 'as' => 'project.version.revalidate']);
     $router->post('/{id}/related', ['uses' => 'ModController@getRelatedProjects', 'as' => 'project.related']);
-    $router->post('/merge', ['uses' => 'ModController@merge', 'as' => 'project.merge']);
+    $router->post('/{id}/merge', ['uses' => 'ModController@merge', 'as' => 'project.merge']);
     $router->post('/{id}/unmerge', ['uses' => 'ModController@unmerge', 'as' => 'project.unmerge']);
     $router->post('/{id}/default', ['uses' => 'ModController@setDefault', 'as' => 'project.set-default']);
 });

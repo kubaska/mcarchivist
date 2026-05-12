@@ -5,12 +5,14 @@
             <div>
                 <div class="d-flex align-items-center gap-2">
                     <router-link class="text-reset text-decoration-none" v-if="withNavigation"
-                                 :to="{ name: routeName, params: { id: project.id, source: platform.name.toLowerCase() } }"
+                                 :to="{ name: routeName, params: { id: project[props.routeName.startsWith('archive') ? 'id' : 'remote_id'], source: project.platform } }"
                     >
                         <p class="m-0 fs-6 fw-bold" @click="onNavigate">{{ project.name }}</p>
                     </router-link>
                     <p class="m-0 fs-6 fw-bold" v-else>{{ project.name }}</p>
-                    <fa-icon icon="arrow-right-arrow-left" v-tooltip="project.merged_projects_count + ' merged projects'" v-if="project.merged_projects_count > 1" />
+                    <fa-icon icon="arrow-right-arrow-left" v-if="showMergedProjects && project.merged_projects_count > 1"
+                             v-tooltip="project.merged_projects_count + ' merged projects'"
+                    />
                     <span class="badge text-bg-primary fs-9" v-if="showDefault && project.default">Default</span>
                 </div>
                 <p class="m-0 fs-7 lh-md">{{ project.summary }}</p>
@@ -30,7 +32,9 @@
                 </button>
             </MDropdown>
 
-            <button class="btn btn-icon" v-if="showArchiveButton" :class="{ 'bg-success-subtle': project.archive_rules.length }" @click="$emit('archive', project)">
+            <button class="btn btn-icon" v-if="showArchiveButton" :class="{ 'bg-success-subtle': project.is_archiving }"
+                    @click="$emit('archive', project)"
+            >
                 <fa-icon icon="box-archive" />
             </button>
         </div>
@@ -39,16 +43,21 @@
 
 <script setup>
 import {computed} from "vue";
-import MDropdown from "./base/MDropdown.vue";
+import {useRouter} from "vue-router";
 import {useStore} from "../stores/store";
+import {useMcaRoute} from "../hooks/route";
 import {useConfigStore} from "../stores/config";
-import {getProjectTypesById, isDescendantOf} from "../utils/utils";
 import {useNumberFormatter} from "../hooks/formatter";
+import {getProjectTypesById, isDescendantOf} from "../utils/utils";
+import MDropdown from "./base/MDropdown.vue";
 
+const route = useMcaRoute();
 const props = defineProps({
     project: { type: Object, required: true },
-    routeName: { type: String, required: true },
-    platformId: { type: String, required: true },
+    routeName: { type: String, required: false, default(props) {
+        return props.project.project_id ? 'archive.project' : 'browse.project'
+    } },
+    showMergedProjects: { type: Boolean, required: false, default: true },
     showCategories: { type: Boolean, required: false, default: true },
     showPlatformBadge: { type: Boolean, default: false },
     showControls: { type: Boolean, default: true },
@@ -60,9 +69,10 @@ const props = defineProps({
     selected: { type: Boolean, default: false }
 });
 const config = useConfigStore();
+const router = useRouter();
 const store = useStore();
 const numberFormatter = useNumberFormatter();
-const platform = computed(() => config.getPlatform(props.platformId));
+const platform = computed(() => config.getPlatform(props.project.platform));
 const allDropdownOptions = computed(() => [
     { name: 'Open project page', link: props.project.project_url, linkNewTab: true },
     ...props.dropdownOptions

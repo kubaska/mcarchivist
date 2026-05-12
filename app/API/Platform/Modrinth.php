@@ -85,7 +85,7 @@ class Modrinth extends BaseThirdPartyApi
                 [
                     'key' => 'loaders',
                     'target_key' => 'facets',
-                    'transform_fn' => fn(Collection $v) => Modrinth::transformToFacet('categories', $v->toArray())
+                    'transform_fn' => fn(Collection $v) => Modrinth::transformToFacet('categories', $v->toArray(), 'or')
                 ],
                 [
                     'key' => 'categories',
@@ -111,7 +111,9 @@ class Modrinth extends BaseThirdPartyApi
             ]);
             $request::configureAfterTransform(Modrinth::class, function (array $options) {
                 // Merge facets
-                $options['facets'] = sprintf('[%s]', implode(',', $options['facets']));
+                if (isset($options['facets'])) {
+                    $options['facets'] = sprintf('[%s]', implode(',', $options['facets']));
+                }
 
                 return $options;
             });
@@ -375,10 +377,11 @@ class Modrinth extends BaseThirdPartyApi
 
     public static function transformToFacet(string $key, array $values, $joinType = 'and'): array
     {
-        if ($joinType === 'or') return [sprintf('[%s]', implode(',', array_map(fn($v) => sprintf('"%s:%s"', $key, Str::lower($v)), $values)))];
+        if ($joinType === 'or') {
+            return [sprintf('[%s]', implode(',', array_map(fn($v) => sprintf('"%s:%s"', $key, Str::lower($v)), $values)))];
+        }
+
         return [implode(',', array_map(fn($v) => sprintf('["%s:%s"]', $key, Str::lower($v)), $values))];
-//        return array_map(fn($v) => [$key => $v], $values);
-//        return [Arr::map($values, fn($v) => [$key => $v])];
     }
 
     public static function formatLoaderName(string $name): string

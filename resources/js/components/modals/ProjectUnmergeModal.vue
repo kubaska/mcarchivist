@@ -3,7 +3,7 @@
         <LoadingSpinner v-if="loading" />
         <div v-else>
             <div class="d-flex flex-column gap-2" v-if="projects.length">
-                <Project v-for="project in projects" :project="project" route-name="archive.project" :platform-id="project.platform"
+                <Project v-for="project in projects" :project="project" route-name="archive.project"
                          :show-platform-badge="true" :show-controls="false" :selectable="true" :with-navigation="false"
                          :selected="`${project.platform}|${project.remote_id}` === `${selectedProject?.platform}|${selectedProject?.remote_id}`"
                          @select="onProjectSelect(project)" @navigate="onProjectNavigate"
@@ -48,7 +48,9 @@ async function getProjects() {
         platform: route.isBrowse() ? project.value.platform : undefined,
     });
 
-    projects.value = res.data.data.filter(p => p.project_id !== project.value.project_id);
+    projects.value = route.isBrowse()
+        ? res.data.data.projects.filter(p => !(p.remote_id === project.value.remote_id && p.platform === project.value.platform))
+        : res.data.data.projects.filter(p => p.project_id !== project.value.project_id);
     loading.value = false;
 }
 

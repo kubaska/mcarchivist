@@ -25,13 +25,14 @@ class ProjectDTO extends DTO implements Arrayable
         public readonly ?string $logo,
         public readonly array $gallery,
         public readonly string $projectUrl,
-        public readonly ?int $downloads,
+        public ?int $downloads,
         protected readonly ?array $gameVersions,
         public readonly ?Collection $loaders,
         public readonly ?Collection $authors,
         public readonly Collection $projectTypes,
         public readonly Collection $categories,
         public readonly string $platform,
+        public ?bool $isArchiving = null,
         public bool $default = false,
         public ?int $mergedProjectsCount = null,
         // only when listing dependencies/dependants
@@ -50,7 +51,7 @@ class ProjectDTO extends DTO implements Arrayable
             $mp->id,
             $project->remote_id,
             $project->id,
-            $mp->name,
+            $project->name,
             $project->summary,
             $project->description,
             $project->logo,
@@ -63,13 +64,20 @@ class ProjectDTO extends DTO implements Arrayable
             $project->project_types->map(fn(ProjectType $c) => $c->type),
             $project->categories->map(fn(Category $c) => CategoryDTO::fromLocal($c)),
             $project->platform,
+            $mp->projects->contains(fn(Project $p) => $p->archive_rules->isNotEmpty()),
             $mp->preferred_project_id === $project->getKey(),
-            $mp->projects_count,
+            $mp->projects->count(),
             null,
             null,
             $project->relationLoaded('archive_rules') ? $project->archive_rules : null,
             $mp->versions_count ?? $project->versions_count,
         );
+    }
+
+    public function setDownloads(int $downloads): static
+    {
+        $this->downloads = $downloads;
+        return $this;
     }
 
     public function setArchiveRules(Collection $rules)
@@ -132,10 +140,11 @@ class ProjectDTO extends DTO implements Arrayable
             'downloads' => $this->downloads,
             'game_versions' => $this->gameVersions,
             'loaders' => $this->loaders?->map(fn(LoaderDTO $loader) => $loader->toArray()),
-            'authors' => $this->authors,
+            'authors' => $this->authors?->toArray(),
             'project_types' => $this->projectTypes,
             'categories' => $this->categories,
             'platform' => $this->platform,
+            'is_archiving' => $this->isArchiving,
             'default' => $this->default,
             'merged_projects_count' => $this->mergedProjectsCount,
             'archive_rules' => $this->archiveRules ? ArchiveRuleResource::collection($this->archiveRules) : [],

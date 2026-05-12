@@ -15,6 +15,7 @@ export const useConfigStore = defineStore('config', {
     getters: {
         getPlatform: state => id => state.platforms.find(platform => platform.id === id),
         getPlatformBySlug: state => slug => state.platforms.find(platform => platform.slug === slug),
+        availablePlatforms: state => state.platforms.filter(platform => ! platform.disabled),
         getRequestInfo: (state) => {
             return (platform, requestName) => {
                 return state.requests[requestName]?.[platform];
@@ -40,9 +41,6 @@ export const useConfigStore = defineStore('config', {
         },
         getLoadersForPlatformAnyProjectType: (state) => {
             return (platform) => state.loaders.filter(loader => loader.remotes?.[platform]);
-        },
-        gameVersionsRelease: (state) => {
-            return state.gameVersions.filter(i => i.type === 0);
         },
         categoriesForProjectType: (state) => {
             return (platform, projectType) => {

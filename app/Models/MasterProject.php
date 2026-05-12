@@ -25,6 +25,11 @@ class MasterProject extends Model
         return $this->belongsTo(Project::class);
     }
 
+    public function archive_rules()
+    {
+        return $this->morphMany(ArchiveRule::class, 'ruleable');
+    }
+
     public function versions()
     {
         return ($this->hasManyThrough(Version::class, Project::class, secondKey: 'versionable_id')
@@ -38,6 +43,7 @@ class MasterProject extends Model
 
         \DB::transaction(function () use ($projectToMerge) {
             $projectToMerge->projects->map(fn(Project $p) => $p->update(['master_project_id' => $this->getKey()]));
+            $projectToMerge->archive_rules()->delete();
             $projectToMerge->delete();
         });
     }
@@ -52,6 +58,14 @@ class MasterProject extends Model
             ]);
 
             $project->update(['master_project_id' => $newMP->getKey()]);
+
+            if ($this->name === $project->name) {
+                $this->name = $this->projects->first()->name;
+            }
+            if ($this->preferred_project_id === $project->getKey()) {
+                $this->preferred_project_id = $this->projects->first()->getKey();
+            }
+            $this->save();
         });
     }
 

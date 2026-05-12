@@ -3,8 +3,9 @@
 namespace App\API\DTO;
 
 use App\Models\Author;
+use Illuminate\Contracts\Support\Arrayable;
 
-class AuthorDTO extends DTO
+class AuthorDTO extends DTO implements Arrayable
 {
     public function __construct(
         public readonly string $remoteId,

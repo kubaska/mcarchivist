@@ -19,6 +19,11 @@ class ArchiveRule extends Model
         'dependencies' => DependencyQualifier::class
     ];
 
+    public function ruleable()
+    {
+        return $this->morphTo();
+    }
+
     public function loader()
     {
         return $this->belongsTo(Loader::class);

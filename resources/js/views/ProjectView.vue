@@ -26,8 +26,8 @@
             </div>
 
             <div class="d-flex align-items-center gap-2">
-                <button class="btn btn-icon btn-icon-lg border" :class="{ 'bg-success-subtle': project.archive_rules.length }"
-                        v-tooltip="'Archive'" @click="onArchiveRulesetBtnClick"
+                <button class="btn btn-icon btn-icon-lg border" :class="{ 'bg-success-subtle': project.is_archiving }"
+                        v-tooltip="'Archive'" @click="onArchiveBtnClick"
                 >
                     <fa-icon icon="box-archive" size="lg" />
                 </button>
@@ -64,7 +64,7 @@
             </KeepAlive>
         </router-view>
 
-        <ArchiveModal ref="archiveRulesModal" :platform-id="platform?.id" @confirm="onArchiveRulesetConfirm" />
+        <ArchiveModal ref="archiveModal" @confirm="onArchiveConfirm" />
         <ProjectMergeModal ref="projectMergeModal" @confirm="onProjectMergeConfirm" />
         <ProjectUnmergeModal ref="projectUnmergeModal" @confirm="onProjectUnmergeConfirm" />
         <ProjectSelectModal ref="projectSelectModal" title="Select project" action-title="Select" @confirm="onProjectSelectConfirm" />
@@ -98,7 +98,7 @@ const platform = computed(() => project.value
     : config.getPlatformBySlug(route.params.source)
 );
 
-const archiveRulesModal = ref(null);
+const archiveModal = ref(null);
 const projectMergeModal = ref(null);
 const projectUnmergeModal = ref(null);
 const projectSelectModal = ref(null);
@@ -115,8 +115,11 @@ function getProject(options = {}) {
         project.value = null;
     }
 
-    if (route.isBrowse()) options.platform = platform.value.id;
-    return api.getProject(route.params.id, { archived_only: route.isArchive(), ...options })
+    return api.getProject(route.params.id, {
+        archived_only: route.isArchive(),
+        platform: route.isBrowse() ? platform.value.id : route.params.source,
+        ...options
+    })
         .then(response => {
             project.value = response.data.data;
         })
@@ -127,50 +130,47 @@ function getProject(options = {}) {
         });
 }
 
-function onArchiveRulesetBtnClick() {
-    if (project.value.archive_rules.length) {
-        archiveRulesModal.value.loadRules(project.value.archive_rules);
-    }
-
-    archiveRulesModal.value.show();
-}
-function onArchiveRulesetConfirm(rules, finish) {
-    api.archiveProject(route.isArchive() ? project.value.project_id : project.value.remote_id, {
-        platform_id: project.value.platform, archived_only: route.isArchive(), ...rules
-    }).then(res => {
-        finish();
-        project.value.archive_rules = res.data.data;
-    })
-    .catch(err => {
-        finish('An error occurred');
-    });
-}
-function onMergeBtnClick() {
-    projectMergeModal.value.setData(project.value);
-    projectMergeModal.value.show();
-}
-function onUnmergeBtnClick() {
-    projectUnmergeModal.value.setData(project.value);
-    projectUnmergeModal.value.show();
-}
 function onProjectSelectBtnClick() {
     projectSelectModal.value.setData(project.value);
     projectSelectModal.value.show();
 }
+function onProjectSelectConfirm(selectedProject, finish) {
+    if (project.value.id === selectedProject.id && project.value.platform === selectedProject.platform) {
+        getProject({ project_id: selectedProject.project_id });
+    } else {
+        router.replace({ route: route.name, params: { id: selectedProject.id, source: selectedProject.platform, project_id: selectedProject.project_id } });
+    }
+    finish();
+}
 
-function onProjectMergeConfirm(finish, options) {
-    api.mergeProjects(options)
-        .then(() => getProject().then(() => finish()))
-        .catch(err => finish(err));
+function onArchiveBtnClick() {
+    archiveModal.value.loadRules(project.value);
+    archiveModal.value.show();
+}
+function onArchiveConfirm(hasRules) {
+    project.value.is_archiving = hasRules;
+}
+
+function onMergeBtnClick() {
+    projectMergeModal.value.setData(project.value);
+    projectMergeModal.value.show();
+}
+function onProjectMergeConfirm(mergedProject) {
+    if (project.value.id === mergedProject.id) {
+        getProject();
+    } else {
+        router.replace({ route: route.name, params: { id: mergedProject.id, source: mergedProject.platform } });
+    }
+}
+
+function onUnmergeBtnClick() {
+    projectUnmergeModal.value.setData(project.value);
+    projectUnmergeModal.value.show();
 }
 function onProjectUnmergeConfirm(finish, unmergedProjectId) {
     api.unmergeProject(unmergedProjectId)
         .then(() => getProject().then(() => finish()))
         .catch(err => finish(err));
-}
-function onProjectSelectConfirm(projectId, finish) {
-    getProject({ project_id: projectId });
-    finish();
 }
 
 onMounted(() => {
