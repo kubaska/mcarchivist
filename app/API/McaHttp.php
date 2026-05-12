@@ -12,7 +12,6 @@ use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Kevinrob\GuzzleCache\CacheMiddleware;
 use Kevinrob\GuzzleCache\Storage\LaravelCacheStorage;
-use Kevinrob\GuzzleCache\Strategy\GreedyCacheStrategy;
 
 class McaHttp
 {
@@ -31,7 +30,7 @@ class McaHttp
     protected function getHttp()
     {
         return Http::withMiddleware(new CacheMiddleware(
-            new GreedyCacheStrategy(new LaravelCacheStorage($this->cache), 1800)
+            new McaCachingStrategy(new LaravelCacheStorage($this->cache), 1800)
         ));
     }
 
