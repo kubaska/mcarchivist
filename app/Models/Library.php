@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Casts\AsHashListCast;
 use App\Enums\StorageArea;
 use App\Mca\MavenArtifact;
+use App\Services\SettingsService;
 use App\Support\McaFilesystem;
 use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -16,6 +17,8 @@ use Illuminate\Support\Facades\Log;
 class Library extends Model
 {
     use HasFactory;
+
+    private static MavenArtifact $artifact;
 
     protected $fillable = [
         'name', 'hash', 'hashes', 'size'
@@ -32,7 +35,20 @@ class Library extends Model
 
     public function getMavenArtifact(): MavenArtifact
     {
-        return new MavenArtifact($this->name);
+        if (isset(self::$artifact)) return self::$artifact;
+
+        return self::$artifact = new MavenArtifact($this->name);
+    }
+
+    public function getFileName(): string
+    {
+        return $this->getMavenArtifact()->filename();
+    }
+
+    public function getFilePath(): string
+    {
+        $settings = app(SettingsService::class);
+        return $settings->getPath('libraries', $this->getMavenArtifact()->path());
     }
 
     public function hasDependants(array|Collection|null $except = null): bool

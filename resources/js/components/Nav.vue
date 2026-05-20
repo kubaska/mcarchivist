@@ -44,6 +44,11 @@
                                      :class="{ active: routeIsActive('/archive') }"
                         >Archive</router-link>
                     </li>
+                    <li class="nav-item">
+                        <router-link :to="{ name: 'libraries' }" class="nav-link"
+                                     :class="{ active: routeIsActive('/libraries') }"
+                        >Libraries</router-link>
+                    </li>
                 </ul>
             </div>
         </div>

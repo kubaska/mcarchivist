@@ -56,6 +56,11 @@ $router->group(['prefix' => 'rulesets'], function () use ($router) {
     $router->delete('/{id}', 'RulesetController@destroy');
 });
 
+$router->group(['prefix' => 'libraries'], function () use ($router) {
+    $router->get('/', 'LibraryController@index');
+    $router->get('/{id}', 'LibraryController@show');
+});
+
 $router->group(['prefix' => 'queue'], function () use ($router) {
     $router->get('/', 'QueueController@index');
     $router->post('/{id}/cancel', 'QueueController@cancel');

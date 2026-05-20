@@ -23,7 +23,7 @@
 
 <script setup>
 const props = defineProps({
-    modelValue: { type: Array, required: true, default: [] },
+    modelValue: { type: [Array, Object], required: true, default: [] },
     options: { type: Array, required: false, default: [] },
     multiple: { type: Boolean, required: false, default: true },
     trackBy: { type: String, required: false },
@@ -42,7 +42,11 @@ function isSelected(option) {
             return props.modelValue.includes(option);
         }
     } else {
-        return props.modelValue === option;
+        if (props.trackBy) {
+            return props.modelValue[props.trackBy] === option[props.trackBy];
+        } else {
+            return props.modelValue === option;
+        }
     }
 }
 

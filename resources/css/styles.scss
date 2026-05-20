@@ -31,7 +31,11 @@
     width: 36px;
     height: 36px;
     border-radius: 100%;
-    padding: 0;
+    border-width: 1px !important;
+    padding: 0 !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 .btn-icon-sm {
     width: 24px;

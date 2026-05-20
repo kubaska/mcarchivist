@@ -5,6 +5,7 @@ import RulesetsView from './views/RulesetsView.vue';
 import SettingsView from './views/SettingsView.vue';
 import LoadersIndex from './views/LoadersIndex.vue';
 import NotFoundView from './views/NotFoundView.vue';
+import LibrariesView from './views/LibrariesView.vue';
 import ProjectsIndex from './views/ProjectsIndex.vue';
 import GameVersionsView from './views/GameVersionsView.vue';
 import ProjectVersionsView from './views/Project/ProjectVersionsView.vue';
@@ -73,6 +74,12 @@ const router = createRouter({
             path: '/rulesets',
             name: 'rulesets',
             component: RulesetsView,
+        },
+
+        {
+            path: '/libraries',
+            name: 'libraries',
+            component: LibrariesView,
         },
 
         ...makeRoutesForBase('archive'),

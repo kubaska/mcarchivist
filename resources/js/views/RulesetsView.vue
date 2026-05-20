@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="me-2">
         <div class="d-flex flex-column flex-lg-row justify-content-between gap-2 my-3 align-items-center">
             <h3 class="m-0">Rulesets</h3>
             <form @submit.prevent="createRuleset">
@@ -11,7 +11,29 @@
         </div>
         <hr/>
 
-        <RulesetTable :rulesets="config.rulesets" @edit="onRulesetEditBtnClick" @delete="onRulesetDeleteBtnClick" />
+        <MTable :columns="[['Ruleset', ''], ['Name', 'Rule count', 'Date added', ''], ['Name', 'Rule count', 'Date added', '']]" class="mt-5">
+            <MTableRow v-for="ruleset in config.rulesets" :key="ruleset.id">
+                <MTableWrappingColumn class="gap-2 gap-md-0">
+                    <MTableColumn>{{ ruleset.name }}</MTableColumn>
+
+                    <MTableWrappingColumn>
+                        <MTableColumn>{{ ruleset.rules.length }} {{ ruleset.rules.length === 1 ? 'rule' : 'rules' }}</MTableColumn>
+                        <MTableColumn>
+                            <fa-icon icon="calendar" class="d-sm-none me-1" />
+                            <FormattedDate :date="ruleset.created_at" />
+                        </MTableColumn>
+                    </MTableWrappingColumn>
+                </MTableWrappingColumn>
+                <MTableColumn>
+                    <button class="btn btn-icon" @click="onRulesetEditBtnClick(ruleset.id)">
+                        <fa-icon icon="pencil" />
+                    </button>
+                    <button class="btn btn-icon" @click="onRulesetDeleteBtnClick(ruleset.id)">
+                        <fa-icon icon="xmark" />
+                    </button>
+                </MTableColumn>
+            </MTableRow>
+        </MTable>
 
         <CommonDeleteModal ref="deleteModal" @delete="onRulesetDelete" />
         <RulesetEditModal ref="rulesetEditModal" @update="onRulesetUpdate" />
@@ -20,11 +42,15 @@
 
 <script setup>
 import {ref} from "vue";
+import {useConfigStore} from "../stores/config";
 import MButton from "../components/base/MButton.vue";
-import RulesetTable from "../components/rulesets/RulesetTable.vue";
+import MTable from "../components/base/Table/MTable.vue";
+import MTableRow from "../components/base/Table/MTableRow.vue";
+import FormattedDate from "../components/base/FormattedDate.vue";
+import MTableColumn from "../components/base/Table/MTableColumn.vue";
 import RulesetEditModal from "../components/modals/RulesetEditModal.vue";
 import CommonDeleteModal from "../components/modals/CommonDeleteModal.vue";
-import {useConfigStore} from "../stores/config";
+import MTableWrappingColumn from "../components/base/Table/MTableWrappingColumn.vue";
 
 const config = useConfigStore();
 const deleteModal = ref(null);

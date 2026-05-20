@@ -128,5 +128,9 @@ export default {
     },
     deleteRuleset(id) {
         return request.delete(`/rulesets/${id}`);
+    },
+
+    getLibrary(id) {
+        return request.get('/libraries/'+id);
     }
 }

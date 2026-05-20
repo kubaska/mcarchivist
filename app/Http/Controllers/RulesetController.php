@@ -27,7 +27,7 @@ class RulesetController extends Controller
         ]);
 
         $ruleset = new Ruleset;
-        $ruleset->name = $request->get('name');
+        $ruleset->name = $request->input('name');
         $ruleset->custom = true;
         $ruleset->save();
 
