@@ -102,7 +102,7 @@ export const useConfigStore = defineStore('config', {
         createRuleset(name) {
             return api.createRuleset(name)
                 .then(response => {
-                    this.rulesets.push(response.data.data);
+                    this.rulesets.unshift(response.data.data);
                     return response;
                 });
         },

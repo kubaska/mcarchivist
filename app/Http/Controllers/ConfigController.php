@@ -43,7 +43,7 @@ class ConfigController extends Controller
             'categories' => $categories,
             'game_versions' => GameVersion::query()->orderByDesc('id')->get(),
             'loaders' => LoaderResource::collection($loaders),
-            'rulesets' => RulesetResource::collection(Ruleset::query()->with('archive_rules')->get()),
+            'rulesets' => RulesetResource::collection(Ruleset::query()->with('archive_rules')->latest()->get()),
             'settings' => app(SettingsService::class)->getAll()
         ];
     }

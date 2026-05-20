@@ -15,7 +15,7 @@ class RulesetController extends Controller
 
     public function index()
     {
-        $rulesets = Ruleset::query()->with('archive_rules')->get();
+        $rulesets = Ruleset::query()->with('archive_rules')->latest()->get();
 
         return RulesetResource::collection($rulesets);
     }
