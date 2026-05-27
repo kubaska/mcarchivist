@@ -216,11 +216,15 @@ class LiteLoader extends BaseLoader
                 [$date, $time, $size, $name] = explode('  ', $v);
 
                 // Special case for misnamed file
-                if ($name === 'liteloader_1.3.2_00.zip') {
-                    $name = 'liteloader_1.3.2_03.zip';
-                }
+                $nameFixed = $name === 'liteloader_1.3.2_00.zip'
+                    ? 'liteloader_1.3.2_03.zip'
+                    : $name;
 
-                return [...compact('date', 'time', 'size', 'name'), 'url' => self::LEGACY_INDEX_URL.$name];
+                return [
+                    ...compact('date', 'time', 'size'),
+                    'name' => $nameFixed,
+                    'url' => self::LEGACY_INDEX_URL.$name
+                ];
             });
     }
 
