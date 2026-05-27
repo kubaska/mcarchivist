@@ -3,6 +3,7 @@
 namespace App\API\DTO;
 
 use App\Enums\VersionType;
+use Carbon\Carbon;
 use Illuminate\Contracts\Support\Arrayable;
 
 class LoaderVersionDTO extends DTO implements Arrayable
@@ -11,7 +12,8 @@ class LoaderVersionDTO extends DTO implements Arrayable
         public readonly string $version,
         public readonly string $fullVersion,
         public readonly ?string $gameVersion,
-        public readonly VersionType $versionType
+        public readonly VersionType $versionType,
+        public readonly ?Carbon $releaseDate = null
     )
     {
     }

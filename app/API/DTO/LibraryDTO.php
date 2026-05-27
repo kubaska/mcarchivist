@@ -21,7 +21,7 @@ class LibraryDTO extends DTO
      */
     public function __construct(
         public readonly string $name,
-        public readonly ?BasicComponent $basicComponent,
+        public readonly ?BasicComponent $basicComponent = null,
         public readonly ?LibraryRuleset $rules = null,
         public readonly ?Collection $classifiers = null
     )

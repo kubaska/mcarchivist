@@ -60,6 +60,8 @@ class ApiManager
             throw new \RuntimeException(sprintf('Loader %s is already registered', $name));
         }
 
+        $loader::registerSettings(app(SettingsService::class));
+
         $this->loaders->put($name, [
             'name' => $loader::name(),
             'class' => $loader

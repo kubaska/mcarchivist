@@ -10,7 +10,7 @@ mcarchivist is a self-hosted archiving solution for everything about Minecraft: 
 mcarchivist currently supports archiving:
 - Game versions: Mojang
 - Addon platforms: Modrinth, Curseforge (API key required)
-- Mod loaders: Forge, NeoForge, Fabric + Fabric Intermediary
+- Mod loaders: Forge, NeoForge, Fabric + Fabric Intermediary, LiteLoader
 
 ## Installation
 ### Option 1 - Docker

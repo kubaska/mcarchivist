@@ -22,6 +22,11 @@ abstract class BaseLoader implements LoaderContract
         return Str::slug(static::name());
     }
 
+    public static function registerSettings(SettingsService $settings)
+    {
+
+    }
+
     public function getSettingPrefix(): string
     {
         return 'loaders.'.$this->slug();

@@ -151,7 +151,10 @@ class McaLoaderArchiver
     {
         $version = $loader->versions()->updateOrCreate(
             ['remote_id' => $loaderVersion->fullVersion],
-            ['platform' => $api::id(), 'version' => $loaderVersion->version, 'type' => $loaderVersion->versionType]
+            [
+                'platform' => $api::id(), 'version' => $loaderVersion->version, 'type' => $loaderVersion->versionType,
+                ...($loaderVersion->releaseDate ? ['published_at' => $loaderVersion->releaseDate] : [])
+            ]
         );
 
         if ($loaderVersion->gameVersion) {

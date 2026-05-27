@@ -19,7 +19,7 @@ class FileDTO extends DTO implements Arrayable
         public readonly ?int $size,
         public readonly HashList $hashes,
         public ?bool $primary,
-        public bool $local
+        public bool $local = false
     )
     {
     }
@@ -51,8 +51,7 @@ class FileDTO extends DTO implements Arrayable
             $file['url'],
             $file['size'],
             new HashList(['sha1' => $file['sha1']]),
-            Utils::isPrimaryComponent($component),
-            false
+            Utils::isPrimaryComponent($component)
         );
     }
 
@@ -67,8 +66,7 @@ class FileDTO extends DTO implements Arrayable
             $url,
             $size,
             new HashList($hash ? ['md5' => $hash] : []),
-            $primary,
-            false
+            $primary
         );
     }
 
@@ -83,8 +81,7 @@ class FileDTO extends DTO implements Arrayable
             $url,
             null,
             new HashList($hash ? ['sha1' => $hash] : []),
-            $primary,
-            false
+            $primary
         );
     }
 

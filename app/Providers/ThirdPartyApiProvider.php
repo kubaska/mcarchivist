@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\API\Loader\LiteLoader;
 use App\API\Platform\Curseforge;
 use App\API\Loader\Fabric;
 use App\API\Loader\FabricIntermediary;
@@ -25,7 +26,8 @@ class ThirdPartyApiProvider extends ServiceProvider
             Forge::class,
             NeoForge::class,
             Fabric::class,
-            FabricIntermediary::class
+            FabricIntermediary::class,
+            LiteLoader::class
         ];
     }
 

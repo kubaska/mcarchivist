@@ -17,6 +17,7 @@ class McaHttp
 {
     protected CacheRepository $cache;
     protected bool $useCache = true;
+    protected int $cacheTtl = 1800;
     protected array $headers = [];
     protected string $userAgent;
     private string $baseUrl = '';
@@ -29,9 +30,11 @@ class McaHttp
 
     protected function getHttp()
     {
-        return Http::withMiddleware(new CacheMiddleware(
-            new McaCachingStrategy(new LaravelCacheStorage($this->cache), 1800)
-        ));
+        return Http::when($this->useCache,
+            fn(PendingRequest $http) => $http->withMiddleware(new CacheMiddleware(
+                new McaCachingStrategy(new LaravelCacheStorage($this->cache), $this->cacheTtl)
+            ))
+        );
     }
 
     public function setHeaders(array $headers): static
@@ -49,6 +52,18 @@ class McaHttp
     public function setUserAgent(string $userAgent): static
     {
         $this->userAgent = $userAgent;
+        return $this;
+    }
+
+    public function setCacheTtl(int $cacheTtl): static
+    {
+        if ($cacheTtl < 30) {
+            $this->useCache = false;
+        } else {
+            $this->cacheTtl = $cacheTtl;
+            $this->useCache = true;
+        }
+
         return $this;
     }
 

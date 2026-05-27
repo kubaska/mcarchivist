@@ -102,6 +102,7 @@ export const getLoaderArchiveFilter = (loader) => {
             return [{ id: '*', name: 'All' }, { id: 'highlighted', name: 'Highlighted' }];
         case 'NeoForge':
         case 'Fabric':
+        case 'LiteLoader':
             return [{ id: '*', name: 'All' }, { id: 'latest', name: 'Latest' }];
         default:
             return [];
@@ -180,6 +181,17 @@ export const getLoaderComponents = (name) => {
                 { id: 'changelog', name: 'Changelog' },
                 { id: 'sources', name: 'Sources' },
                 { id: 'userdev', name: 'Userdev' },
+            ];
+        case 'liteloader':
+            return [
+                { id: 'universal', name: 'Universal' },
+                { id: 'sources', name: 'Sources' },
+                { id: 'javadoc', name: 'Javadoc' },
+                { id: 'staging', name: 'Staging' },
+                { id: 'release', name: 'Release' },
+                { id: 'mcpnames', name: 'MCP names' },
+                { id: 'mcpnames-sources', name: 'MCP names sources' },
+                { id: 'srgnames-sources', name: 'SRG names sources' },
             ];
         default:
             return [];
