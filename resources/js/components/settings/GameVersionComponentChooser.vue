@@ -30,7 +30,7 @@
                 <ul class="m-0">
                     <li>
                     <span class="text-muted fs-7">
-                        <span>Allowed values: </span><span v-for="c in components">{{ c.id }}, </span><span>or "*" for all components.</span>
+                        <span>Possible values: </span><span v-for="c in components">{{ c.id }}, </span><span>or "*" for all components.</span>
                     </span>
                     </li>
                     <li>

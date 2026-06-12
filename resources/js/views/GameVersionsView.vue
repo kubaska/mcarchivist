@@ -7,7 +7,8 @@
         <VersionDeleteModal ref="fileDeleteModal" @confirm="onFileDeleteConfirm"></VersionDeleteModal>
         <Modal ref="settingsModal" title="Settings" size-class="modal-lg" @hide="resetSettings">
             <GameVersionComponentChooser v-model="settings[settingNamePrefix+'manual_archive.components']"
-                                         :components="GAME_VERSION_COMPONENTS" title="Archive button behavior"
+                                         :components="settingsDetails[settingNamePrefix+'manual_archive.components']['options']"
+                                         title="Archive button behavior"
                                          description="Choose which components will be archived when you click 'Archive' button."
             />
             <hr/>
@@ -20,12 +21,14 @@
                 />
 
                 <GameVersionComponentChooser v-model="settings[settingNamePrefix+'automatic_archive.components']"
-                                             :components="GAME_VERSION_COMPONENTS" title="Components"
+                                             :components="settingsDetails[settingNamePrefix+'automatic_archive.components']['options']"
+                                             title="Components"
                                              description="Choose which components will be automatically archived."
                 />
 
                 <VersionTypeChooserSetting v-model="settings[settingNamePrefix+'automatic_archive.release_types']"
-                                           :types="getMojangVersionTypes()" title="Release Types"
+                                           :types="settingsDetails[settingNamePrefix+'automatic_archive.release_types']['options']"
+                                           title="Release Types"
                                            description="Choose which release types will be automatically archived."
                 />
             </div>
@@ -71,7 +74,7 @@ import VersionTypeChooserSetting from "../components/settings/VersionTypeChooser
 import GameVersionComponentChooser from "../components/settings/GameVersionComponentChooser.vue";
 import {useSettings} from "../hooks/settings";
 import {useConfigStore} from "../stores/config";
-import {GAME_VERSION_COMPONENTS, getMojangVersionTypes} from "../utils/utils";
+import {getMojangVersionTypes} from "../utils/utils";
 
 const changelogModal = ref(null);
 const revalidateModal = ref(null);
@@ -89,7 +92,7 @@ const versions = ref(null);
 const pagination = ref(null);
 const settingNamePrefix = 'game_versions.';
 const updateIndexTaskId = 'game-versions-update-index';
-const { settings, settingsLoading, areSettingsChanged, saveSettings, resetSettings } = useSettings(settingNamePrefix);
+const { settings, settingsDetails, settingsLoading, areSettingsChanged, saveSettings, resetSettings } = useSettings(settingNamePrefix);
 
 async function getVersions(filters = {}) {
     const r = await api.getGameVersions(filters);

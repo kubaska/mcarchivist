@@ -12,7 +12,7 @@ use Tests\Laravel\RefreshDatabase;
 
 abstract class TestCase extends BaseTestCase
 {
-    use McaMakesHttpRequests, InteractsWithDatabase, InteractsWithFilesystem;
+    use AssertsExceptions, McaMakesHttpRequests, InteractsWithDatabase, InteractsWithFilesystem;
 
     protected function tearDown(): void
     {

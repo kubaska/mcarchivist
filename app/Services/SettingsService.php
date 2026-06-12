@@ -6,9 +6,13 @@ use App\Enums\AutomaticArchiveSetting;
 use App\Exceptions\McaValidationException;
 use App\Models\Setting;
 use App\Rules\WritableDirectoryPathRule;
+use App\Settings\McaSetting;
+use App\Settings\McaSettingCollection;
+use App\Support\Utils;
 use Carbon\Carbon;
 use GuzzleHttp\Utils as PsrUtils;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -18,108 +22,139 @@ use Symfony\Component\Filesystem\Path;
 class SettingsService
 {
     protected bool $settingsLoaded = false;
-    protected array $store = [];
+    protected McaSettingCollection $store;
     protected array $settings = [];
 
     public function __construct()
     {
-        $pathValidator = fn() => ['required', 'bail', 'string', new WritableDirectoryPathRule()];
+        $this->store = new McaSettingCollection();
 
         // === General
-        $this->registerSetting('general.storage.assets', Path::join(storage_path('mca'), 'assets'), $pathValidator, 'Asset storage directory');
-        $this->registerSetting('general.storage.game', Path::join(storage_path('mca'), 'game'), $pathValidator, 'Game storage directory');
-        $this->registerSetting('general.storage.libraries', Path::join(storage_path('mca'), 'libraries'), $pathValidator, 'Library storage directory');
-        $this->registerSetting('general.storage.loaders', Path::join(storage_path('mca'), 'loaders'), $pathValidator, 'Loader storage directory');
-        $this->registerSetting('general.storage.projects', Path::join(storage_path('mca'), 'projects'), $pathValidator, 'Project storage directory');
-        $this->registerSetting('general.storage.temp', Path::join(storage_path('mca'), 'temp'), $pathValidator, 'Temporary storage directory');
+        $this->registerPathSetting('assets', 'assets');
+        $this->registerPathSetting('game', 'game');
+        $this->registerPathSetting('libraries', 'libraries');
+        $this->registerPathSetting('loaders', 'loaders');
+        $this->registerPathSetting('projects', 'projects');
+        $this->registerPathSetting('temp', 'temp');
 
         // === Projects
-        $this->registerAutomaticArchivingIntervalSettings('projects');
+        $this->registerAutoArchiveIntervalSettings('projects');
 
         // === Game versions
-        $this->registerAutomaticArchivingSettings('game_versions');
-        // client, server, server_windows, mappings_client, mappings_server
-        $this->registerSetting('game_versions.manual_archive.components', ['client', 'server']);
-        $this->registerSetting('game_versions.automatic_archive.components', ['client', 'server']);
-        // release, beta, alpha, snapshot
-        $this->registerSetting('game_versions.automatic_archive.release_types', ['release']);
-        // windows, linux, macos
-//        $this->registerSetting('game_versions.automatic_archive.os_type', ['windows', 'linux', 'macos']);
+        $this->registerAutoArchiveSettings('game_versions');
 
-        // === Forge
-        $this->registerSetting('loaders.forge.manual_archive.components', ['client', 'server', 'universal', 'installer']);
-        $this->registerAutomaticArchivingSettings('loaders.forge');
-        // highlighted, all
-        $this->registerSetting('loaders.forge.automatic_archive.filter', 'highlighted');
-        // client, server, universal, installer, src ("sources" in newer ver), userdev, mdk, changelog, launcher
-        $this->registerSetting('loaders.forge.automatic_archive.components', ['client', 'server', 'universal', 'installer']);
-        // release, snapshot
-        $this->registerSetting('loaders.forge.automatic_archive.release_types', ['release']);
-        $this->registerSetting('loaders.forge.automatic_archive.remove_old', true);
-
-        // === Neoforge
-        $this->registerAutomaticArchivingSettings('loaders.neoforge');
-        // latest, all
-        $this->registerSetting('loaders.neoforge.automatic_archive.filter', 'latest');
-        // universal, installer, changelog, sources, userdev
-        $this->registerSetting('loaders.neoforge.manual_archive.components', ['universal', 'installer']);
-        $this->registerSetting('loaders.neoforge.automatic_archive.components', ['universal', 'installer']);
-        // release, snapshot
-        $this->registerSetting('loaders.neoforge.automatic_archive.release_types', ['release']);
-        $this->registerSetting('loaders.neoforge.automatic_archive.remove_old', true);
-
-        // Fabric
-        $this->registerAutomaticArchivingSettings('loaders.fabric');
-        // Latest, All
-        $this->registerSetting('loaders.fabric.automatic_archive.filter', 'latest');
-        $this->registerSetting('loaders.fabric.automatic_archive.remove_old', true);
-
-        // === Fabric Intermediary
-        $this->registerAutomaticArchivingSettings('loaders.fabric-intermediary');
-        // Release, snapshot
-        $this->registerSetting('loaders.fabric-intermediary.automatic_archive.release_types', ['release']);
+        $this->registerArchivingComponentsSettings('game_versions', ['client', 'server'], [
+            'client',
+            'server',
+            ['id' => 'server_windows', 'name' => 'Server (Windows)'],
+            ['id' => 'client_mappings', 'name' => 'Client mappings'],
+            ['id' => 'server_mappings', 'name' => 'Server mappings']
+        ]);
+        $this->registerAutoArchiveReleaseTypesSetting('game_versions', ['release'], ['release', 'beta', 'alpha', 'snapshot']);
     }
 
-    public function registerAutomaticArchivingSettings(string $prefix)
+    protected function registerPathSetting(string $key, string $directory)
     {
-        $this->registerSetting($prefix.'.automatic_archive', AutomaticArchiveSetting::OFF, [new Enum(AutomaticArchiveSetting::class)]);
-        $this->registerAutomaticArchivingIntervalSettings($prefix);
-        $this->registerSetting($prefix.'.automatic_archive.last_check', null, ['date'], expose: false);
+        $this->registerSetting(
+            (new McaSetting('general.storage.'.$key, Path::join(storage_path('mca'), $directory)))
+                ->setName($key.' storage directory')
+                ->setValidationRules(['required', 'bail', 'string', new WritableDirectoryPathRule()])
+        );
     }
 
-    public function registerAutomaticArchivingIntervalSettings(string $prefix)
+    public function registerAutoArchiveSettings(string $prefix)
     {
-        $this->registerSetting($prefix.'.automatic_archive.interval', 1, ['numeric', 'integer', 'min:1', 'max:30']);
-        $this->registerSetting($prefix.'.automatic_archive.interval_unit', 'd', [Rule::in(['h', 'd'])]);
+        $this->registerSetting(
+            (new McaSetting($prefix.'.automatic_archive', AutomaticArchiveSetting::OFF))
+                ->setValidationRules(['required', new Enum(AutomaticArchiveSetting::class)])
+        );
+
+        $this->registerAutoArchiveIntervalSettings($prefix);
+
+        $this->registerSetting(
+            (new McaSetting($prefix.'.automatic_archive.last_check', null, expose: false))
+                ->setValidationRules(['nullable', 'date'])
+        );
     }
 
-    public function registerSetting(string $key, mixed $default, array|\Closure|null $validator = null, ?string $name = null, bool $expose = true)
+    public function registerAutoArchiveIntervalSettings(string $prefix)
     {
-        $type = match (true) {
-            $default instanceof \BackedEnum => 'enum',
-            default => gettype($default)
-        };
+        $this->registerSetting(
+            (new McaSetting($prefix.'.automatic_archive.interval', 1))
+                ->setValidationRules(['required', 'integer:strict', 'min:1', 'max:30'])
+        );
+        $this->registerSetting(
+            (new McaSetting($prefix.'.automatic_archive.interval_unit', 'd'))
+                ->setValidationRules(['required', Rule::in(['h', 'd'])])
+        );
+    }
 
-        $this->store[$key] = [
-            'default' => $default,
-            'type' => $type,
-            'name' => $name ?? $key,
-            'validator' => $validator,
-            'expose' => $expose
-        ];
+    public function registerAutoArchiveFilterSetting(string $prefix, string $default, array $options)
+    {
+        $this->registerSetting(
+            (new McaSetting($prefix.'.automatic_archive.filter', $default))
+                ->setOptions($options)
+        );
+    }
+
+    public function registerArchivingComponentsSettings(string $prefix, array $components, array $options)
+    {
+        $this->registerSetting(
+            (new McaSetting($prefix.'.manual_archive.components', $components))
+                ->setOptions($options, true, false)
+        );
+
+        $this->registerSetting(
+            (new McaSetting($prefix.'.automatic_archive.components', $components))
+                ->setOptions($options, true, false)
+        );
+    }
+
+    public function registerAutoArchiveReleaseTypesSetting(string $prefix, array $default, array $options)
+    {
+        $this->registerSetting(
+            (new McaSetting($prefix.'.automatic_archive.release_types', $default))
+                ->setOptions($options, true, true)
+        );
+    }
+
+    public function registerAutoArchiveRemoveOldSetting(string $prefix, bool $default = true)
+    {
+        $this->registerSetting(
+            (new McaSetting($prefix.'.automatic_archive.remove_old', $default))
+                ->setValidationRules(['required', 'boolean'])
+        );
+    }
+
+    public function registerSetting(McaSetting $setting)
+    {
+        if ($this->has($setting->key)) {
+            Log::error(sprintf('Setting [%s] is already registered!', $setting->key));
+            return;
+        }
+
+        $this->store[$setting->key] = $setting;
     }
 
     protected function hydrate(mixed $value, mixed $default, string $type)
     {
-        if ($type === 'array') return PsrUtils::jsonDecode($value);
-        elseif ($type === 'enum') return get_class($default)::tryFrom($value);
-        return $value;
+        return match ($type) {
+            'array' => PsrUtils::jsonDecode($value),
+            'boolean' => (bool)$value,
+            'enum' => get_class($default)::tryFrom($value),
+            'integer' => (int)$value,
+            default => $value === '' ? null : $value
+        };
     }
 
     protected function dehydrate(mixed $value)
     {
-        if (is_array($value)) return PsrUtils::jsonEncode($value);
-        return $value;
+        return match (true) {
+            is_array($value) => PsrUtils::jsonEncode($value),
+            Utils::isEnum($value) => Utils::getEnumValue($value),
+            is_null($value) => '',
+            default => $value
+        };
     }
 
     protected function load()
@@ -128,10 +163,17 @@ class SettingsService
 
         $settings = Setting::query()->get();
         $this->settings = $settings->reduce(function (array &$carry, Setting $s) {
-            if (! isset($this->store[$s->key])) return $carry;
-            $carry[$s->key] = $this->hydrate($s->value, $this->store[$s->key]['default'], $this->store[$s->key]['type']);
+            if (! $this->has($s->key)) return $carry;
+
+            $carry[$s->key] = $this->hydrate(
+                $s->value,
+                $this->store->get($s->key)->getDefault(),
+                $this->store->get($s->key)->getType()
+            );
+
             return $carry;
         }, []);
+
         $this->settingsLoaded = true;
 
         return $this->settings;
@@ -139,24 +181,13 @@ class SettingsService
 
     public function has(string $key): bool
     {
-        return isset($this->store[$key]);
+        return $this->store->has($key);
     }
 
     public function get(string $key): mixed
     {
         $this->load();
-        return $this->settings[$key] ?? $this->store[$key]['default'];
-    }
-
-    public function getMany(array $keys): array
-    {
-        return array_reduce($keys, function (array $carry, string $key) {
-            if (isset($this->store[$key])) {
-                $carry[$key] = $this->get($key);
-            }
-
-            return $carry;
-        }, []);
+        return $this->settings[$key] ?? $this->store->get($key)?->getDefault();
     }
 
     public function getDate(string $key): ?Carbon
@@ -175,37 +206,70 @@ class SettingsService
         return $storage;
     }
 
-    public function getAll(): array
+    protected function getAllExposed(): Collection
     {
-        return Arr::map(array_filter($this->store, fn($i) => $i['expose']), fn($i, string $k) => $this->get($k));
+        return $this->store->filter(fn(McaSetting $setting) => $setting->expose);
     }
 
+    /**
+     * Get all registered exposed settings.
+     *
+     * @return Collection
+     */
+    public function getAll(): Collection
+    {
+        return $this->getAllExposed()
+            ->map(function (McaSetting $setting) {
+                $result = ['value' => $this->get($setting->key)];
+
+                if ($setting->getOptions() !== null) {
+                    $result['options'] = $setting->getOptions();
+                }
+
+                return $result;
+            });
+    }
+
+    /**
+     * Get all registered exposed settings' default values.
+     *
+     * @return array
+     */
     public function getDefault(): array
     {
-        return Arr::map(array_filter($this->store, fn($i) => $i['expose']), fn($i) => $i['default']);
+        return $this->getAllExposed()->map(fn(McaSetting $setting) => $setting->getDefault())->toArray();
     }
 
-    public function save(array $settings)
+    public function save(array $settings): bool
     {
         // Discard any invalid settings
         $settings = array_filter($settings, function (mixed $v, string $k) {
-            if (! isset($this->store[$k])) {
-                Log::warning(sprintf('Rejecting non-existent settings key [%s] with value [%s]!', $k, $v));
+            if (! $this->has($k)) {
+                Log::warning(sprintf('Rejecting non-existent settings key [%s] with value "%s"!', $k, $v));
                 return false;
             }
 
             return true;
         }, ARRAY_FILTER_USE_BOTH);
 
-        $validatableSettings = array_filter($settings, fn(mixed $v, string $k) => isset($this->store[$k]['validator']), ARRAY_FILTER_USE_BOTH);
+        $validatableSettings = array_filter(
+            $settings,
+            fn(string $k) => $this->store->get($k)?->hasValidationRules(),
+            ARRAY_FILTER_USE_KEY
+        );
+
         if (! empty($validatableSettings)) {
             $validator = Validator::make(
                 $validatableSettings,
-                Arr::mapWithKeys($validatableSettings, function (mixed $v, string $k) {
-                    $rules = $this->store[$k]['validator'];
-                    return [str_replace('.', '\.', $k) => $rules instanceof \Closure ? $rules() : $rules];
+                Arr::mapWithKeys($validatableSettings, function (mixed $v, string $settingKey) {
+                    return Arr::mapWithKeys(
+                        $this->store->get($settingKey)->getValidationRules(),
+                        fn(array $rules, string $key) => [
+                            str_replace($settingKey, str_replace('.', '\.', $settingKey), $key) => $rules
+                        ]
+                    );
                 }),
-                attributes: Arr::map($validatableSettings, fn(mixed $v, string $k) => strtolower($this->store[$k]['name']))
+                attributes: Arr::map($validatableSettings, fn(mixed $v, string $k) => strtolower($this->store->get($k)->getName()))
             );
 
             if ($validator->fails()) {
@@ -215,11 +279,21 @@ class SettingsService
 
         foreach ($settings as $setting => $value) {
             $now = Carbon::now();
+            $dehydratedValue = $this->dehydrate($value);
+
             Setting::query()->mcaUpdateOrInsert(
                 ['key' => $setting],
-                ['value' => $this->dehydrate($value), 'updated_at' => $now],
+                ['value' => $dehydratedValue, 'updated_at' => $now],
                 ['created_at' => $now]
             );
+
+            $this->settings[$setting] = $this->hydrate(
+                $dehydratedValue,
+                $this->store->get($setting)->getDefault(),
+                $this->store->get($setting)->getType()
+            );
         }
+
+        return true;
     }
 }

@@ -16,7 +16,6 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
 use Symfony\Component\DomCrawler\Crawler;
 
 class LiteLoader extends BaseLoader
@@ -44,14 +43,20 @@ class LiteLoader extends BaseLoader
 
     public static function registerSettings(SettingsService $settings)
     {
-        $settings->registerAutomaticArchivingSettings('loaders.liteloader');
+        $settings->registerAutoArchiveSettings('loaders.liteloader');
 
-        // universal, sources, javadoc, staging, release, mcpnames, mcpnames-sources, srgnames-sources
-        $settings->registerSetting('loaders.liteloader.manual_archive.components', ['universal'], ['array']);
-        $settings->registerSetting('loaders.liteloader.automatic_archive.components', ['universal'], ['array']);
-        // Latest, All
-        $settings->registerSetting('loaders.liteloader.automatic_archive.filter', 'latest', [Rule::in(['latest', 'all'])]);
-        $settings->registerSetting('loaders.liteloader.automatic_archive.remove_old', true, ['boolean']);
+        $settings->registerArchivingComponentsSettings('loaders.liteloader', ['universal'], [
+            'universal', 'sources', 'javadoc', 'staging', 'release',
+            ['id' => 'mcpnames', 'name' => 'MCP names'],
+            ['id' => 'mcpnames-sources', 'name' => 'MCP names sources'],
+            ['id' => 'srgnames-sources', 'name' => 'SRG names sources'],
+        ]);
+
+        $settings->registerAutoArchiveFilterSetting('loaders.liteloader', 'latest', [
+            ['id' => '*', 'name' => 'All'], 'latest'
+        ]);
+
+        $settings->registerAutoArchiveRemoveOldSetting('loaders.liteloader');
     }
 
     public function isVersionedByGameVersions(): bool

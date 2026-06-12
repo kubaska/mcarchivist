@@ -8,6 +8,7 @@ use App\API\DTO\LoaderVersionDTO;
 use App\API\Loader\Base\BaseLoader;
 use App\API\Loader\Base\LoaderCommons;
 use App\Models\Version;
+use App\Services\SettingsService;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
@@ -16,6 +17,17 @@ class Fabric extends BaseLoader
     public static function name(): string
     {
         return 'Fabric';
+    }
+
+    public static function registerSettings(SettingsService $settings)
+    {
+        $settings->registerAutoArchiveSettings('loaders.fabric');
+
+        $settings->registerAutoArchiveFilterSetting('loaders.fabric', 'latest', [
+            ['id' => '*', 'name' => 'All'], 'latest'
+        ]);
+
+        $settings->registerAutoArchiveRemoveOldSetting('loaders.fabric');
     }
 
     public function isVersionedByGameVersions(): bool

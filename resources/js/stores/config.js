@@ -94,7 +94,15 @@ export const useConfigStore = defineStore('config', {
         saveSettings(settings) {
             return api.saveSettings(settings)
                 .then(() => {
-                    this.settings = { ...this.settings, ...settings };
+                    Object.keys(settings).forEach(key => {
+                        if (! this.settings[key]) {
+                            console.error(`Failed to update setting [${key}]: key does not exist`);
+                            return;
+                        }
+
+                        this.settings[key]['value'] = settings[key];
+                    })
+
                     return settings;
                 });
         },

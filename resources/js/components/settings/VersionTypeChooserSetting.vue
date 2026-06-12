@@ -7,7 +7,7 @@
         <div class="col-12 col-md-8">
             <div class="form-check" v-for="type in types">
                 <label class="form-check-label">
-                    <input class="form-check-input" type="checkbox" :value="type.name.toLowerCase()" v-model="model">
+                    <input class="form-check-input" type="checkbox" :value="type.id" v-model="model">
                     {{ type.name }}
                 </label>
             </div>

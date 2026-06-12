@@ -20,6 +20,7 @@ use App\API\ThirdPartyApiResponse;
 use App\Enums\EProjectType;
 use App\Exceptions\UnsupportedApiMethodException;
 use App\Services\SettingsService;
+use App\Settings\McaSetting;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
@@ -92,7 +93,9 @@ class Curseforge extends BaseThirdPartyApi
 
     public static function registerSettings(SettingsService $settings)
     {
-        $settings->registerSetting('platforms.curseforge.api_key', '', ['string'], 'Curseforge API key');
+        $settings->registerSetting(
+            (new McaSetting('platforms.curseforge.api_key', ''))->setValidationRules(['string'])
+        );
     }
 
     public static function configureRequest(string $request)

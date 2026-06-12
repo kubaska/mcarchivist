@@ -1,18 +1,22 @@
 import {useConfigStore} from "../stores/config";
 import {computed, onBeforeUnmount, ref, toValue, watchEffect} from "vue";
-import {isEqual} from "lodash-es";
+import {isEqual, mapValues, omit} from "lodash-es";
 
 export const useSettings = (keyNames) => {
     const store = useConfigStore();
     const origSettings = computed(() => store.getSettingsStartingWith(toValue(keyNames)));
-    const settings = ref({ ...origSettings.value });
+
+    // Only setting values e.g. { game_versions.automatic_archive: true, ... }
+    const settings = ref(mapValues(origSettings.value, setting => setting.value));
+    // Everything except values e.g. { game_versions.components: { options: ['client', 'server'] }, ... }
+    const settingsDetails = computed(() => mapValues(origSettings.value, setting => omit(setting, 'value')));
 
     const settingsLoading = ref(false);
     const settingsErrorResponse = ref(null);
     const settingsErrors = ref(null);
     const onSettingChangeCallbacks = ref([]);
     const changedSettings = computed(() => Object.fromEntries(
-        Object.entries(settings.value).filter(([key, value]) => ! isEqual(value, origSettings.value[key]))
+        Object.entries(settings.value).filter(([key, value]) => ! isEqual(value, origSettings.value[key]['value']))
     ));
     const areSettingsChanged = computed(() => Object.keys(changedSettings.value).length > 0);
     const onSettingChange = (callback) => {
@@ -39,13 +43,13 @@ export const useSettings = (keyNames) => {
             })
             .finally(() => settingsLoading.value = false);
     }
-    const resetSettings = () => settings.value = { ...origSettings.value };
+    const resetSettings = () => settings.value = mapValues(origSettings.value, setting => setting.value);
 
     onBeforeUnmount(() => onSettingChangeCallbacks.value = []);
     watchEffect(resetSettings);
 
     return {
-        settings, settingsLoading, settingsErrorResponse, settingsErrors, changedSettings, areSettingsChanged,
+        settings, settingsDetails, settingsLoading, settingsErrorResponse, settingsErrors, changedSettings, areSettingsChanged,
         onSettingChange, saveSettings, resetSettings
     };
 }

@@ -8,7 +8,8 @@
         <Modal ref="settingsModal" v-if="loader.promoted" title="Loader settings" @hide="resetSettings" size-class="modal-lg">
             <div class="d-flex flex-column" v-if="settings[settingNamePrefix+'manual_archive.components'] !== undefined">
                 <GameVersionComponentChooser v-model="settings[settingNamePrefix+'manual_archive.components']"
-                                             :components="components" title="Archive button behavior"
+                                             :components="settingsDetails[settingNamePrefix+'manual_archive.components']['options']"
+                                             title="Archive button behavior"
                                              description="Choose which components will be archived when you click 'Archive' button."
                 />
                 <hr/>
@@ -23,19 +24,22 @@
 
                 <GenericRadioSetting v-if="settings[settingNamePrefix+'automatic_archive.filter'] !== undefined"
                                      v-model="settings[settingNamePrefix+'automatic_archive.filter']"
-                                     :options="versionFilter" title="Version filter"
+                                     :options="settingsDetails[settingNamePrefix+'automatic_archive.filter']['options']"
+                                     title="Version filter"
                                      description="Choose which loader versions will be automatically archived, for each Minecraft version."
                 />
 
                 <GameVersionComponentChooser v-if="settings[settingNamePrefix+'automatic_archive.components'] !== undefined"
                                              v-model="settings[settingNamePrefix+'automatic_archive.components']"
-                                             :components="components" title="Components"
+                                             :components="settingsDetails[settingNamePrefix+'automatic_archive.components']['options']"
+                                             title="Components"
                                              description="Choose which components will be automatically archived."
                 />
 
                 <VersionTypeChooserSetting v-if="settings[settingNamePrefix+'automatic_archive.release_types'] !== undefined"
                                            v-model="settings[settingNamePrefix+'automatic_archive.release_types']"
-                                           :types="archivableGameVersionTypes" title="Release Types"
+                                           :types="settingsDetails[settingNamePrefix+'automatic_archive.release_types']['options']"
+                                           title="Release Types"
                                            description="Choose Minecraft release types for which loader versions will be automatically archived."
                 />
 
@@ -95,11 +99,7 @@ import VersionDeleteModal from "../components/modals/VersionDeleteModal.vue";
 import CommonConfirmModal from "../components/modals/CommonConfirmModal.vue";
 import {useRoute, useRouter} from "vue-router";
 import {useConfigStore} from "../stores/config";
-import {
-    getLoaderArchivableGameVersionTypes,
-    getLoaderArchiveFilter,
-    getLoaderComponents, getLoaderReleaseTypes,
-} from "../utils/utils";
+import { getLoaderReleaseTypes } from "../utils/utils";
 import {useSettings} from "../hooks/settings";
 import {displayNotFoundPage} from "../utils/errors";
 
@@ -122,12 +122,9 @@ const selectedComponent = ref(null);
 const activeLoader = computed(() => selectedComponent.value ?? loader);
 const versions = ref(null);
 const pagination = ref(null);
-const components = computed(() => getLoaderComponents(loader?.slug));
 const settingNamePrefix = computed(() => `loaders.${activeLoader.value.slug}.`);
-const { settings, settingsLoading, areSettingsChanged, saveSettings, resetSettings } = useSettings(settingNamePrefix);
-const archivableGameVersionTypes = computed(() => getLoaderArchivableGameVersionTypes(activeLoader.value.name));
+const { settings, settingsDetails, settingsLoading, areSettingsChanged, saveSettings, resetSettings } = useSettings(settingNamePrefix);
 const releaseTypes = computed(() => getLoaderReleaseTypes(activeLoader.value.name));
-const versionFilter = computed(() => getLoaderArchiveFilter(activeLoader.value.name));
 const updateIndexTaskId = computed(() => 'loader-update-index;'+activeLoader.value.id);
 
 function getData(page, filters = {}) {

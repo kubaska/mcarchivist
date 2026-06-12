@@ -9,6 +9,7 @@ use App\API\Loader\Base\BaseLoader;
 use App\API\Loader\Base\LoaderCommons;
 use App\Enums\VersionType;
 use App\Models\Version;
+use App\Services\SettingsService;
 use Carbon\Carbon;
 use Illuminate\Http\Client\Pool;
 use Illuminate\Support\Arr;
@@ -30,6 +31,25 @@ class NeoForge extends BaseLoader
     public static function name(): string
     {
         return 'NeoForge';
+    }
+
+    public static function registerSettings(SettingsService $settings)
+    {
+        $settings->registerAutoArchiveSettings('loaders.neoforge');
+
+        $settings->registerArchivingComponentsSettings(
+            'loaders.neoforge',
+            ['universal', 'installer'],
+            ['universal', 'installer', 'changelog', 'sources', 'userdev']
+        );
+
+        $settings->registerAutoArchiveFilterSetting('loaders.neoforge', 'latest', [
+            ['id' => '*', 'name' => 'All'], 'latest'
+        ]);
+
+        $settings->registerAutoArchiveReleaseTypesSetting('loaders.neoforge', ['release'], ['release', 'snapshot']);
+
+        $settings->registerAutoArchiveRemoveOldSetting('loaders.neoforge');
     }
 
     public function isVersionedByGameVersions(): bool

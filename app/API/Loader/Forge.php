@@ -10,6 +10,7 @@ use App\API\Loader\Base\LoaderCommons;
 use App\Enums\VersionType;
 use App\Exceptions\McaHttpException;
 use App\Models\Version;
+use App\Services\SettingsService;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
@@ -31,6 +32,29 @@ class Forge extends BaseLoader
     public static function name(): string
     {
         return 'Forge';
+    }
+
+    public static function registerSettings(SettingsService $settings)
+    {
+        $settings->registerAutoArchiveSettings('loaders.forge');
+
+        $settings->registerArchivingComponentsSettings(
+            'loaders.forge',
+            ['client', 'server', 'universal', 'installer'],
+            [
+                'client', 'server', 'universal', 'installer', 'changelog',
+                ['id' => 'sources', 'hint' => '"src" in older Forge versions'],
+                ['id' => 'mdk', 'name' => 'mdk (Development Kit)'],
+                'userdev', 'launcher'
+            ]
+        );
+
+        $settings->registerAutoArchiveFilterSetting('loaders.forge', 'highlighted', [
+            ['id' => '*', 'name' => 'All'], 'highlighted'
+        ]);
+
+        $settings->registerAutoArchiveReleaseTypesSetting('loaders.forge', ['release'], ['release', 'snapshot']);
+        $settings->registerAutoArchiveRemoveOldSetting('loaders.forge');
     }
 
     public function isVersionedByGameVersions(): bool

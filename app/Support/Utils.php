@@ -31,6 +31,20 @@ class Utils
         return array_values($components);
     }
 
+    public static function isEnum($enum): bool
+    {
+        return $enum instanceof \UnitEnum;
+    }
+
+    public static function getEnumValue(\UnitEnum $enum, $default = null)
+    {
+        return match (true) {
+            $enum instanceof \BackedEnum => $enum->value,
+            $enum instanceof \UnitEnum => $enum->name,
+            default => value($default),
+        };
+    }
+
     public static function getRequests(): array
     {
         return [

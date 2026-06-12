@@ -83,32 +83,6 @@ export const getLoaderReleaseTypes = (loader) => {
     }
 };
 
-// Determines which game version types given mod loader have releases for.
-// e.g. Forge, NeoForge, Fabric Intr have releases for stable and snapshot Minecraft versions.
-export const getLoaderArchivableGameVersionTypes = (loader) => {
-    switch (loader) {
-        case 'Forge':
-        case 'NeoForge':
-        case 'Fabric Intermediary':
-            return [{ id: 'release', name: 'Release' }, { id: 'snapshot', name: 'Snapshot' }];
-        default:
-            return [];
-    }
-}
-
-export const getLoaderArchiveFilter = (loader) => {
-    switch (loader) {
-        case 'Forge':
-            return [{ id: '*', name: 'All' }, { id: 'highlighted', name: 'Highlighted' }];
-        case 'NeoForge':
-        case 'Fabric':
-        case 'LiteLoader':
-            return [{ id: '*', name: 'All' }, { id: 'latest', name: 'Latest' }];
-        default:
-            return [];
-    }
-}
-
 const JOB_TYPES = {
     0: { id: 0, name: 'Archiving' },
     1: { id: 1, name: 'Revalidating' },
@@ -132,14 +106,6 @@ export const getProjectTypes = () => [
     { id: 8, name: 'Customization', name_plural: 'Customization' },
 ];
 
-export const GAME_VERSION_COMPONENTS = [
-    { id: 'client', name: 'Client' },
-    { id: 'server', name: 'Server' },
-    { id: 'windows_server', name: 'Server (Windows)', hint: 'Available only for old betas, provided as a self contained EXE file.' },
-    { id: 'client_mappings', name: 'Mappings (client)' },
-    { id: 'server_mappings', name: 'Mappings (server)' },
-];
-
 export const formatComponentName = (name) => {
     switch (name) {
         case 'windows_server': return 'Server (Windows)';
@@ -148,55 +114,6 @@ export const formatComponentName = (name) => {
         default: return capitalizeString(name);
     }
 };
-
-export const getIconNameForGameVersionComponent = (name) => {
-    switch (name) {
-        case 'client': return 'display';
-        case 'server': return 'server';
-        case 'windows_server': return 'server';
-        case 'client_mappings': return 'code';
-        case 'server_mappings': return 'code';
-        default: return 'file';
-    }
-}
-
-export const getLoaderComponents = (name) => {
-    switch (name) {
-        case 'forge':
-            return [
-                { id: 'client', name: 'Client' },
-                { id: 'server', name: 'Server' },
-                { id: 'universal', name: 'Universal' },
-                { id: 'installer', name: 'Installer' },
-                { id: 'changelog', name: 'Changelog' },
-                { id: 'sources', name: 'Sources', hint: '"src" in older Forge versions' },
-                { id: 'mdk', name: 'mdk (Development Kit)' },
-                { id: 'userdev', name: 'Userdev' },
-                { id: 'launcher', name: 'Launcher' },
-            ];
-        case 'neoforge':
-            return [
-                { id: 'universal', name: 'Universal' },
-                { id: 'installer', name: 'Installer' },
-                { id: 'changelog', name: 'Changelog' },
-                { id: 'sources', name: 'Sources' },
-                { id: 'userdev', name: 'Userdev' },
-            ];
-        case 'liteloader':
-            return [
-                { id: 'universal', name: 'Universal' },
-                { id: 'sources', name: 'Sources' },
-                { id: 'javadoc', name: 'Javadoc' },
-                { id: 'staging', name: 'Staging' },
-                { id: 'release', name: 'Release' },
-                { id: 'mcpnames', name: 'MCP names' },
-                { id: 'mcpnames-sources', name: 'MCP names sources' },
-                { id: 'srgnames-sources', name: 'SRG names sources' },
-            ];
-        default:
-            return [];
-    }
-}
 
 // https://stackoverflow.com/questions/15900485/correct-way-to-convert-size-in-bytes-to-kb-mb-gb-in-javascript
 export const formatBytes = (bytes, decimals = 2) => {

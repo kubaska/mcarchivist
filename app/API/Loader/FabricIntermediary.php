@@ -8,7 +8,7 @@ use App\API\DTO\LoaderVersionDTO;
 use App\API\Loader\Base\BaseLoader;
 use App\API\Loader\Base\LoaderCommons;
 use App\Models\Version;
-use Illuminate\Support\Arr;
+use App\Services\SettingsService;
 use Illuminate\Support\Collection;
 
 class FabricIntermediary extends BaseLoader
@@ -16,6 +16,17 @@ class FabricIntermediary extends BaseLoader
     public static function name(): string
     {
         return 'Fabric Intermediary';
+    }
+
+    public static function registerSettings(SettingsService $settings)
+    {
+        $settings->registerAutoArchiveSettings('loaders.fabric-intermediary');
+
+        $settings->registerAutoArchiveReleaseTypesSetting(
+            'loaders.fabric-intermediary',
+            ['release'],
+            ['release', 'snapshot']
+        );
     }
 
     public function isVersionedByGameVersions(): bool
