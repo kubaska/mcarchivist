@@ -41,7 +41,7 @@ class ConfigController extends Controller
             'platforms' => $apiManager->getAvailablePlatforms(),
             'requests' => $requests,
             'categories' => $categories,
-            'game_versions' => GameVersion::query()->orderByDesc('id')->get(),
+            'game_versions' => GameVersion::query()->orderByDesc('id')->get(['id', 'name', 'type', 'released_at']),
             'loaders' => LoaderResource::collection($loaders),
             'rulesets' => RulesetResource::collection(Ruleset::query()->with('archive_rules')->latest()->get()),
             'settings' => app(SettingsService::class)->getAll()
