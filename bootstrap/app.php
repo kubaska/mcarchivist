@@ -74,6 +74,11 @@ $app->configure('queue');
 |
 */
 
+$app->middleware([
+    \App\Http\Middleware\Laravel\ConvertEmptyStringsToNull::class,
+    \App\Http\Middleware\Laravel\TrimStrings::class
+]);
+
 // $app->middleware([
 //     App\Http\Middleware\ExampleMiddleware::class
 // ]);
