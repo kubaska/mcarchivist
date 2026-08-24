@@ -4,22 +4,25 @@
             <h3 class="my-2">Loaders</h3>
         </div>
         <hr class="mt-0" />
-        <div class="row row-gap-1 gx-2">
-            <div class="col-md-6 col-lg-4 col-xxl-3" v-for="loader in config.loaders">
-                <router-link :to="{ name: 'loader', params: { slug: loader.slug } }" class="text-decoration-none">
-                    <div class="card">
-                        <div class="card-body">
-                            <fa-icon icon="star" v-if="loader.promoted" style="color: gold;" /> <span class="card-title text-center">{{ loader.name }}</span>
-                        </div>
-                    </div>
-                </router-link>
-            </div>
+
+        <LoaderGroup v-if="promoted.length" :loaders="promoted" />
+        <LoaderGroup v-if="notPromotedButHasVersions.length" header="Has archived versions" :loaders="notPromotedButHasVersions" />
+        <LoaderGroup v-if="other.length" header="Without automatic archiving support" :loaders="other" />
+
+        <div v-if="!promoted.length && !notPromotedButHasVersions.length && !other.length">
+            <p class="text-center">No loaders added yet. Try archiving some projects!</p>
         </div>
     </div>
 </template>
 
 <script setup>
+import {computed} from "vue";
 import {useConfigStore} from "../stores/config";
+import LoaderGroup from "../components/LoaderGroup.vue";
 
 const config = useConfigStore();
+
+const promoted = computed(() => config.loaders.filter(l => l.promoted));
+const notPromotedButHasVersions = computed(() => config.loaders.filter(l => !l.promoted && l.version_count > 0));
+const other = computed(() => config.loaders.filter(l => !l.promoted && l.version_count === 0));
 </script>

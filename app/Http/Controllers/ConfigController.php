@@ -26,7 +26,7 @@ class ConfigController extends Controller
             ->get()
             ->map(fn(Category $c) => CategoryDTO::fromLocal($c));
 
-        $loaders = Loader::query()->with('remotes.project_types')->get();
+        $loaders = Loader::query()->with('remotes.project_types')->withCount('versions')->get();
 
         $requests = [];
 
