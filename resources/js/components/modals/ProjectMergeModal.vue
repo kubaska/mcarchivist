@@ -1,9 +1,10 @@
 <template>
     <Modal ref="modal" title="Merge project" size-class="modal-lg" :dialog-scrollable="true" @hide="onHide" @show="onShow">
         <template v-if="step === 1">
-            <input type="text" class="form-control mb-2" v-model="projectSearchName" @input="getProjectsDebounced">
+            <MInput class="mb-2" placeholder="Search..." v-model="projectSearchName" @input="getProjectsDebounced" />
 
-            <LoadingSpinner v-if="loading" />
+            <p v-if="!projectSearchName" class="text-center mt-3 mb-1">Search for a project to merge</p>
+            <LoadingSpinner v-else-if="loading" />
             <template v-else>
                 <div class="d-flex flex-column gap-2" v-if="projects.length">
                     <Project v-for="project in projects" :project="project" route-name="archive.project"
@@ -65,6 +66,7 @@ import {showErrorNotification} from "../../utils/notifications";
 import api from "../../api/api";
 import Project from "../Project.vue";
 import Modal from "../base/Modal.vue";
+import MInput from "../base/MInput.vue";
 import MButton from "../base/MButton.vue";
 import ArchiveRule from "../ArchiveRule.vue";
 import LoadingSpinner from "../base/LoadingSpinner.vue";
