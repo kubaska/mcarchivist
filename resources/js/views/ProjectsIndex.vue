@@ -81,8 +81,8 @@ const projectDropdownOptions = [
 ];
 
 const platform = computed(() => config.getPlatform(filters.value.platform));
-const requestConfig = computed(() => config.getRequestInfo(filters.value.platform, 'search'));
-const sortOptions = computed(() => route.isArchive() ? getLocalSortingOptions() : requestConfig.value?.sort_by?.options);
+const requestConfig = computed(() => config.getRequestInfo(filters.value.platform, 'search') ?? {});
+const sortOptions = computed(() => route.isArchive() ? getLocalSortingOptions() : (requestConfig.value?.sort_by?.options ?? []));
 
 function setupDefaultPlatform() {
     if (route.isBrowse() && ! filters.value.platform) {
@@ -268,6 +268,7 @@ watch(route.getBase, (val) => {
     }
 });
 watch(filters.value, debounce(() => {
+    if (! ['archive', 'browse'].includes(route.name)) return;
     if (! initialLoad.value) pagination.page = 1;
     getData(initialLoad.value ? {} : { page: 1 });
     updateRouteQuery();

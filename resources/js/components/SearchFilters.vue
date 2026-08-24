@@ -136,7 +136,7 @@ function onPlatformChange(e) {
 
 watch(() => props.sortOptions, () => {
     if (! props.sortOptions.some(sortType => sortType.id === model.value.sortBy)) {
-        model.value.sortBy = props.sortOptions?.[0].id;
+        model.value.sortBy = props.sortOptions.length ? props.sortOptions[0]?.id : null;
     }
 });
 </script>
