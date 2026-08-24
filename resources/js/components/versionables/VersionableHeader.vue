@@ -1,6 +1,6 @@
 <template>
     <div class="d-flex flex-column flex-md-row gap-md-3 justify-content-between my-2">
-        <h3>{{ name }}</h3>
+        <h3 class="m-0">{{ name }}</h3>
         <div class="d-flex gap-2 align-items-center">
             <div :class="{ 'btn-group': canRevalidate }" v-if="canUpdateIndex">
                 <MButton @click="onUpdateIndex(false)" :loading="isUpdatingIndex">

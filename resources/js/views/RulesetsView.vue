@@ -1,6 +1,6 @@
 <template>
     <div class="me-2">
-        <div class="d-flex flex-column flex-lg-row justify-content-between gap-2 my-3 align-items-center">
+        <div class="d-flex flex-column flex-lg-row justify-content-between gap-2 my-2 align-items-center">
             <h3 class="m-0">Rulesets</h3>
             <form @submit.prevent="createRuleset">
                 <div class="input-group">
@@ -9,9 +9,9 @@
                 </div>
             </form>
         </div>
-        <hr/>
+        <hr class="mt-0" />
 
-        <MTable :columns="[['Ruleset', ''], ['Name', 'Rule count', 'Date added', ''], ['Name', 'Rule count', 'Date added', '']]" class="mt-5">
+        <MTable :columns="[['Ruleset', ''], ['Name', 'Rule count', 'Date added', ''], ['Name', 'Rule count', 'Date added', '']]">
             <MTableRow v-for="ruleset in config.rulesets" :key="ruleset.id">
                 <MTableWrappingColumn class="gap-2 gap-md-0">
                     <MTableColumn>{{ ruleset.name }}</MTableColumn>
