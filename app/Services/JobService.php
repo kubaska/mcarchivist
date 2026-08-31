@@ -7,7 +7,6 @@ use App\Jobs\Job;
 use App\Logging\QueueLogHandler;
 use App\Models\JobStatus;
 use Illuminate\Bus\Batch;
-use Illuminate\Bus\BatchRepository;
 use Illuminate\Contracts\Bus\Dispatcher;
 use Illuminate\Queue\Events\JobFailed;
 use Illuminate\Queue\Events\JobProcessed;
@@ -50,11 +49,9 @@ class JobService
     public function cancel(JobStatus $status): bool
     {
         return DB::transaction(function () use ($status) {
-            $status = JobStatus::query()
-                ->lockForUpdate()
-                ->where('id', $status->id)
-                ->where('state', $status->state)
-                ->first();
+            $status = JobStatus::query()->lockForUpdate()->find($status->id);
+
+            if (! $status || ! $status->canBeCancelled()) return false;
 
             if ($status->state === JobState::FAILED && $status->uuid) {
                 DB::table('failed_jobs')->where('uuid', $status->uuid)->delete();

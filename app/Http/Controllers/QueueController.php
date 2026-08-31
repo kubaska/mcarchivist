@@ -31,7 +31,7 @@ class QueueController extends Controller
     public function cancel($id, JobService $jobService)
     {
         $cancelled = DB::transaction(function () use ($id, $jobService) {
-            $status = JobStatus::query()->lockForUpdate()->findOrFail($id);
+            $status = JobStatus::query()->findOrFail($id);
 
             if ($status->canBeCancelled()) {
                 return $jobService->cancel($status);
