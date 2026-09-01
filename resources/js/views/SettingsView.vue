@@ -12,26 +12,32 @@
         <div class="d-flex flex-column gap-2">
             <DirectoryInputSetting v-model="settings['general.storage.assets']" title="Asset storage directory"
                                    description="Directory where assets should be stored."
+                                   :disabled="!!tasks['settings_general.storage.assets']"
                                    @openDirectorySelector="onOpenDirectorySelector('general.storage.assets')"
             />
             <DirectoryInputSetting v-model="settings['general.storage.game']" title="Game storage directory"
                                    description="Directory where game files should be stored."
+                                   :disabled="!!tasks['settings_general.storage.game']"
                                    @openDirectorySelector="onOpenDirectorySelector('general.storage.game')"
             />
             <DirectoryInputSetting v-model="settings['general.storage.libraries']" title="Library storage directory"
                                    description="Directory where libraries should be stored."
+                                   :disabled="!!tasks['settings_general.storage.libraries']"
                                    @openDirectorySelector="onOpenDirectorySelector('general.storage.libraries')"
             />
             <DirectoryInputSetting v-model="settings['general.storage.loaders']" title="Loader storage directory"
                                    description="Directory where loaders should be stored."
+                                   :disabled="!!tasks['settings_general.storage.loaders']"
                                    @openDirectorySelector="onOpenDirectorySelector('general.storage.loaders')"
             />
             <DirectoryInputSetting v-model="settings['general.storage.projects']" title="Project storage directory"
                                    description="Directory where projects should be stored."
+                                   :disabled="!!tasks['settings_general.storage.projects']"
                                    @openDirectorySelector="onOpenDirectorySelector('general.storage.projects')"
             />
             <DirectoryInputSetting v-model="settings['general.storage.temp']" title="Temporary storage directory"
                                    description="Directory where temporary files should be stored."
+                                   :disabled="!!tasks['settings_general.storage.temp']"
                                    @openDirectorySelector="onOpenDirectorySelector('general.storage.temp')"
             />
         </div>
@@ -54,6 +60,7 @@ import DirectoryInputSetting from "../components/settings/DirectoryInputSetting.
 import {useConfigStore} from "../stores/config";
 import {useSettings} from "../hooks/settings";
 import {showSuccessNotification} from "../utils/notifications";
+import {useTaskSpy} from "../hooks/queue";
 
 const directorySelectModal = ref();
 const {
@@ -89,4 +96,6 @@ function onSettingsSave() {
             window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
         });
 }
+
+const { tasks } = useTaskSpy(task => task.frontend_id.startsWith('settings_'));
 </script>

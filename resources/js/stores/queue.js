@@ -2,6 +2,7 @@ import {defineStore} from "pinia";
 import api from "../api/api";
 import {groupBy} from "lodash-es";
 import {isJobFailed, isJobFinished} from "../utils/utils";
+import {useConfigStore} from "./config";
 
 export const useQueueStore = defineStore('queue', {
     state: () => ({
@@ -43,6 +44,9 @@ export const useQueueStore = defineStore('queue', {
                 this.failedTasks = groupedTasks['finished'].filter(job => isJobFailed(job.state));
             } else {
                 this.failedTasks = [];
+                if (groupedTasks['finished'].find(job => job.job_type === 3)) {
+                    useConfigStore().fetchSettings();
+                }
             }
 
             if (groupedTasks['running']) {

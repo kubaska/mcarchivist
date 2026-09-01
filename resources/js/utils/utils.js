@@ -86,7 +86,8 @@ export const getLoaderReleaseTypes = (loader) => {
 const JOB_TYPES = {
     0: { id: 0, name: 'Archiving' },
     1: { id: 1, name: 'Revalidating' },
-    2: { id: 2, name: 'Updating Index' }
+    2: { id: 2, name: 'Updating Index' },
+    3: { id: 3, name: 'Exclusive' }
 };
 
 export const getJobTypeName = (type) => JOB_TYPES[type]?.name;

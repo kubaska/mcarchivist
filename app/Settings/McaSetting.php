@@ -47,7 +47,6 @@ class McaSetting
 
     /**
      * Set setting name.
-     * This is not used anywhere at this point.
      *
      * @param string $name
      * @return McaSetting

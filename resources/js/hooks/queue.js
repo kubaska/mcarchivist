@@ -8,6 +8,27 @@ const getQueueStore = () => {
     return queueStore;
 }
 
+export const useTaskSpy = (frontendIds) => {
+    const tasks = ref({});
+
+    const setTasks = (state) => tasks.value = state.tasks
+        .filter(task => typeof frontendIds === 'function' ? frontendIds(task) : task === toValue(frontendIds))
+        .reduce((acc, task) => {
+            acc[task.frontend_id] = task;
+            return acc;
+        }, {});
+
+    onMounted(() => {
+        setTasks(getQueueStore().$state);
+
+        getQueueStore().$subscribe((mutation, state) => {
+            setTasks(state);
+        });
+    });
+
+    return { tasks };
+}
+
 export const useTaskStateSpy = (frontendId, onTaskSuccess, onActivate = null) => {
     const queueTask = ref(null);
     const unsubscribe = ref(null);
@@ -17,7 +38,7 @@ export const useTaskStateSpy = (frontendId, onTaskSuccess, onActivate = null) =>
         if (unsubscribe.value) unsubscribe.value();
         unsubscribe.value = null;
         queueTask.value = null;
-    }
+    };
     const attach = () => {
         if (unsubscribe.value) return;
 
@@ -42,7 +63,7 @@ export const useTaskStateSpy = (frontendId, onTaskSuccess, onActivate = null) =>
             if (onActivate) onActivate();
             attach();
         }
-    }
+    };
 
     onMounted(() => attachIfTaskIsRunning());
     onUnmounted(() => detach());

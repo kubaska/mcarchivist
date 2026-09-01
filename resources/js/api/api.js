@@ -110,6 +110,10 @@ export default {
         return request.post(`/queue/${jobId}/retry`);
     },
 
+    fetchConfig() {
+        return request.get('/config');
+    },
+
     getSettings() {
         return request.get('/settings');
     },

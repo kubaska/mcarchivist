@@ -79,16 +79,20 @@ export const useConfigStore = defineStore('config', {
     },
     actions: {
         async getConfig() {
-            const r = await fetch('/api/config');
-            const json = await r.json();
+            const config = await api.fetchConfig();
 
-            this.platforms = json.platforms;
-            this.requests = json.requests;
-            this.categories = json.categories;
-            this.gameVersions = json.game_versions;
-            this.loaders = json.loaders;
-            this.rulesets = json.rulesets;
-            this.settings = json.settings;
+            this.platforms = config.data.platforms;
+            this.requests = config.data.requests;
+            this.categories = config.data.categories;
+            this.gameVersions = config.data.game_versions;
+            this.loaders = config.data.loaders;
+            this.rulesets = config.data.rulesets;
+            this.settings = config.data.settings;
+        },
+
+        async fetchSettings() {
+            const settings = await api.getSettings();
+            this.settings = settings.data;
         },
 
         saveSettings(settings) {

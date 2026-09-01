@@ -122,4 +122,23 @@ class Utils
     {
         return array_intersect(Mca::FILE_HASHES_ALGOS, ...$algos);
     }
+
+    public static function isInvalidWritableEmptyDirectory(string $path): bool|string
+    {
+        $filesystem = app(McaFilesystem::class);
+
+        if (! $filesystem->exists($path)) {
+            return sprintf('Directory "%s" does not exist', $path);
+        }
+
+        if (! $filesystem->isWritable($path)) {
+            return sprintf('Directory "%s" is not writable', $path);
+        }
+
+        if (! $filesystem->isEmptyDirectory($path)) {
+            return sprintf('Directory "%s" is not empty', $path);
+        }
+
+        return false;
+    }
 }

@@ -190,6 +190,11 @@ class SettingsService
         return $this->settings[$key] ?? $this->store->get($key)?->getDefault();
     }
 
+    public function getMcaSetting(string $key): ?McaSetting
+    {
+        return $this->store->get($key);
+    }
+
     public function getDate(string $key): ?Carbon
     {
         return Carbon::make($this->get($key));

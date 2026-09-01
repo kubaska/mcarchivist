@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Exceptions\RateLimitedApiException;
+use App\Jobs\Middleware\Exclusive;
 use App\Jobs\Middleware\UpdatesBatchStatus;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -37,6 +38,7 @@ abstract class Job implements ShouldQueue
     public function middleware(): array
     {
         return [
+            new Exclusive,
             (new ThrottlesExceptions(1, 60))
                 ->backoff(1)
                 ->when(fn(\Throwable $e) => $e instanceof RateLimitedApiException || $e instanceof ConnectionException),

@@ -2,8 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\ChangeStorageDirectoryJob;
+use App\Resources\JobStatusResource;
+use App\Services\JobService;
 use App\Services\SettingsService;
+use App\Support\McaFilesystem;
+use App\Support\Utils;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Symfony\Component\Filesystem\Path;
 use Symfony\Component\Finder\Finder;
@@ -19,15 +25,51 @@ class SettingsController extends Controller
         return $settings->getAll();
     }
 
-    public function store(SettingsService $settings, Request $request)
+    public function store(JobService $jobService, McaFilesystem $filesystem, SettingsService $settings, Request $request)
     {
-        $settings->save($request->all());
-        return [];
+        list($pathSettings, $otherSettings) = Arr::partition(
+            $request->all(),
+            fn($_, $key) => str_starts_with($key, 'general.storage.') && $settings->has($key)
+        );
+
+        $queuedTasks = [];
+
+        foreach ($pathSettings as $key => $value) {
+            if ($reason = Utils::isInvalidWritableEmptyDirectory($value)) {
+                return response([
+                    'error' => $reason,
+                    'description' => 'Please select a different directory and try again.'
+                ], 422);
+            }
+        }
+
+        foreach ($pathSettings as $key => $value) {
+            $currentPath = $settings->get($key);
+
+            if ((! $filesystem->isDirectory($currentPath)) ||
+                ($filesystem->isReadable($currentPath) && $filesystem->isEmptyDirectory($currentPath)))
+            {
+                // Current path does not exist, or is an empty directory, skip dispatching job and update path immediately
+                $otherSettings[$key] = $value;
+            } else {
+                $queuedTasks[] = $jobService->dispatch(
+                    new ChangeStorageDirectoryJob($key, $value),
+                    "Changing storage directory\n".ucfirst($settings->getMcaSetting($key)->getName()),
+                    'settings_'.$key
+                );
+            }
+        }
+
+        $settings->save($otherSettings);
+
+        return empty($queuedTasks)
+            ? response()->json(null, 204)
+            : JobStatusResource::collection($queuedTasks);
     }
 
     public function directorySelector(Request $request)
     {
-        $currentDir = $request->get('dir', storage_path());
+        $currentDir = $request->input('dir', storage_path());
 
         if (Path::isRelative($currentDir)) {
             return response()->json(['error' => 'Path is relative', 'description' => 'Relative paths are disallowed'], 422);

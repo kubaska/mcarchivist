@@ -6,8 +6,8 @@
         </div>
         <div class="col-12 col-md-8">
             <div class="input-group">
-                <input type="text" class="form-control" v-model="model">
-                <button class="btn btn-outline-dark" @click="emit('openDirectorySelector')">
+                <input type="text" class="form-control" v-model="model" :disabled="disabled">
+                <button class="btn btn-outline-dark" @click="emit('openDirectorySelector')" :disabled="disabled">
                     <fa-icon icon="folder-open" />
                 </button>
             </div>
@@ -20,6 +20,7 @@ const model = defineModel();
 const props = defineProps({
     title: { type: String, required: true },
     description: { type: String, required: false },
+    disabled: { type: Boolean, required: false, default: false }
 });
 const emit = defineEmits(['openDirectorySelector']);
 </script>

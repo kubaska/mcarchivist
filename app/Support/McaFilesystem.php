@@ -8,12 +8,81 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Symfony\Component\Filesystem\Filesystem as SymfonyFilesystem;
 use Symfony\Component\Filesystem\Path;
+use Symfony\Component\Process\Process;
 
 class McaFilesystem extends Filesystem
 {
-    public function __construct(protected SettingsService $settings)
+    public function __construct(
+        protected SettingsService $settings,
+        protected SymfonyFilesystem $symfonyFilesystem
+    )
     {
+    }
+
+    /**
+     * Move a file or directory to a new location.
+     *
+     * @param string $path
+     * @param string $target
+     * @return bool
+     */
+    public function move($path, $target): bool
+    {
+        // Let OS handle the move - PHP built-in fails when source and target destination live on different partitions.
+        if (! defined('PHP_WINDOWS_VERSION_BUILD')) {
+            $p = new Process(['mv', $path, $target], timeout: null);
+            $p->run();
+
+            if ($p->getExitCode() === 0) return true;
+        }
+
+        // Try built-in and if it fails, copy the source to destination and remove source.
+        $this->symfonyFilesystem->rename($path, $target);
+        return true;
+    }
+
+    /**
+     * Recursively move a file or directory to a new location.
+     *
+     * @param string $path
+     * @param string $target
+     */
+    public function moveRecursive(string $path, string $target)
+    {
+        $path = rtrim($path, '/\\');
+        $target = rtrim($target, '/\\');
+
+        $iterator = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($path, \FilesystemIterator::SKIP_DOTS),
+            \RecursiveIteratorIterator::CHILD_FIRST
+        );
+        $movedEntries = [];
+
+        /** @var \SplFileInfo $entry */
+        foreach ($iterator as $entry) {
+            if ($entry->getPathname() === $target || $entry->getRealPath() === $target || isset($movedEntries[$entry->getRealPath()])) {
+                continue;
+            }
+
+            $entryTargetDir = $target.substr($entry->getPath(), strlen($path));
+            $entryTargetPath = $target.substr($entry->getPathname(), strlen($path));
+            $movedEntries[$entryTargetPath] = true;
+
+            if (is_link($entry)) {
+                // ...
+            } elseif ($entry->getType() === 'dir') {
+                $this->ensureDirectoryExists($entryTargetPath);
+
+                if ($this->isEmptyDirectory($entry->getPathname())) {
+                    $this->deleteDirectory($entry->getPathname());
+                }
+            } elseif ($entry->getType() === 'file') {
+                $this->ensureDirectoryExists($entryTargetDir);
+                $this->move($entry, $entryTargetPath);
+            }
+        }
     }
 
     public function getStoragePath(StorageArea $storageArea, array|string|null $path = null, bool $makeDir = false): string
@@ -33,9 +102,13 @@ class McaFilesystem extends Filesystem
 
     public static function makeFileName(string $name, ?string $extra = null, int $limit = 100): string
     {
-        // initial name, without extension
-        $newName = Str::beforeLast($name, '.');
-        $extension = Str::afterLast($name, '.');
+        $newName = Path::getFilenameWithoutExtension($name);
+        $extension = Path::getExtension($name, true);
+
+        if ($extension === '') {
+            throw new \RuntimeException('Given file name is invalid: '.$name);
+        }
+
         $limit = max(1, ($limit - (strlen($extension) + 1) - ($extra ? (strlen($extra) + 1) : 0)));
         // replace all non-basic characters
         $newName = preg_replace('/[^\w]/', '_', $newName);
