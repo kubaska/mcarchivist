@@ -48,9 +48,10 @@ class SettingsServiceFake extends SettingsService
         return $this->settings;
     }
 
-    public function save(array $settings)
+    public function save(array $settings): bool
     {
         $this->settings = array_merge($this->settings, $settings);
+        return true;
     }
 
     public function cleanupStorageDirectories()

@@ -24,6 +24,7 @@ class LoaderResource extends JsonResource
             'name' => $this->name,
             'slug' => $this->slug,
             'promoted' => $apiManager->hasLoader($this->name),
+            'version_count' => $this->whenCounted('versions'),
             'remotes' => $this->whenLoaded(
                 'remotes',
                 fn(Collection $remotes) => $remotes->reduce(function (Collection $carry, LoaderRemote $lr) {
