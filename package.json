@@ -2,7 +2,8 @@
     "private": true,
     "scripts": {
         "dev": "vite",
-        "build": "vite build"
+        "build": "vite build",
+        "start": "concurrently --names php,npm \"php -S 0.0.0.0:8000 -t public\" \"npm run dev\""
     },
     "engines": {
         "npm": "^11.10.0"
@@ -25,6 +26,7 @@
     },
     "devDependencies": {
         "@vitejs/plugin-vue": "^6.0.4",
+        "concurrently": "^10.0.5",
         "laravel-vite-plugin": "^2.1.0",
         "sass": "1.78.0",
         "vite": "^7.3.1"
