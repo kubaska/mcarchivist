@@ -8,7 +8,7 @@
                     </slot>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body" :class="bodyClass">
                     <slot></slot>
                 </div>
                 <div class="modal-footer" v-if="showFooter">
@@ -29,6 +29,7 @@ const props = defineProps({
     title: { type: String, required: false },
     showFooter: { type: Boolean, required: false, default: true },
     sizeClass: { type: String, required: false },
+    bodyClass: { type: String, required: false, default: '' },
     dialogCentered: { type: Boolean, required: false, default: false },
     dialogScrollable: { type: Boolean, required: false, default: false },
 });

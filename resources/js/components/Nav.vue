@@ -9,7 +9,7 @@
                     <router-link :to="{ name: 'home' }" class="navbar-brand">mcarchivist</router-link>
                 </div>
                 <div class="d-flex gap-2" style="order: 9;">
-                    <QueueNotification />
+                    <QueueNotifications />
                     <router-link :to="{ name: 'settings' }">
                         <button class="btn">
                             <fa-icon icon="cog" />
@@ -55,7 +55,7 @@
     </nav>
 </template>
 <script setup>
-import QueueNotification from "./QueueNotification.vue";
+import QueueNotifications from "./QueueNotifications.vue";
 import {useRoute} from "vue-router";
 
 const route = useRoute();

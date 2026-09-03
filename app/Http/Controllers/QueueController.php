@@ -6,7 +6,7 @@ use App\Enums\JobState;
 use App\Models\JobStatus;
 use App\Resources\JobStatusResource;
 use App\Services\JobService;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
@@ -15,32 +15,46 @@ class QueueController extends Controller
 {
     public function index(Request $request)
     {
-        $query = JobStatus::query()
-            ->leftJoin('failed_jobs', 'failed_jobs.uuid', '=', 'job_statuses.uuid')
-            ->select(['job_statuses.*', 'failed_jobs.exception']);
-
         if ($request->has('ids')) {
-            $jobs = $query->findMany((array)$request->get('ids'));
+            $jobs = JobStatus::query()->withException()->findMany($request->array('ids'));
         } else {
-            $jobs = $query->whereIn('state', [JobState::CREATED, JobState::RUNNING, JobState::FAILED])->get();
+            $jobs = collect([
+                JobStatus::query()->whereIn('state', [JobState::CREATED, JobState::RUNNING])->get(),
+                JobStatus::query()->withException()->where('state', JobState::FAILED)->limit(20)->get()
+            ])->flatten(1)->sortBy('created_at');
         }
 
         return JobStatusResource::collection($jobs);
     }
 
+    public function previous(Request $request)
+    {
+        $tasks = JobStatus::query()
+            ->withException()
+            ->whereIn('state', [JobState::CANCELLED, JobState::FAILED, JobState::FINISHED])
+            ->when($request->input('exclude'), fn(Builder $q) => $q->whereNotIn('job_statuses.id', $request->array('exclude')))
+            ->when($request->input('cursor'), fn(Builder $q) => $q->where('job_statuses.id', '<', (int)$request->input('cursor')))
+            ->limit(20)
+            ->latest('job_statuses.id')
+            ->get();
+
+        return JobStatusResource::collection($tasks);
+    }
+
     public function cancel($id, JobService $jobService)
     {
-        $cancelled = DB::transaction(function () use ($id, $jobService) {
+        /** @var JobStatus $status */
+        $status = DB::transaction(function () use ($id, $jobService) {
             $status = JobStatus::query()->findOrFail($id);
 
-            if ($status->canBeCancelled()) {
-                return $jobService->cancel($status);
+            if ($status->canBeCancelled() && $jobService->cancel($status)) {
+                return $status;
             }
 
             return false;
         });
 
-        if ($cancelled) return response(null, 204);
+        if ($status) return new JobStatusResource($status->refresh());
 
         return response()->json([
             'error' => 'Unable to cancel job',

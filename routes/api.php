@@ -63,6 +63,7 @@ $router->group(['prefix' => 'libraries'], function () use ($router) {
 
 $router->group(['prefix' => 'queue'], function () use ($router) {
     $router->get('/', 'QueueController@index');
+    $router->get('/previous', 'QueueController@previous');
     $router->post('/{id}/cancel', 'QueueController@cancel');
     $router->post('/{id}/retry', 'QueueController@retry');
 });

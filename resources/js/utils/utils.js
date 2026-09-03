@@ -89,11 +89,25 @@ const JOB_TYPES = {
     2: { id: 2, name: 'Updating Index' },
     3: { id: 3, name: 'Exclusive' }
 };
+export const JOB_STATE = {
+    QUEUED: 0,
+    RUNNING: 1,
+    FINISHED: 2,
+    FAILED: 3,
+    CANCELLED: 4
+};
+const JOB_STATE_DETAILS = {
+    0: { id: 0, name: 'Queued' },
+    1: { id: 1, name: 'Running' },
+    2: { id: 2, name: 'Finished' },
+    3: { id: 3, name: 'Failed' },
+    4: { id: 4, name: 'Cancelled' },
+};
 
 export const getJobTypeName = (type) => JOB_TYPES[type]?.name;
+export const getJobState = (jobState) => JOB_STATE_DETAILS[jobState];
 
-export const isJobFinished = (jobState) => [2,3,4].includes(jobState);
-export const isJobFailed = (jobState) => jobState === 3;
+export const isJobFinished = (jobState) => [JOB_STATE.FINISHED, JOB_STATE.FAILED, JOB_STATE.CANCELLED].includes(jobState);
 
 export const getProjectTypes = () => [
     { id: 0, name: 'Mod', name_plural: 'Mods' },
@@ -147,3 +161,7 @@ export const getDefaultSearchRequestInfo = () => {
         page: {}
     };
 }
+
+export const queueNotificationTimeFormatterOptions = { relativeTimeFormatOptions: { style: 'narrow', numeric: 'auto' }, insertSpace: false };
+export const queueNotificationJobStyle = { [JOB_STATE.FINISHED]: 'bg-success', [JOB_STATE.FAILED]: 'bg-danger', [JOB_STATE.CANCELLED]: 'bg-secondary' };
+export const queueNotificationJobIcon = { [JOB_STATE.QUEUED]: 'hourglass-half', [JOB_STATE.FINISHED]: 'check', [JOB_STATE.FAILED]: 'xmark', [JOB_STATE.CANCELLED]: 'ban' };

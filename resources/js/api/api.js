@@ -103,6 +103,9 @@ export default {
     getQueue(ids = []) {
         return request.get('/queue', { params: { ids } });
     },
+    getPreviousTasks(options) {
+        return request.get('/queue/previous', { params: options });
+    },
     cancelQueueJob(jobId) {
         return request.post(`/queue/${jobId}/cancel`);
     },

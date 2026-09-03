@@ -1,120 +1,115 @@
 <template>
-    <div id="head-button" class="position-relative d-inline-block">
-        <FailedTaskDetailsModal ref="failedTaskModal" />
-
-        <button type="button" class="btn position-relative" @click="shown = !shown">
-            <fa-icon icon="download" />
-            <span class="notifications--count position-absolute translate-middle badge rounded-pill bg-danger" v-if="queueStore.tasks.length">
-                {{ queueStore.tasks.length > 9 ? '9+' : queueStore.tasks.length }}<span class="visually-hidden">active jobs</span>
-            </span>
-        </button>
-
-        <div @click="shown = false" class="position-fixed inset-0 h-100 w-100 z-1" :class="{ 'd-none': !shown }"></div>
-        <div class="position-absolute notifications bg-body z-4" :class="{ 'notifications--show': shown }">
-            <p class="border-bottom text-center fs-5 m-0">Queue</p>
-            <div class="d-flex p-2 align-items-center align-items-center" v-if="queueStore.allTasks.length === 0">
-                <p class="m-0">Queue is empty!</p>
+    <div class="queue-notification fs-7 border-bottom">
+        <div class="queue-notification--badge">
+            <div class="notification--badge h-100 d-flex align-items-center justify-content-center" :class="queueNotificationJobStyle[task.state]" :title="getJobState(task.state).name">
+                <div class="spinner-border spinner-border-sm" v-if="task.state === JOB_STATE.RUNNING"></div>
+                <fa-icon :icon="queueNotificationJobIcon[task.state]" :class="{ 'text-white': ! [JOB_STATE.QUEUED, JOB_STATE.RUNNING].includes(task.state) }" v-else />
             </div>
-            <div class="notifications-list" v-else>
-                <div class="d-flex justify-content-between p-1 border-bottom fs-7 justify-content-center"
-                     :class="jobStyle[task.state]" v-for="task in queueStore.allTasks" :key="task.id"
-                >
-                    <div class="d-flex gap-2 align-items-center">
-                        <div class="spinner-border spinner-border-sm flex-shrink-0" role="status" v-if="task.state === 1"></div>
-                        <fa-icon :icon="jobIcon[task.state]" v-if="jobIcon[task.state]" />
-                        <div class="d-flex flex-column">
-                            <span class="fw-semibold text-truncate" :title="task.name.split('\n', 1)[0]">{{ task.name.split('\n', 1)[0] }}</span>
-                            <span class="fs-8">{{ task.name.split('\n', 2)?.[1] ?? 'unknown' }}</span>
-                        </div>
-                    </div>
-                    <div class="d-flex">
-                        <button class="btn btn-icon align-self-center" title="Show details" @click="showDetails(task.id)"
-                                v-if="task.state === 3">
-                            <fa-icon icon="circle-info" />
-                        </button>
-                        <button class="btn btn-icon align-self-center" title="Retry" @click="retryJob(task.id)"
-                                v-if="task.state === 3">
-                            <fa-icon icon="arrow-rotate-right" />
-                        </button>
-                        <button class="btn btn-icon align-self-center" title="Cancel" @click="tryCancelJob(task.id)"
-                                v-if="task.cancellable && (task.state === 0 || task.state === 3)">
-                            <fa-icon icon="xmark" />
-                        </button>
-                    </div>
-                </div>
+        </div>
+        <div class="queue-notification--upper mx-1">
+            <span class="queue-notification--name fw-semibold text-truncate">{{ task.name.split('\n', 1)[0] }}</span>
+            <span class="queue-notification--time text-muted" :title="dateFormatter.format(new Date(task.updated_at))">
+                {{ formatTimeAgoIntl(new Date(task.updated_at), queueNotificationTimeFormatterOptions) }}
+            </span>
+        </div>
+        <div class="queue-notification--down mx-1">
+            <div class="queue-notification--desc fs-8 text-truncate pb-1">{{ task.name.split('\n', 2)?.[1] ?? 'unknown' }}</div>
+            <div class="queue-notification--controls d-flex">
+                <button class="btn btn-icon btn-icon-sm align-self-center" title="Show details" @click="emit('details', task.id)"
+                        v-if="!!task.details || !!task.exception">
+                    <fa-icon icon="circle-info" />
+                </button>
+                <button class="btn btn-icon btn-icon-sm align-self-center" title="Retry" @click="retryJob(task.id)"
+                        v-if="task.state === JOB_STATE.FAILED">
+                    <fa-icon icon="arrow-rotate-right" />
+                </button>
+                <button class="btn btn-icon btn-icon-sm align-self-center" title="Cancel" @click="tryCancelJob(task.id)"
+                        v-if="task.cancellable && (task.state === JOB_STATE.QUEUED || task.state === JOB_STATE.FAILED)">
+                    <fa-icon icon="ban" />
+                </button>
             </div>
         </div>
     </div>
 </template>
 
 <script setup>
-import {ref} from "vue";
-import FailedTaskDetailsModal from "./modals/FailedTaskDetailsModal.vue";
+import {formatTimeAgoIntl} from "@vueuse/core";
+import {
+    getJobState, JOB_STATE,
+    queueNotificationJobIcon, queueNotificationJobStyle, queueNotificationTimeFormatterOptions
+} from "../utils/utils";
+import {useDateFormatter} from "../hooks/date";
+import {showErrorNotificationFromAxiosError} from "../utils/notifications";
 import {useQueueStore} from "../stores/queue";
-import {showErrorNotification} from "../utils/notifications";
+import {ref} from "vue";
 
+const props = defineProps({
+    task: { type: Object, required: true }
+});
+
+const emit = defineEmits(['details']);
+const dateFormatter = useDateFormatter();
 const queueStore = useQueueStore();
-const shown = ref(false);
-const failedTaskModal = ref();
+const jobCancelling = ref(false);
+const jobRetrying = ref(false);
 
-const jobStyle = { 2: 'bg-success-subtle', 3: 'bg-danger-subtle' };
-const jobIcon = { 2: 'check', 3: 'xmark' };
-
-function showDetails(jobId) {
-    const task = queueStore.getFailedTask(jobId);
-    if (! task) return;
-
-    const details = (task.details ? (task.details + '\n') : '') + (task.exception ?? '')
-    failedTaskModal.value.setDetails(details ?? 'No details available for this task');
-    failedTaskModal.value.show();
-}
 function tryCancelJob(jobId) {
-    const result = queueStore.cancelJob(jobId);
-    if (! result) {
-        showErrorNotification('Unable to cancel task at this time');
-    }
+    if (jobCancelling.value) return;
+    jobCancelling.value = true;
+
+    queueStore.cancelJob(jobId)
+        .catch(err => {
+            showErrorNotificationFromAxiosError(err);
+        })
+        .finally(() => {
+            jobCancelling.value = false;
+        });
 }
 function retryJob(jobId) {
-    queueStore.retryJob(jobId);
+    if (jobRetrying.value) return;
+    jobRetrying.value = true;
+
+    queueStore.retryJob(jobId)
+        .catch(err => {
+            showErrorNotificationFromAxiosError(err);
+        })
+        .finally(() => {
+            jobRetrying.value = false;
+        });
 }
 </script>
 
 <style lang="sass">
-.notifications
-    min-width: 350px
-    transition: 0.25s ease-out 0s opacity
-    border: 1px solid #bdc3c7
-    right: 0
-    opacity: 0
-    top: -999px
+.queue-notification
+    display: grid
+    grid-template-columns: min-content auto
+    grid-template-rows: auto auto
+    grid-auto-flow: row
+    grid-template-areas: "badge upper" "badge down"
 
-@media (prefers-reduced-motion: reduce)
-    .notifications
-        transition: none
+    &--upper
+        grid-area: upper
+        display: grid
+        grid-template-columns: 1fr auto
+        grid-template-rows: auto
+        grid-template-areas: "name time"
+    &--down
+        grid-area: down
+        display: grid
+        grid-template-columns: 1fr auto
+        grid-template-rows: auto
+        grid-template-areas: "desc controls"
 
-.notifications:after
-    border: 10px solid transparent
-    border-bottom-color: #bdc3c7
-    content: ''
-    display: block
-    height: 0
-    right: 10px
-    position: absolute
-    top: -20px
-    width: 0
-
-.notifications-list
-    max-height: 350px
-    overflow-y: auto
-
-    > *:last-child
-        border: none !important
-
-.notifications--show
-    top: 60px
-    opacity: 1
-
-.notifications--count
-    top: 10% !important
-    left: 90% !important
+    &--badge
+        grid-area: badge
+        width: 23px
+        border-right: 1px solid #bdc3c7
+    &--name
+        grid-area: name
+    &--time
+        grid-area: time
+    &--desc
+        grid-area: desc
+    &--controls
+        grid-area: controls
 </style>

@@ -23,8 +23,9 @@ class JobStatusResource extends JsonResource
             'name' => $this->name,
             'cancellable' => $this->canBeCancelled(),
             'details' => $this->details,
-            'exception' => $this->exception
-//            'updated_at' => $this->updated_at
+            'exception' => $this->exception,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at
         ];
     }
 }
