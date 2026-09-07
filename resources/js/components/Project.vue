@@ -1,6 +1,7 @@
 <template>
     <div class="border d-flex gap-2 align-items-center" :class="{ 'cursor-pointer': selectable, 'border-black': selected }" @click="onSelect">
-        <img :src="project.logo" alt="Project logo" class="mx-2" style="width: 4rem; height: 4rem;" loading="lazy" decoding="async" :key="project.logo">
+        <img :src="project.logo" class="project--image mx-2" loading="lazy" decoding="async" v-if="project.logo && !imageLogoErrored" @error="onImageError" :key="project.logo">
+        <fa-icon :icon="['mdi', 'image-off']" class="project--image mx-2" title="No Image" v-else />
         <div class="d-flex flex-column flex-grow-1 justify-content-evenly py-1">
             <div>
                 <div class="d-flex align-items-center gap-2">
@@ -42,7 +43,7 @@
 </template>
 
 <script setup>
-import {computed} from "vue";
+import {computed, ref} from "vue";
 import {useRouter} from "vue-router";
 import {useStore} from "../stores/store";
 import {useMcaRoute} from "../hooks/route";
@@ -72,6 +73,7 @@ const config = useConfigStore();
 const router = useRouter();
 const store = useStore();
 const numberFormatter = useNumberFormatter();
+const imageLogoErrored = ref(false);
 const platform = computed(() => config.getPlatform(props.project.platform));
 const allDropdownOptions = computed(() => [
     { name: 'Open project page', link: props.project.project_url, linkNewTab: true },
@@ -79,6 +81,10 @@ const allDropdownOptions = computed(() => [
 ]);
 
 const emit = defineEmits(['archive', 'select', 'navigate']);
+
+function onImageError() {
+    imageLogoErrored.value = true;
+}
 
 function onSelect(e) {
     // Don't select when clicking buttons
@@ -92,3 +98,9 @@ function onNavigate() {
     store.setProject(props.project);
 }
 </script>
+
+<style lang="sass">
+.project--image
+    width: 4rem
+    height: 4rem
+</style>

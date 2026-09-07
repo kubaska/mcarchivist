@@ -11,6 +11,7 @@ import {
     faCircleCheck, faCode, faCog, faDisplay, faDownload, faDownLong, faEllipsisVertical, faFile, faFilter, faFolder,
     faFolderOpen, faHourglassHalf, faList, faObjectGroup, faPencil, faServer, faStar, faTriangleExclamation, faUpLong, faXmark
 } from '@fortawesome/free-solid-svg-icons';
+import { imageOff } from "./mdicons";
 
 config.styleDefault = 'fas';
 library.add(
@@ -19,6 +20,7 @@ library.add(
     faCircleCheck, faCode, faCog, faDisplay, faDownload, faDownLong, faEllipsisVertical, faFile, faFilter, faFolder,
     faFolderOpen, faHourglassHalf, faList, faObjectGroup, faPencil, faServer, faStar, faTriangleExclamation, faUpLong, faXmark
 );
+library.add(imageOff);
 
 import 'floating-vue/dist/style.css';
 
