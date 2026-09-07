@@ -1,5 +1,5 @@
 <template>
-    <div class="m-table--row py-1 py-md-0">
+    <div class="m-table--row py-1">
         <slot></slot>
     </div>
 </template>

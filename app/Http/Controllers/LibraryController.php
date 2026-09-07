@@ -3,10 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\API\DTO\FileDetailsDTO;
+use App\Models\GameVersion;
 use App\Models\Library;
+use App\Models\Version;
 use App\Resources\LibraryResource;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 
 class LibraryController extends Controller
 {
@@ -36,5 +39,27 @@ class LibraryController extends Controller
         $library = Library::findOrFail($id);
 
         return FileDetailsDTO::fromLibrary($library);
+    }
+
+    public function dependants($id)
+    {
+        $library = Library::query()->with('versions', function ($q) {
+            $q->orderBy('published_at')->with('versionable');
+        })->findOrFail($id);
+
+        return $library->versions->groupBy(fn(Version $v) => $this->getVersionableIdentifier($v))
+            ->mapWithKeys(function (Collection $v, string $k) {
+                $result = $k === GameVersion::class ? ['name' => 'Minecraft'] : ['name' => $v->first()->versionable->name];
+                $result['versions'] = $v;
+                return [$k => $result];
+            })
+            ->values();
+    }
+
+    private function getVersionableIdentifier(Version $version)
+    {
+        return $version->versionable_type === GameVersion::class
+            ? $version->versionable_type
+            : $version->versionable_type.$version->versionable_id;
     }
 }

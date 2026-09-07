@@ -1,10 +1,8 @@
 <template>
-    <div class="m-table" :style="`--m-table-columns: ${columns[0].length - 1}; --m-table-columns-md: ${columns[1].length - 1}; --m-table-columns-xl: ${columns[2].length - 1};`">
-        <div class="m-table--row py-2 d-grid fw-semibold">
+    <div class="m-table" :style="sizingCss">
+        <div class="m-table--row py-2 fw-semibold">
             <slot name="header">
-                <span v-for="column in columns[0]" class="d-block d-md-none">{{ column }}</span>
-                <span v-for="column in columns[1]" class="d-none d-md-block d-lg-block d-xl-none">{{ column }}</span>
-                <span v-for="column in columns[2]" class="d-none d-xl-block">{{ column }}</span>
+                <span v-for="column in columns" class="d-block">{{ column }}</span>
             </slot>
         </div>
 
@@ -12,8 +10,33 @@
     </div>
 </template>
 <script setup>
+import {computed} from "vue";
+import {breakpointsBootstrapV5, useBreakpoints} from "@vueuse/core";
+import {repeat} from "lodash-es";
+
 const props = defineProps({
-    columns: { type: Array, required: false, default: [] }
+    columns: { type: Array, required: false, default: [] },
+    sizing: { type: Array, required: false, default: [] }
+});
+
+const breakpoints = useBreakpoints(breakpointsBootstrapV5);
+
+const columns = computed(() => {
+    if (breakpoints.smaller('md').value) return props.columns[0] ?? props.columns;
+    else if (breakpoints.smaller('xl').value) return props.columns[1] ?? props.columns;
+    else return props.columns[2] ?? props.columns;
+});
+
+const sizingCss = computed(() => {
+    // Get sizing for current breakpoint, if set
+    const sizingForCurrentBreakpoint = props.sizing[breakpoints.smaller('md').value ? 0 : (breakpoints.smaller('xl').value ? 1 : 2)];
+
+    const result = Array.isArray(sizingForCurrentBreakpoint)
+        ? sizingForCurrentBreakpoint
+        : (props.sizing.length ? props.sizing.join(' ') : repeat('1fr ', columns.value.length - 1) + 'min-content');
+    // Set min-content on last column by default
+
+    return `grid-template-columns: ${result};`;
 });
 </script>
 
@@ -24,18 +47,11 @@ const props = defineProps({
 
     @supports (grid-template-columns: subgrid)
         display: grid
-        grid-template-columns: repeat(var(--m-table-columns, 2), auto) min-content
-
-        @media (min-width: 768px)
-            grid-template-columns: repeat(var(--m-table-columns-md, 3), auto) min-content
-
-        @media (min-width: 1200px)
-            grid-template-columns: repeat(var(--m-table-columns-xl, 4), auto) min-content
 
 .m-table--row
     display: grid
     gap: 1rem
-    grid-template-columns: repeat(var(--m-table-columns, 2), 1fr) min-content
+    grid-template-columns: inherit
     border-bottom: var(--bs-gray-300) 1px solid
 
     &:last-child
@@ -44,10 +60,4 @@ const props = defineProps({
     @supports (grid-template-columns: subgrid)
         grid-column: 1 / -1
         grid-template-columns: subgrid !important
-
-    @media (min-width: 768px)
-        grid-template-columns: repeat(var(--m-table-columns-md, 3), 1fr) min-content
-
-    @media (min-width: 1200px)
-        grid-template-columns: repeat(var(--m-table-columns-xl, 4), 1fr) min-content
 </style>

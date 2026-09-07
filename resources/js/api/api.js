@@ -139,5 +139,8 @@ export default {
 
     getLibrary(id) {
         return request.get('/libraries/'+id);
+    },
+    getLibraryDependants(id) {
+        return request.get(`/libraries/${id}/dependants`);
     }
 }

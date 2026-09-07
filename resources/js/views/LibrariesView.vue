@@ -61,6 +61,7 @@
         </template>
 
         <FileDetailsModal ref="fileDetailsModal" />
+        <VersionDependenciesModal ref="versionDependenciesModal" />
     </div>
 </template>
 
@@ -80,8 +81,10 @@ import MTableColumn from "../components/base/Table/MTableColumn.vue";
 import FileDetailsModal from "../components/modals/FileDetailsModal.vue";
 import SelectableDropdown from "../components/common/SelectableDropdown.vue";
 import MTableWrappingColumn from "../components/base/Table/MTableWrappingColumn.vue";
+import VersionDependenciesModal from "../components/modals/VersionDependenciesModal.vue";
 
 const fileDetailsModal = ref(null);
+const versionDependenciesModal = ref(null);
 
 const sortOptions = [
     { id: 'name', name: 'Name' },
@@ -90,6 +93,7 @@ const sortOptions = [
 ];
 const dropdownOptions = [
     { name: 'Details', onClick: onDetailsOptionChoose },
+    { name: 'Dependants', onClick: onDependantListOptionChoose }
 ];
 
 const sortOption = ref(sortOptions[0]);
@@ -119,6 +123,19 @@ function onDetailsOptionChoose(library) {
         .catch(err => {
             fileDetailsModal.value.hide();
             showErrorNotification('Failed to fetch library details');
+            console.log(err);
+        });
+}
+
+function onDependantListOptionChoose(library) {
+    versionDependenciesModal.value.show();
+    api.getLibraryDependants(library.id)
+        .then(res => {
+            versionDependenciesModal.value.setData('Dependants', res.data);
+        })
+        .catch(err => {
+            versionDependenciesModal.value.hide();
+            showErrorNotification('Failed to fetch library dependants');
             console.log(err);
         });
 }

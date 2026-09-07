@@ -59,6 +59,7 @@ $router->group(['prefix' => 'rulesets'], function () use ($router) {
 $router->group(['prefix' => 'libraries'], function () use ($router) {
     $router->get('/', 'LibraryController@index');
     $router->get('/{id}', 'LibraryController@show');
+    $router->get('/{id}/dependants', 'LibraryController@dependants');
 });
 
 $router->group(['prefix' => 'queue'], function () use ($router) {
