@@ -22,7 +22,9 @@
                 <span class="badge" :style="`background-color:${platform.theme_color};`" v-if="showPlatformBadge">{{ platform.name }}</span>
                 <span class="badge text-bg-secondary" v-for="type in getProjectTypesById(project.project_types)">{{ type.name }}</span>
                 <span class="badge text-bg-primary" v-if="project.downloads !== null">{{ numberFormatter.format(project.downloads) }} downloads</span>
-                <span class="badge text-bg-success" v-if="project.local_version_count">{{ project.local_version_count }} version(s) archived</span>
+                <span class="badge text-bg-success" v-if="project.local_version_count">
+                    {{ project.local_version_count }} {{ project.local_version_count === 1 ? 'version' : 'versions' }} archived
+                </span>
                 <span class="badge text-bg-info" v-for="category in project.categories" v-if="showCategories">{{ category.name }}</span>
             </div>
         </div>
@@ -45,12 +47,12 @@
 <script setup>
 import {computed, ref} from "vue";
 import {useRouter} from "vue-router";
-import {useStore} from "../stores/store";
 import {useMcaRoute} from "../hooks/route";
 import {useConfigStore} from "../stores/config";
 import {useNumberFormatter} from "../hooks/formatter";
 import {getProjectTypesById, isDescendantOf} from "../utils/utils";
 import MDropdown from "./base/MDropdown.vue";
+import {useProjectsStore} from "../stores/projects";
 
 const route = useMcaRoute();
 const props = defineProps({
@@ -70,8 +72,8 @@ const props = defineProps({
     selected: { type: Boolean, default: false }
 });
 const config = useConfigStore();
+const projectsStore = useProjectsStore();
 const router = useRouter();
-const store = useStore();
 const numberFormatter = useNumberFormatter();
 const imageLogoErrored = ref(false);
 const platform = computed(() => config.getPlatform(props.project.platform));
@@ -95,7 +97,7 @@ function onSelect(e) {
 function onNavigate() {
     if (! props.withNavigation) return;
     emit('navigate', props.project);
-    store.setProject(props.project);
+    projectsStore.setProject(props.project);
 }
 </script>
 

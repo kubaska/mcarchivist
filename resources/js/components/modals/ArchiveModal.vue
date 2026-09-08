@@ -13,7 +13,7 @@
         </div>
         <div v-else>
             <div class="alert alert-info">
-                <p class="text-center m-0">Click 'Add rule' button, to add and configure archive rules.</p>
+                <p class="text-center m-0">Click <span class="badge text-bg-light mx-1">Add rule</span> button, to add and configure archive rules.</p>
                 <p class="text-center m-0">Alternatively, select a previously saved ruleset below.</p>
             </div>
 
@@ -105,6 +105,7 @@ function fetchProjects(project) {
         })
         .catch(err => {
             if (err.response.status === 404) {
+                // Project is not archived yet
                 const fakeProject = {
                     remote_id: project.remote_id, name: project.name,
                     platform: project.platform, archive_rules: []
@@ -143,14 +144,14 @@ function finish(err) {
 }
 
 function onArchiveBtnClick() {
+    if (! selectedProject.value) {
+        return showErrorNotification('Invalid project selected');
+    }
+
     isArchiving.value = true;
     const data = selectedRuleset.value
         ? { ruleset_id: selectedRuleset.value }
         : { rules: ar.getRulesForApi() };
-
-    if (! selectedProject.value) {
-        return showErrorNotification('Invalid project selected');
-    }
 
     api.archiveProject(selectedProject.value.remote_id, {
         for_master_project: selectedProject.value.is_master,

@@ -1,5 +1,5 @@
 <template>
-    <ul class="list-style-reset m-0">
+    <ul class="list-style-reset m-0" :class="{ 'checkbox-list--capped-size': cappedSize }">
         <template v-for="option in _sortBy(options, sortBy)" :key="option[trackBy]">
             <li class="d-flex justify-content-between">
                 <label>
@@ -11,9 +11,9 @@
                 </span>
             </li>
             <CheckboxList v-if="displayChildren && option.children?.length && expandedCategories.indexOf(option[trackBy]) > -1" class="ps-4"
-                          v-model="model" :options="_sortBy(option.children, sortBy)"
+                          v-model="model" :options="option.children"
                           :track-by="trackBy" :display-by="displayBy" :model-by="modelBy"
-                          :display-children="false" :max="max"
+                          :sort-by="sortBy" :display-children="false" :max="max"
             />
         </template>
     </ul>
@@ -28,9 +28,10 @@ const props = defineProps({
     trackBy: { type: String, required: false, default: 'id' },
     displayBy: { type: String, required: false, default: 'name' },
     modelBy: { type: String, required: false },
-    sortBy: { type: [String, Function], required: false },
+    sortBy: { type: [String, Function, Array], required: false },
     displayChildren: { type: Boolean, required: false, default: false },
-    max: { type: Number, required: false }
+    max: { type: Number, required: false },
+    cappedSize: { type: Boolean, required: false, default: false }
 });
 
 const model = defineModel();
@@ -52,3 +53,9 @@ function toggleExpandCategory(id) {
     else expandedCategories.value.push(id);
 }
 </script>
+
+<style lang="sass">
+.checkbox-list--capped-size
+    max-height: 200px
+    overflow-x: auto
+</style>

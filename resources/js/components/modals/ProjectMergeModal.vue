@@ -149,7 +149,7 @@ function performMerge() {
         merged_project_id: selectedProject.value.id,
         merge_direction_reverse: mergeDirectionReversed.value
     }).then(res => {
-        emit('confirm', res.data.data);
+        emit('confirm', res.data.data, project.value);
         modal.value.hide();
     }).catch(err => {
         showErrorNotification('Failed to merge projects', 'Check browser console for details');

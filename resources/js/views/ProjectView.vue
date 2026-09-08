@@ -81,17 +81,17 @@ import PlatformBadge from "../components/base/PlatformBadge.vue";
 import ProjectMergeModal from "../components/modals/ProjectMergeModal.vue";
 import ProjectSelectModal from "../components/modals/ProjectSelectModal.vue";
 import ProjectUnmergeModal from "../components/modals/ProjectUnmergeModal.vue";
-import {useStore} from "../stores/store";
 import {useRouter} from "vue-router";
 import {useMcaRoute} from "../hooks/route";
 import {getProjectTypesById} from "../utils/utils";
 import {useConfigStore} from "../stores/config";
 import {displayNotFoundPage} from "../utils/errors";
+import {useProjectsStore} from "../stores/projects";
 
 const route = useMcaRoute();
 const router = useRouter();
-const store = useStore();
 const config = useConfigStore();
+const projectsStore = useProjectsStore();
 const project = ref(null);
 const platform = computed(() => project.value
     ? config.getPlatform(project.value.platform)
@@ -108,9 +108,9 @@ const dropdownOptions = computed(() => [
 ]);
 
 function getProject(options = {}) {
-    if (store.project) {
-        project.value = store.project;
-        store.project = null;
+    if (projectsStore.project) {
+        project.value = projectsStore.project;
+        projectsStore.resetActiveProject();
     } else {
         project.value = null;
     }
