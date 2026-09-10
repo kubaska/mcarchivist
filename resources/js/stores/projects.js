@@ -73,8 +73,10 @@ export const useProjectsStore = defineStore('projects', () => {
         : (requestInfo.value?.sort_by?.options ?? [])
     );
 
-    watch(route.getBase, (currentRoute) => {
-        if (filters.value.platform === '' && currentRoute === 'browse') {
+    watch(route.getBase, () => {
+        if (! route.isArchiveOrBrowse()) return;
+
+        if (filters.value.platform === '' && route.isBrowse()) {
             filters.value.platform = config.availablePlatforms?.[0].id;
         }
     });
@@ -131,7 +133,7 @@ export const useProjectsStore = defineStore('projects', () => {
             pagination.value.lastPage = 1;
             pagination.value.total = null;
             throw err;
-        })
+        });
     }
 
     function resetFilters() {
