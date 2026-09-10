@@ -129,6 +129,11 @@ class Modrinth extends BaseThirdPartyApi
                     'key' => 'loaders',
                     'target_key' => 'loaders',
                     'transform_fn' => fn(Collection $v) => Modrinth::transformToFacet('categories', $v->toArray())
+                ],
+                [
+                    'key' => 'page',
+                    'target_key' => 'page',
+                    'validation' => ['integer', 'min:1']
                 ]
             ]);
         }
@@ -168,12 +173,24 @@ class Modrinth extends BaseThirdPartyApi
 
     public function getProjectVersions($projectId, GetVersionsRequest|array $options): ThirdPartyApiResponse
     {
-        $response = $this->http->get("/project/$projectId/version", $this->getOptions($options));
+        $options = $this->getOptions($options);
+        $page = $options['page'] ?? 1;
+        unset($options['page']);
 
-        return new ThirdPartyApiResponse(
-            ModrinthResponseTransformer::collection(VersionDTO::class, $response->json()),
+        $response = $this->http->get("/project/$projectId/version", $options);
+
+        $pagination = ModrinthResponseTransformer::toPagination([
+            'total_hits' => count($response->json()),
+            'limit' => 50,
+            'offset' => ($page * 50) - 50
+        ]);
+
+        $versions = array_slice($response->json(), $pagination->getIndex(), $pagination->perPage);
+
+        return (new ThirdPartyApiResponse(
+            ModrinthResponseTransformer::collection(VersionDTO::class, $versions),
             $response->isCached()
-        );
+        ))->withPagination($pagination);
     }
 
     public function getProjectDependencies(string $projectId, array $options = []): ThirdPartyApiResponse
@@ -308,13 +325,18 @@ class Modrinth extends BaseThirdPartyApi
 
     public function getAllProjectVersions(string $projectId, array $options = []): ThirdPartyApiResponse
     {
-        return $this->getProjectVersions($projectId, $options);
+        $response = $this->http->get("/project/$projectId/version", $options);
+
+        return new ThirdPartyApiResponse(
+            ModrinthResponseTransformer::collection(VersionDTO::class, $response->json()),
+            $response->isCached()
+        );
     }
 
     public function getProjectVersionsToDate(string $projectId, Carbon $date): Collection
     {
         // api returns all versions, no need to do any filtering
-        return $this->getProjectVersions($projectId, [])->getData();
+        return $this->getAllProjectVersions($projectId)->getData();
     }
 
     public function getProjectVersionsForGameVersions(string $projectId, array $gameVersions, array $options = []): ThirdPartyApiResponse
