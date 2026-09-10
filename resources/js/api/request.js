@@ -1,14 +1,14 @@
 import axios from "axios";
 import {useQueueStore} from "../stores/queue";
 
-const request = axios.create({
+export const request = axios.create({
     baseURL: '/api/'
 });
 
 const isTask = element => element.original_id && element.uuid !== undefined;
 
+// Automatically add jobs to queue store
 request.interceptors.response.use(response => {
-    // Automatically add jobs to queue store
     if (! response.config.url.startsWith('/queue') && response.data?.data) {
         // Singular
         if (isTask(response.data.data)) {
@@ -28,4 +28,25 @@ request.interceptors.response.use(response => {
     return response;
 });
 
-export default request;
+export const abortableRequest = request.create();
+
+const runningRequests = {};
+abortableRequest.interceptors.request.use(config => {
+    runningRequests[config.url]?.abort();
+    runningRequests[config.url] = new AbortController();
+    config.signal = runningRequests[config.url].signal;
+
+    return config;
+});
+const abortableOnResponse = response => {
+    if (axios.isCancel(response)) {
+        return new Promise(() => {});
+    }
+
+    runningRequests[response.config.url] = null;
+
+    return response;
+};
+abortableRequest.interceptors.response.use(abortableOnResponse, response => {
+    return Promise.reject(abortableOnResponse(response));
+});

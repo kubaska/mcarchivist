@@ -1,4 +1,4 @@
-import request from "./request";
+import {request, abortableRequest} from "./request";
 
 export default {
     getGameVersions(options = {}) {
@@ -46,10 +46,10 @@ export default {
     },
 
     searchProjects(options) {
-        return request.get('/projects', { params: options });
+        return abortableRequest.get('/projects', { params: options });
     },
     getProject(id, options) {
-        return request.get(`/projects/${id}`, { params: options });
+        return abortableRequest.get(`/projects/${id}`, { params: options });
     },
     archiveProject(id, rules) {
         return request.post(`/projects/${id}/archive`, rules);
@@ -58,7 +58,7 @@ export default {
         return request.get(`/projects/${id}/authors`, { params: options });
     },
     getProjectVersions(id, options) {
-        return request.get(`/projects/${id}/versions`, { params: options });
+        return abortableRequest.get(`/projects/${id}/versions`, { params: options });
     },
     getProjectDependencies(id, options) {
         return request.get(`/projects/${id}/dependencies`, { params: options });
