@@ -465,7 +465,7 @@ class ModrinthTest extends TestCase implements ThirdPartyApiTest
         $response = $this->api->getProjectVersions('ae2', []);
 
         Http::assertSentCount(1);
-        $this->assertNull($response->getPagination());
+        $this->assertNotNull($response->getPagination());
         $this->assertSame(2, $response->getData()->count());
         $this->assertContainsOnlyInstancesOf(VersionDTO::class, $response->getData());
     }
