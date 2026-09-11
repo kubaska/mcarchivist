@@ -7,10 +7,12 @@
     <VersionDeleteModal ref="fileDeleteModal" @confirm="onFileDeleteConfirm"></VersionDeleteModal>
 
     <div v-if="versions">
-        <ProjectVersions :versions="versions" :platform-id="project.platform" :actions="onVersionAction"
-                         :columns="columns" :pagination="pagination" :task-id-prefix="project.platform"
-                         :game-versions="project.game_versions" :loaders="project.loaders" :project-types="project.project_types"
-                         :filter-archived-only="route.isBrowse()" :filter-all-platforms="route.isArchive() && project.merged_projects_count > 1"
+        <ProjectVersions :versions="versions" :platform-id="projectsStore.project.platform" :actions="onVersionAction"
+                         :columns="columns" :pagination="pagination" :task-id-prefix="projectsStore.project.platform"
+                         :game-versions="projectsStore.project.game_versions" :loaders="projectsStore.project.loaders"
+                         :project-types="projectsStore.project.project_types"
+                         :filter-archived-only="route.isBrowse()"
+                         :filter-all-platforms="route.isArchive() && projectsStore.project.merged_projects_count > 1"
                          @filters="onFiltersChange"
         />
     </div>
@@ -18,21 +20,20 @@
 </template>
 
 <script setup>
-import {computed, ref, watch} from "vue";
 import api from "../../api/api";
-import ProjectVersions from "../../components/ProjectVersions.vue";
+import {unionBy} from "lodash-es";
+import {computed, ref, watch} from "vue";
+import {useMcaRoute} from "../../hooks/route";
+import {useProjectsStore} from "../../stores/projects";
 import FilesModal from "../../components/modals/FilesModal.vue";
+import ProjectVersions from "../../components/ProjectVersions.vue";
 import ChangelogModal from "../../components/modals/ChangelogModal.vue";
 import DependenciesModal from "../../components/modals/DependenciesModal.vue";
 import VersionDeleteModal from "../../components/modals/VersionDeleteModal.vue";
 import CommonConfirmModal from "../../components/modals/CommonConfirmModal.vue";
-import {useMcaRoute} from "../../hooks/route";
-import {unionBy} from "lodash-es";
 
-const props = defineProps({
-    project: { type: Object, required: true }
-});
 const route = useMcaRoute();
+const projectsStore = useProjectsStore();
 const columns = computed(() => ({
     'Compatibility': { 'Game Versions': 'gameVersions', 'Loaders': 'loaders' },
     'Stats': route.isBrowse()
@@ -56,12 +57,12 @@ const dependenciesModal = ref(null);
 const filesModal = ref(null);
 
 async function getVersions(filters = {}) {
-    if (! props.project.id) return;
+    if (! projectsStore.project.id) return;
     if (route.isArchive() || ! useInBrowserVersionFiltering.value) {
         // If user is browsing the archive, we need to use project ID instead of master project ID
-        const res = await api.getProjectVersions(route.isArchive() ? props.project.project_id : props.project.id, {
+        const res = await api.getProjectVersions(route.isArchive() ? projectsStore.project.project_id : projectsStore.project.id, {
             archived_only: route.isArchive(),
-            platform: route.isBrowse() ? props.project.platform : null,
+            platform: route.isBrowse() ? projectsStore.project.platform : null,
             ...filters
         });
 
@@ -112,16 +113,16 @@ function onVersionAction(type, data) {
     switch (type) {
         case 'get-archivable-components':
             return api.getVersionFiles(route.params.id, data.id, {
-                archived_only: route.isArchive(), platform: props.project.platform
+                archived_only: route.isArchive(), platform: projectsStore.project.platform
             });
         case 'archive':
             return api.archiveProjectVersion(route.params.id, data.id, {
-                platform: props.project.platform, project_name: props.project.name,
+                platform: projectsStore.project.platform, project_name: projectsStore.project.name,
                 project_version: data.name, file_ids: ['*']
             });
         case 'archive-components':
             return api.archiveProjectVersion(route.params.id, data.model.id, {
-                platform: props.project.platform, project_name: props.project.name,
+                platform: projectsStore.project.platform, project_name: projectsStore.project.name,
                 project_version: data.model.name, file_ids: data.components
             });
         case 'changelog':
@@ -134,14 +135,14 @@ function onVersionAction(type, data) {
             return;
         case 'dependants':
             dependenciesModal.value.show();
-            api.getVersionDependants(route.params.id, data.id, { archived_only: route.isArchive(), platform: props.project.platform })
+            api.getVersionDependants(route.params.id, data.id, { archived_only: route.isArchive(), platform: projectsStore.project.platform })
                 .then(response => {
                     dependenciesModal.value.setData('Dependants', response.data.data);
                 });
             return;
         case 'dependencies':
             dependenciesModal.value.show();
-            api.getVersionDependencies(route.params.id, data.id, { archived_only: route.isArchive(), platform: props.project.platform })
+            api.getVersionDependencies(route.params.id, data.id, { archived_only: route.isArchive(), platform: projectsStore.project.platform })
                 .then(response => {
                     dependenciesModal.value.setData('Dependencies', response.data.data);
                 });
@@ -155,7 +156,7 @@ function onVersionAction(type, data) {
             revalidateModal.value.show();
             return revalidateModal.value.awaitChoice()
                 .then(modal => {
-                    return api.revalidateVersion(props.project.project_id, data.id, {
+                    return api.revalidateVersion(projectsStore.project.project_id, data.id, {
                         platform: data.platform, id_is_remote: route.isBrowse()
                     }).then(() => {
                         modal.finish();
@@ -172,8 +173,8 @@ function onVersionAction(type, data) {
 }
 
 function onVersionDeleteConfirm(version, file, finish) {
-    api.deleteVersion(props.project.project_id, version.id, { platform: version.platform, id_is_remote: !version.local })
-        .then(res => {
+    api.deleteVersion(projectsStore.project.project_id, version.id, { platform: version.platform, id_is_remote: !version.local })
+        .then(() => {
             finish();
 
             if (route.isArchive()) {
@@ -199,7 +200,7 @@ function onFileDelete(version, file) {
 }
 
 function onFileDeleteConfirm(version, file, finish) {
-    api.deleteVersionFile(props.project.project_id, version.id, file.id, { platform: version.platform, id_is_remote: !version.local })
+    api.deleteVersionFile(projectsStore.project.project_id, version.id, file.id, { platform: version.platform, id_is_remote: !version.local })
         .then(res => {
             finish();
 
@@ -223,7 +224,7 @@ function onFileDeleteConfirm(version, file, finish) {
 }
 
 getVersions();
-watch(() => `${props.project.id};${props.project.project_id};${props.project.platform}`, () => {
+watch(() => `${projectsStore.project.id};${projectsStore.project.project_id};${projectsStore.project.platform}`, () => {
     useInBrowserVersionFiltering.value = false;
     getVersions();
 });

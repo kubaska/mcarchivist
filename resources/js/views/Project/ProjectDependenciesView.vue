@@ -13,18 +13,19 @@
     </div>
 </template>
 <script setup>
-import {onMounted, ref, watch} from "vue";
 import api from "../../api/api";
+import {useRouter} from "vue-router";
+import {onMounted, ref, watch} from "vue";
+import {useMcaRoute} from "../../hooks/route";
+import {useProjectsStore} from "../../stores/projects";
 import Dependency from "../../components/Dependency.vue";
 import LoadingSpinner from "../../components/base/LoadingSpinner.vue";
-import {useMcaRoute} from "../../hooks/route";
-import {useRouter} from "vue-router";
 
 const props = defineProps({
-    project: { type: Object, required: true },
     mode: { type: String, required: true }
 });
 
+const projectsStore = useProjectsStore();
 const route = useMcaRoute();
 const router = useRouter();
 const error = ref(null);
@@ -37,8 +38,8 @@ function getData() {
     const apiFn = props.mode === 'dependants' ? api.getProjectDependants : api.getProjectDependencies;
 
     apiFn(
-        route.isArchive() ? props.project.project_id : props.project.remote_id,
-        { archived_only: route.isArchive(), platform: props.project.platform }
+        route.isArchive() ? projectsStore.project.project_id : projectsStore.project.remote_id,
+        { archived_only: route.isArchive(), platform: projectsStore.project.platform }
     ).then(res => {
         data.value = res.data.data;
     })
@@ -58,7 +59,7 @@ function onDepAction(action, data) {
 
 onMounted(getData);
 watch(() => props.mode, getData);
-watch(() => props.project, getData);
+watch(() => projectsStore.project, getData);
 </script>
 
 <style lang="sass">

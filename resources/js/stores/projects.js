@@ -152,8 +152,17 @@ export const useProjectsStore = defineStore('projects', () => {
         }
     }
 
-    function setProject(project) {
-        project.value = project;
+    function getProject(id, options = {}) {
+        return api.getProject(id, options)
+            .then(response => {
+                project.value = response.data.data;
+
+                return response;
+            });
+    }
+
+    function setProject(_project) {
+        project.value = _project;
     }
     function resetActiveProject() {
         project.value = null;
@@ -162,6 +171,6 @@ export const useProjectsStore = defineStore('projects', () => {
     return {
         projects, filters, pagination, project,
         requestInfo, projectFiltersSortOptions, filtersSnakeCased,
-        getProjects, resetFilters, replaceProject, setProject, resetActiveProject
+        getProjects, resetFilters, replaceProject, getProject, setProject, resetActiveProject
     };
 });
