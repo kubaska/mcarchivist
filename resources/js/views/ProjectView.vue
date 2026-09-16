@@ -45,7 +45,7 @@
 
         <ul class="nav nav-underline justify-content-center">
             <li class="nav-item">
-                <router-link :to="{ name: route.getRouteForBase('project') }" class="nav-link" active-class="" exact-active-class="active">Description</router-link>
+                <router-link :to="{ name: route.getRouteForBase('project') }" class="nav-link">Description</router-link>
             </li>
             <li class="nav-item">
                 <router-link :to="{ name: route.getRouteForBase('project.versions') }" class="nav-link">Versions</router-link>
@@ -59,7 +59,7 @@
         </ul>
 
         <router-view v-slot="{ Component }">
-            <KeepAlive :include="['ProjectDescriptionView', 'ProjectVersionsView', 'ProjectDependenciesView']" :key="projectsStore.project?.id ?? route.params.id">
+            <KeepAlive :include="['ProjectDescriptionView', 'ProjectVersionsView', 'ProjectDependenciesView']" :key="projectsStore.project?.project_id ?? projectsStore.project?.id ?? route.params.id">
                 <component :is="projectsStore.project ? Component : Placeholder" />
             </KeepAlive>
         </router-view>
