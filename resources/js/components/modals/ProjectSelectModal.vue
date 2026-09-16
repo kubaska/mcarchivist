@@ -8,7 +8,7 @@
                          :show-controls="true" :selectable="true" :show-archive-button="false"
                          :dropdown-options="dropdownOptions" :show-default="true" :with-navigation="false"
                          :selected="`${project.platform}|${project.remote_id}` === `${selectedProject?.platform}|${selectedProject?.remote_id}`"
-                         @select="onProjectSelect(project)" @navigate="onProjectNavigate"
+                         @select="onProjectSelect(project)"
                 />
             </div>
             <p v-else>No related projects found.</p>
@@ -70,10 +70,6 @@ function onProjectSelectDefault(project) {
             showErrorNotification('Error updating default project', 'Check browser console for details');
             console.log(err);
         });
-}
-
-function onProjectNavigate() {
-    modal.value.hide();
 }
 
 function finish(err) {

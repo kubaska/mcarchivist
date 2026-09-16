@@ -9,11 +9,11 @@
                     <li v-if="option.separator"><hr class="dropdown-divider"></li>
                     <li v-else><a class="dropdown-item"
                                   :class="{ disabled: typeof option.disabled === 'function' ? option.disabled(context) : option.disabled }"
-                                  :href="option.link ? option.link : '#'"
+                                  :href="option.link ? (typeof option.link === 'function' ? option.link(context) : option.link) : '#'"
                                   :target="option.linkNewTab ? '_blank' : null"
                                   :referrerpolicy="option.linkNewTab ? 'no-referrer' : null"
                                   @click="(e) => { if(! option.link) e.preventDefault(); option.onClick ? option.onClick(context) : null }"
-                    ><span>{{ option.name }}</span><fa-icon icon="arrow-up-right-from-square" class="ms-2" v-if="option.linkNewTab" /></a></li>
+                    ><span>{{ option.name }}</span><fa-icon icon="arrow-up-right-from-square" class="ms-2" size="sm" v-if="option.linkNewTab" /></a></li>
                 </template>
             </slot>
         </ul>

@@ -6,7 +6,7 @@
                 <Project v-for="project in projects" :project="project" route-name="archive.project"
                          :show-platform-badge="true" :show-controls="false" :selectable="true" :with-navigation="false"
                          :selected="`${project.platform}|${project.remote_id}` === `${selectedProject?.platform}|${selectedProject?.remote_id}`"
-                         @select="onProjectSelect(project)" @navigate="onProjectNavigate"
+                         @select="onProjectSelect(project)"
                 />
             </div>
             <p v-else>No related projects found.</p>
@@ -56,10 +56,6 @@ async function getProjects() {
 
 function onProjectSelect(project) {
     selectedProject.value = project;
-}
-
-function onProjectNavigate() {
-    modal.value.hide();
 }
 
 function finish(err) {

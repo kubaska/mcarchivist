@@ -8,8 +8,8 @@
             <template v-else>
                 <div class="d-flex flex-column gap-2" v-if="projects.length">
                     <Project v-for="project in projects" :project="project" route-name="archive.project"
-                             :show-platform-badge="true" :show-controls="false" :selectable="true"
-                             @select="onProjectSelect" @navigate="onProjectNavigate"
+                             :show-platform-badge="true" :selectable="true" :show-archive-button="false"
+                             :with-navigation="false" :dropdown-options="projectDropdownOptions" @select="onProjectSelect"
                     />
                 </div>
                 <p class="text-center mt-3 mb-1" v-else>No projects found.</p>
@@ -18,15 +18,15 @@
         <template v-else-if="step === 2">
             <p>Click the arrow icon to change merge direction, then confirm merge by pressing the Merge button.</p>
             <Project :project="selectedProject" route-name="archive.project"
-                     :show-categories="false" :show-platform-badge="true" :show-controls="false"
-                     @navigate="onProjectNavigate"
+                     :show-categories="false" :show-platform-badge="true" :show-archive-button="false"
+                     :with-navigation="false" :dropdown-options="projectDropdownOptions"
             />
             <p class="text-center m-0 cursor-pointer my-2" @click="mergeDirectionReversed = !mergeDirectionReversed">
                 <fa-icon :icon="mergeDirectionReversed ? 'up-long' : 'down-long'" size="xl" />
             </p>
             <Project :project="project" route-name="archive.project"
-                     :show-categories="false" :show-platform-badge="true" :show-controls="false"
-                     @navigate="onProjectNavigate"
+                     :show-categories="false" :show-platform-badge="true" :show-archive-button="false"
+                     :with-navigation="false" :dropdown-options="projectDropdownOptions"
             />
         </template>
         <template v-else>
@@ -37,8 +37,8 @@
             />
             <div v-else>
                 <Project :project="mergeDirectionReversed ? project : selectedProject"
-                         :show-categories="false" :show-platform-badge="true" :show-controls="false"
-                         @navigate="onProjectNavigate"
+                         :show-categories="false" :show-platform-badge="true" :show-archive-button="false"
+                         :with-navigation="false" :dropdown-options="projectDropdownOptions"
                 />
                 <p class="alert alert-danger my-2 py-2">
                     <fa-icon icon="triangle-exclamation" class="me-2" />
@@ -70,8 +70,10 @@ import MInput from "../base/MInput.vue";
 import MButton from "../base/MButton.vue";
 import ArchiveRule from "../ArchiveRule.vue";
 import LoadingSpinner from "../base/LoadingSpinner.vue";
+import {useRouter} from "vue-router";
 
 const route = useMcaRoute();
+const router = useRouter();
 const modal = ref();
 const step = ref(1);
 const project = ref(null);
@@ -82,6 +84,13 @@ const loading = ref(false);
 const mergeConfirmLoading = ref(false);
 const mergeDirectionReversed = ref(false);
 const archiveRulesToRemove = ref([]);
+const projectDropdownOptions = [
+    {
+        name: 'Open archived project',
+        link: project => router.resolve({ name: 'archive.project', params: { source: project.platform, id: project.id } }).fullPath,
+        linkNewTab: true
+    }
+];
 
 const emit = defineEmits(['confirm']);
 const getProjectsDebounced = debounce(() => getProjects(), 300);
@@ -103,10 +112,6 @@ async function getProjects() {
 function onProjectSelect(project) {
     selectedProject.value = project;
     step.value++;
-}
-
-function onProjectNavigate() {
-    modal.value.hide();
 }
 
 function onConfirmMerge() {

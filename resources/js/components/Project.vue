@@ -29,7 +29,7 @@
             </div>
         </div>
         <div class="d-flex flex-column justify-content-between align-self-stretch px-2 py-1" v-if="showControls">
-            <MDropdown :options="allDropdownOptions" :context="project" direction="start">
+            <MDropdown v-if="dropdownOptions.length" :options="dropdownOptions" :context="project" direction="start">
                 <button class="btn btn-icon">
                     <fa-icon icon="ellipsis-vertical" />
                 </button>
@@ -77,10 +77,6 @@ const router = useRouter();
 const numberFormatter = useNumberFormatter();
 const imageLogoErrored = ref(false);
 const platform = computed(() => config.getPlatform(props.project.platform));
-const allDropdownOptions = computed(() => [
-    { name: 'Open project page', link: props.project.project_url, linkNewTab: true },
-    ...props.dropdownOptions
-]);
 
 const emit = defineEmits(['archive', 'select', 'navigate']);
 

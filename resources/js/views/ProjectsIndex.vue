@@ -61,7 +61,8 @@ const dataSource = ref(route.getBase());
 const inspectedProjectId = ref(null);
 
 const projectDropdownOptions = [
-    { name: 'Merge...', onClick: onProjectMergeBtnClick }
+    { name: 'Merge...', onClick: onProjectMergeBtnClick },
+    { name: 'Open project page', link: project => project.project_url, linkNewTab: true }
 ];
 
 const platform = computed(() => config.getPlatform(projectsStore.filters.platform));
