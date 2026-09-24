@@ -131,6 +131,9 @@ class ModController extends Controller
                         default => $q
                     };
                 })
+                ->when($request->boolean('unmerged_only'), function (Builder $q) {
+                    $q->whereHas('projects', fn(Builder $q) => $q, '=', 1);
+                })
                 ->paginate(50);
 
             $filterProjectsByPlatform = fn(Collection $c) => $c->when(

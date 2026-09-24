@@ -1,5 +1,7 @@
 export const capitalizeString = (str) => str.charAt(0).toUpperCase() + str.slice(1);
 
+export const toBool = (str) => String(str).trim().toLowerCase() === 'true';
+
 /**
  * Check if the provided element, or any parent element, is a descendant of the target,
  * or passes test provided by the callback.

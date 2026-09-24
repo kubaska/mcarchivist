@@ -71,6 +71,15 @@
                     <option :value="option.id" v-for="option in projects.projectFiltersSortOptions">{{ option.name }}</option>
                 </select>
             </div>
+
+            <div v-if="route.isArchive()">
+                <div class="form-check-inline m-0">
+                    <label class="form-label m-0 text-nowrap">
+                        <input type="checkbox" class="form-check-input" v-model="projects.filters.unmergedOnly" />
+                        Unmerged only
+                    </label>
+                </div>
+            </div>
         </div>
     </div>
 </template>

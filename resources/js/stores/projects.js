@@ -4,7 +4,7 @@ import {useConfigStore} from "./config";
 import {computed, ref, watch} from "vue";
 import {useMcaRoute} from "../hooks/route";
 import {castArray, clamp, pickBy, take, truncate} from "lodash-es";
-import {getDefaultSearchRequestInfo, getLocalSortingOptions, getProjectTypes} from "../utils/utils";
+import {getDefaultSearchRequestInfo, getLocalSortingOptions, getProjectTypes, toBool} from "../utils/utils";
 
 export const useProjectsStore = defineStore('projects', () => {
     const config = useConfigStore();
@@ -53,7 +53,8 @@ export const useProjectsStore = defineStore('projects', () => {
             : [],
         sortBy: (route.query.sort_by
             ? projectFiltersSortOptions.find(sortOpt => sortOpt.id == route.query.sort_by)?.id
-            : null) ?? projectFiltersSortOptions?.[0]?.id
+            : null) ?? projectFiltersSortOptions?.[0]?.id,
+        unmergedOnly: toBool(route.query.unmerged_only)
     });
 
     const initialPage = route.query.page ? parseInt(route.query.page) : 1;
@@ -109,7 +110,8 @@ export const useProjectsStore = defineStore('projects', () => {
             query: filters.value.query,
             loaders: filters.value.loaders ? filters.value.loaders.map(l => l.id) : null,
             categories: filters.value.categories,
-            sort_by: filters.value.sortBy
+            sort_by: filters.value.sortBy,
+            unmerged_only: filters.value.unmergedOnly
         }, (i) => !!i)
     }));
 
