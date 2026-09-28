@@ -7,7 +7,6 @@ use App\API\DTO\Modpack\ModpackModDTO;
 use App\API\DTO\VersionDTO;
 use App\Enums\JobType;
 use App\Enums\ProjectDependencyType;
-use App\Enums\StorageArea;
 use App\Exceptions\RemoteFilesMissingException;
 use App\Exceptions\UnsupportedApiMethodException;
 use App\Mca\ApiManager;
@@ -67,7 +66,7 @@ class ArchiveModpack extends Job
         $atLeastOneModpackFileFound = false;
 
         foreach ($maybeModpackFiles as $modpackFile) {
-            $modpackFilePath = $modpackFile->getAbsoluteFilePath(StorageArea::PROJECTS);
+            $modpackFilePath = $modpackFile->getAbsoluteFilePath();
             Log::stack(['queue', 'stack'])->info('Considering modpack file: '.$modpackFilePath);
 
             $installProfile = $api->parseModpackInstallProfile($modpackFilePath);
@@ -138,7 +137,7 @@ class ArchiveModpack extends Job
 
                 $downloader->downloadFromMirrorList(
                     $file->downloads,
-                    $modpackFile->getAbsoluteDirectoryPath(StorageArea::PROJECTS).DIRECTORY_SEPARATOR.$this->version->id.'_extra',
+                    $modpackFile->getAbsoluteDirectoryPath().DIRECTORY_SEPARATOR.$this->version->id.'_extra',
                     McaFilesystem::makeFileName($file->fileName),
                     $algo,
                     $hash,

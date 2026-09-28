@@ -6,7 +6,6 @@ use App\API\DTO\Game\GameComponentDTO;
 use App\API\DTO\Game\GameVersionDTO;
 use App\API\Mojang;
 use App\Enums\StorageArea;
-use App\Jobs\UpdateGameVersionsComponents;
 use App\Mca\McaFile;
 use App\Models\File;
 use App\Models\GameVersion;
@@ -160,6 +159,7 @@ class McaGameArchiver
         return $version->files()->firstOrCreate(
             ['remote_id' => $component->name],
             [
+                'storage_area' => StorageArea::GAME,
                 'side' => $this->api->getFileSide($component->name),
                 'path' => $versionDir, 'file_name' => $fileName, 'original_file_name' => $component->getFileName(),
                 'component' => $component->name,

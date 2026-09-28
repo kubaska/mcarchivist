@@ -390,6 +390,7 @@ class McaArchiver
         return $version->files()->updateOrCreate(
             ['remote_id' => $file->id],
             [
+                'storage_area' => StorageArea::PROJECTS,
                 'path' => $projectDirName,
                 'file_name' => $fileName,
                 'original_file_name' => $file->name,

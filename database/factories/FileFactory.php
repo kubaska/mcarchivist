@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\StorageArea;
 use App\Models\File;
 use App\Support\HashList;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -23,6 +24,7 @@ class FileFactory extends Factory
             'remote_id' => ++static::$remoteId,
             'component' => null,
             'side' => null,
+            'storage_area' => StorageArea::PROJECTS,
             'path' => 'files',
             'file_name' => $fileName.'.jar',
             'original_file_name' => $fileName.'_orig.jar',

@@ -509,7 +509,7 @@ class ProjectApiTest extends TestCase
         $version = $project->versions->first();
         $file = $version->files->first();
 
-        $fileOnDisk = $this->makeExampleFile($version->getStorageArea(), $file);
+        $fileOnDisk = $this->makeExampleFile($file);
         $filePath = $fileOnDisk->getRealPath();
 
         $this->delete(route('project.version.delete', ['id' => $project->getKey(), 'versionId' => $version->getKey()]));
@@ -530,7 +530,7 @@ class ProjectApiTest extends TestCase
         $version = $project->versions->first();
         $file = $version->files->first();
 
-        $fileOnDisk = $this->makeExampleFile($version->getStorageArea(), $file);
+        $fileOnDisk = $this->makeExampleFile($file);
         $filePath = $fileOnDisk->getRealPath();
 
         $this->delete(route('project.version.files.delete', [
@@ -579,8 +579,8 @@ class ProjectApiTest extends TestCase
         $version = $project->versions->first();
         $file = $version->files->first();
 
-        $dependencyFilePath = $this->makeExampleFile($dependencyVersion->getStorageArea(), $dependencyFile)->getRealPath();
-        $filePath = $this->makeExampleFile($version->getStorageArea(), $file)->getRealPath();
+        $dependencyFilePath = $this->makeExampleFile($dependencyFile)->getRealPath();
+        $filePath = $this->makeExampleFile($file)->getRealPath();
 
         $this->delete(route('project.version.delete', ['id' => $project->getKey(), 'versionId' => $version->getKey()]));
         $this->response->assertNoContent();
@@ -692,7 +692,7 @@ class ProjectApiTest extends TestCase
         $project = Project::factory()->has(Version::factory()->has(File::factory()))->create();
         $version = $project->versions->first();
         $file = $version->files->first();
-        $this->makeExampleFile($version->getStorageArea(), $file);
+        $this->makeExampleFile($file);
 
         $this->get(route('download', ['id' => $file->getKey()]));
         $this->response->assertOk()->assertDownload($file->original_file_name);

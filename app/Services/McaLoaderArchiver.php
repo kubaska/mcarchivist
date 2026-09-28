@@ -189,7 +189,7 @@ class McaLoaderArchiver
         foreach ($fileDTOs as $fileDTO) {
             // Check if we have this file already
             if ($localFile = $version->files->first(fn(File $f) => $f->remote_id === $fileDTO->remoteId)) {
-                $files[] = new McaFile($localFile->getAbsoluteFilePath(StorageArea::LOADERS));
+                $files[] = new McaFile($localFile->getAbsoluteFilePath());
                 continue;
             }
 
@@ -199,6 +199,7 @@ class McaLoaderArchiver
             $version->files()->firstOrCreate(
                 ['remote_id' => $fileDTO->remoteId],
                 [
+                    'storage_area' => StorageArea::LOADERS,
                     'component' => $fileDTO->component,
                     'original_file_name' => $fileDTO->name,
                     'path' => Path::join($api->slug(), $loaderDirName), 'file_name' => $fileName,

@@ -197,7 +197,7 @@ class RulesetArchiverTest extends TestCase
 
         $this->assertNotNull($project->refresh()->last_version_check, 'Last check date not updated');
         $version = Version::query()->with('files')->first();
-        $this->assertFileExists($version->files->first()->getAbsoluteFilePath($version->getStorageArea()));
+        $this->assertFileExists($version->files->first()->getAbsoluteFilePath());
     }
 
     /** @test */
@@ -266,7 +266,7 @@ class RulesetArchiverTest extends TestCase
         $this->assertNotNull($project->refresh()->last_version_check, 'Last check date not updated');
         $versions = Version::query()->with('files')->get();
         foreach ($versions as $version) {
-            $this->assertFileExists($version->files->first()->getAbsoluteFilePath($version->getStorageArea()));
+            $this->assertFileExists($version->files->first()->getAbsoluteFilePath());
         }
     }
 

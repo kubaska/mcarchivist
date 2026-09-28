@@ -2,7 +2,6 @@
 
 namespace Tests;
 
-use App\Enums\StorageArea;
 use App\Models\File;
 use Illuminate\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
@@ -25,9 +24,9 @@ trait InteractsWithFilesystem
         return new \SplFileInfo($filePath);
     }
 
-    protected function makeExampleFile(StorageArea $storageArea, File $file): \SplFileInfo
+    protected function makeExampleFile(File $file): \SplFileInfo
     {
-        $base = app(SettingsServiceFake::class)->get('general.storage.'.$storageArea->value);
+        $base = app(SettingsServiceFake::class)->get('general.storage.'.$file->storage_area->getSettingKey());
         return $this->makeFile(Path::join($base, $file->path), $file->file_name, true);
     }
 

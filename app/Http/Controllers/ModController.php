@@ -478,7 +478,7 @@ class ModController extends Controller
             ], 422);
         }
 
-        $file->forceRemove($version->getStorageArea());
+        $file->forceRemove();
 
         if ($version->files->isEmpty()) {
             $version->forceRemove();
@@ -736,9 +736,9 @@ class ModController extends Controller
     {
         $this->validateValues(['id' => $id], ['id' => ['required', 'int']]);
 
-        $file = File::query()->with('version')->findOrFail($id);
+        $file = File::query()->findOrFail($id);
 
-        return response()->download($file->getAbsoluteFilePath($file->version->getStorageArea()), $file->original_file_name);
+        return response()->download($file->getAbsoluteFilePath(), $file->original_file_name);
     }
 
     /**

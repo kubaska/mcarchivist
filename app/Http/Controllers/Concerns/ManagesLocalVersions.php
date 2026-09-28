@@ -38,7 +38,7 @@ trait ManagesLocalVersions
             abort(400);
         }
 
-        $file->forceRemove($file->version->getStorageArea());
+        $file->forceRemove();
 
         return response()->json(null, 204);
     }

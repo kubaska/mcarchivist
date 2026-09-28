@@ -20,6 +20,7 @@ class File extends Model
 
     protected $casts = [
         'side' => FileSide::class,
+        'storage_area' => StorageArea::class,
         'hashes' => AsHashListCast::class
     ];
 
@@ -46,46 +47,44 @@ class File extends Model
     /**
      * Returns an absolute path to directory where the file is located.
      *
-     * @param StorageArea $storageArea
      * @return string
      */
-    public function getAbsoluteDirectoryPath(StorageArea $storageArea): string
+    public function getAbsoluteDirectoryPath(): string
     {
-        return (app(McaFilesystem::class))->getStoragePath($storageArea, $this->path);
+        return (app(McaFilesystem::class))->getStoragePath($this->path);
     }
 
     /**
      * Returns an absolute path to file.
      *
-     * @param StorageArea $storageArea
      * @return string
      */
-    public function getAbsoluteFilePath(StorageArea $storageArea): string
+    public function getAbsoluteFilePath(): string
     {
-        return (app(McaFilesystem::class))->getStoragePath($storageArea, $this->full_path);
+        return (app(McaFilesystem::class))->getStoragePath($this->storage_area, $this->full_path);
     }
 
-    public function existsOnDisk(StorageArea $storageArea): bool
+    public function existsOnDisk(): bool
     {
-        return is_file($this->getAbsoluteFilePath($storageArea));
+        return is_file($this->getAbsoluteFilePath());
     }
 
-    public function validateHash(StorageArea $storageArea): bool
+    public function validateHash(): bool
     {
-        if (! $this->existsOnDisk($storageArea)) return false;
+        if (! $this->existsOnDisk()) return false;
         [$algo, $hash] = $this->hashes->getFirstHash();
-        return $hash === hash_file($algo, $this->getAbsoluteFilePath($storageArea));
+        return $hash === hash_file($algo, $this->getAbsoluteFilePath());
     }
 
-    public function remove(StorageArea $storageArea, bool $force = false): bool
+    public function remove(bool $force = false): bool
     {
         if ($this->created_by !== null && $force === false) {
             return false;
         }
 
-        DB::transaction(function () use ($storageArea) {
+        DB::transaction(function () {
             $fs = app(McaFilesystem::class);
-            $filePath = $fs->getStoragePath($storageArea, $this->full_path);
+            $filePath = $fs->getStoragePath($this->storage_area, $this->full_path);
 
             $this->delete();
 
@@ -101,8 +100,8 @@ class File extends Model
 
             try {
                 $fs->cleanupEmptyDirectories(
-                    $fs->getStoragePath($storageArea, $this->path),
-                    $fs->getStoragePath($storageArea)
+                    $fs->getStoragePath($this->storage_area, $this->path),
+                    $fs->getStoragePath($this->storage_area)
                 );
             } catch (\Exception $e) {
                 Log::error('Failed to clean up empty directories', [$e]);
@@ -112,8 +111,8 @@ class File extends Model
         return true;
     }
 
-    public function forceRemove(StorageArea $storageArea): bool
+    public function forceRemove(): bool
     {
-        return $this->remove($storageArea, true);
+        return $this->remove(true);
     }
 }

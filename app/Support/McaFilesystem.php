@@ -87,7 +87,7 @@ class McaFilesystem extends Filesystem
 
     public function getStoragePath(StorageArea $storageArea, array|string|null $path = null, bool $makeDir = false): string
     {
-        $fullPath = $this->settings->getPath($storageArea->value);
+        $fullPath = $this->settings->getPath($storageArea->getSettingKey());
 
         if ($path) {
             $fullPath = Path::join($fullPath, ...Arr::wrap($path));
