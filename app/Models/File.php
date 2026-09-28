@@ -21,7 +21,8 @@ class File extends Model
     protected $casts = [
         'side' => FileSide::class,
         'storage_area' => StorageArea::class,
-        'hashes' => AsHashListCast::class
+        'hashes' => AsHashListCast::class,
+        'primary' => 'boolean'
     ];
 
     public function version()
