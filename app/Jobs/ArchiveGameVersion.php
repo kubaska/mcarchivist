@@ -21,6 +21,7 @@ class ArchiveGameVersion extends Job
         protected string $version,
         protected array $components,
         protected bool $requestedByUser,
+        protected bool $revalidate = false,
         protected array $options = []
     )
     {
@@ -34,9 +35,9 @@ class ArchiveGameVersion extends Job
         ];
     }
 
-    public static function getJobType(): JobType
+    public function getJobType(): JobType
     {
-        return JobType::ARCHIVING;
+        return $this->revalidate ? JobType::REVALIDATING : JobType::ARCHIVING;
     }
 
     /**
@@ -51,7 +52,7 @@ class ArchiveGameVersion extends Job
             return 0;
         }
 
-        $version = $gameArchiver->archive($this->version, $this->components);
+        $version = $gameArchiver->archive($this->version, $this->components, $this->revalidate);
 
         if ($this->requestedByUser) {
             $version->markComponentsCreatedByUser($this->components);

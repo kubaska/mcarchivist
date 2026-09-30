@@ -34,7 +34,7 @@ class ArchiveProject extends Job
         ];
     }
 
-    public static function getJobType(): JobType
+    public function getJobType(): JobType
     {
         return JobType::ARCHIVING;
     }

@@ -20,7 +20,7 @@ class UpdateGameVersionsIndexJob extends Job
         ];
     }
 
-    public static function getJobType(): JobType
+    public function getJobType(): JobType
     {
         return JobType::UPDATING_INDEX;
     }

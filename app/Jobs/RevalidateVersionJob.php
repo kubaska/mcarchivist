@@ -25,7 +25,7 @@ class RevalidateVersionJob extends Job
         ];
     }
 
-    public static function getJobType(): JobType
+    public function getJobType(): JobType
     {
         return JobType::REVALIDATING;
     }

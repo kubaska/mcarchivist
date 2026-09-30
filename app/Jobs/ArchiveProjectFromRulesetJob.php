@@ -30,7 +30,7 @@ class ArchiveProjectFromRulesetJob extends Job implements ShouldBeUnique
         ];
     }
 
-    public static function getJobType(): JobType
+    public function getJobType(): JobType
     {
         return JobType::ARCHIVING;
     }

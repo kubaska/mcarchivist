@@ -39,7 +39,7 @@ class JobService
             return JobStatus::query()->create([
                 'original_id' => $id,
                 'frontend_id' => $frontendId,
-                'job_type' => method_exists($job, 'getJobType') ? $job::getJobType() : null,
+                'job_type' => method_exists($job, 'getJobType') ? $job->getJobType() : null,
                 'state' => 0,
                 'name' => $name
             ]);

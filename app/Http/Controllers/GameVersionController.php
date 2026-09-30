@@ -87,15 +87,15 @@ class GameVersionController extends Controller
             abort(400);
         }
 
-        return $this->doArchive($version->version, $version->files->pluck('component')->toArray());
+        return $this->doArchive($version->version, $version->files->pluck('component')->toArray(), true);
     }
 
-    protected function doArchive(string $version, array $components)
+    protected function doArchive(string $version, array $components, bool $revalidate = false)
     {
         $jobService = app(JobService::class);
 
         $status = $jobService->dispatch(
-            new ArchiveGameVersion($version, $components, true),
+            new ArchiveGameVersion($version, $components, true, $revalidate),
             sprintf("%s\n%s", 'Minecraft: Java Edition', $version),
             'mc:je;'.$version
         );

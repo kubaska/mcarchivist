@@ -85,22 +85,6 @@ class Utils
         return [false, McaFilesystem::makeUniqueFileName($path, $remote->name)];
     }
 
-    public static function verifyAssetExists(string $path, string $fileName, string $sha1): bool
-    {
-        // File does not exist
-        if (! file_exists($fullPath = Path::join($path, $fileName))) {
-            return false;
-        }
-
-        // File exists, and we verified it's the same as remote.
-        if (hash_file('sha1', $fullPath) === $sha1) {
-            return true;
-        }
-
-        // File exists, but hash differs. We should force redownload the asset.
-        return false;
-    }
-
     /**
      * Find common hash algo from an array of algos.
      *

@@ -12,6 +12,7 @@ use App\Models\GameVersion;
 use App\Models\Version;
 use App\Support\McaFilesystem;
 use App\Support\Utils;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -67,8 +68,12 @@ class McaGameArchiver
             ->values();
     }
 
-    public function archive(string $version, array $components): Version
+    public function archive(string $version, array $components, bool $revalidate = false): Version
     {
+        Log::stack(['queue', 'stack'])->info(
+            sprintf('Archiving game version %s; selected components: %s', $version, Arr::join($components, ', '))
+        );
+
         $localGameVersion = GameVersion::where('name', $version)->firstOrFail();
         $manifest = $this->api->getVersion($version);
         $assets = $this->api->getAssets($version);
@@ -93,12 +98,18 @@ class McaGameArchiver
         $localVersion->libraries()->sync($localLibraries->pluck('id'));
 
         $assetsPath = $this->filesystem->getStoragePath(StorageArea::ASSETS);
-        Log::stack(['queue', 'stack'])->info("Archiving game version: $version");
+
+        // Check if asset file exists
+        // When user wants to revalidate files, additionally do a hash check.
+        $assetExists = fn(string $fileName, string $hash) =>
+            file_exists($pathToAsset = Path::join($assetsPath, $fileName))
+            && ($revalidate === false || hash_file('sha1', $pathToAsset) === $hash);
+
         foreach ($assets['objects'] as $path => $asset) {
             $filename = $asset['hash'].'.'.Str::afterLast($path, '.');
 
-            if (! Utils::verifyAssetExists($assetsPath, $filename, $asset['hash'])) {
-                Log::stack(['queue', 'stack'])->info("Archiving asset: $path");
+            if (! $assetExists($filename, $asset['hash'])) {
+                Log::info("Archiving asset: $path");
 
                 $this->downloader->download(
                     $this->api->resolveAssetUrl($asset['hash']),
@@ -113,8 +124,8 @@ class McaGameArchiver
         }
 
         if ($manifest->loggingFile) {
-            if (! Utils::verifyAssetExists($assetsPath, $manifest->loggingFile->name, $manifest->loggingFile->hash)) {
-                Log::stack(['queue', 'stack'])->info('Archiving logging configuration: '.$manifest->loggingFile->name);
+            if (! $assetExists($manifest->loggingFile->name, $manifest->loggingFile->hash)) {
+                Log::info('Archiving logging configuration: '.$manifest->loggingFile->name);
 
                 $this->downloader->download(
                     $manifest->loggingFile->url,
