@@ -15,6 +15,7 @@ use App\Enums\EProjectType;
 use App\Enums\ProjectDependencyType;
 use App\Enums\VersionType;
 use App\Exceptions\UnsupportedApiMethodException;
+use App\Services\SettingsService;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
@@ -560,7 +561,8 @@ class CurseforgeTest extends TestCase implements ThirdPartyApiTest
 
         Http::preventStrayRequests();
 
-        $this->useAppSettings()->setSettings(['platforms.curseforge.api_key' => 'THE-API-KEY']);
+        app(SettingsService::class)->setSettings(['platforms.curseforge.api_key' => 'THE-API-KEY']);
+
         $this->api = app(Curseforge::class);
     }
 

@@ -14,11 +14,11 @@ abstract class TestCase extends BaseTestCase
 {
     use AssertsExceptions, McaMakesHttpRequests, InteractsWithDatabase, InteractsWithFilesystem;
 
-    protected function tearDown(): void
+    protected function setUp(): void
     {
-        parent::tearDown();
+        parent::setUp();
 
-        $this->cleanupTestFiles();
+        $this->instance(SettingsService::class, app(SettingsServiceFake::class));
     }
 
     protected function getTestDataDir(...$path): string
@@ -36,12 +36,13 @@ abstract class TestCase extends BaseTestCase
      */
     protected function createConfiguredMockWithCallbacks(string $originalClassName, array $config): MockObject
     {
-        $simple = Arr::where($config, fn($v) => !($v instanceof \Closure));
-        $closures = Arr::where($config, fn($v) => $v instanceof \Closure);
+        [$closures, $simple] = Arr::partition($config, fn($v) => $v instanceof \Closure);
+
         $class = $this->createConfiguredMock($originalClassName, $simple);
         foreach ($closures as $name => $callback) {
             $class->method($name)->willReturnCallback($callback);
         }
+
         return $class;
     }
 
@@ -80,12 +81,5 @@ abstract class TestCase extends BaseTestCase
         $this->app->instance($abstract, $instance);
 
         return $instance;
-    }
-
-    protected function useAppSettings(): SettingsServiceFake
-    {
-        $this->instance(SettingsService::class, $fake = app(SettingsServiceFake::class));
-        $this->beforeApplicationDestroyed(fn() => $fake->cleanupStorageDirectories());
-        return $fake;
     }
 }

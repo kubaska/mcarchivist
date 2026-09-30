@@ -36,12 +36,8 @@ class RulesetArchiverTest extends TestCase
 
     protected array $mockedApis = [];
 
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->useAppSettings();
-    }
+    // SHA1 hash for "testdata" string.
+    private const EXAMPLE_FILE_SHA1 = '44115646e09ab3481adc2b1dc17be10dd9cdaa09';
 
     protected function getMockedApi($id, array $methods)
     {
@@ -76,12 +72,12 @@ class RulesetArchiverTest extends TestCase
         return Arr::map(Arr::wrap($files), fn($v) => $this->loadData(VersionDTO::class, $this->getTestDataDir('version', $v)));
     }
 
-    protected function makeGuzzle($autoMakeFile = false): Client
+    protected function makeGuzzle($respondWithExampleFile = false): Client
     {
         $handler = new MockHandler();
         $handlerStack = HandlerStack::create($handler);
-        $middleware = function (callable $handler) use ($autoMakeFile) {
-            return function (RequestInterface $request, array $options) use ($autoMakeFile, $handler) {
+        $middleware = function (callable $handler) use ($respondWithExampleFile) {
+            return function (RequestInterface $request, array $options) use ($respondWithExampleFile, $handler) {
                 $lastUrlPart = $request->getUri()->getPath();
                 $file = Str::afterLast($lastUrlPart, '/');
 
@@ -89,9 +85,8 @@ class RulesetArchiverTest extends TestCase
                 if (str_contains($file, '.') && file_exists($filePath = $this->getTestDataDir('version', $file))) {
                     $handler->append(new Response(200, [], file_get_contents($filePath)));
                 }
-                elseif($autoMakeFile) {
-                    $fileInfo = $this->makeFile($this->getTestDataDir(), $file);
-                    $handler->append(new Response(200, [], file_get_contents($fileInfo->getRealPath())));
+                elseif($respondWithExampleFile) {
+                    $handler->append(new Response(200, [], 'testdata'));
                 }
                 else {
                     Log::debug('404!!');
@@ -287,9 +282,9 @@ class RulesetArchiverTest extends TestCase
             ->create(['name' => 'Tinkers Construct [2]', 'platform' => 'local']);
 
         $version1 = Version::factory()->forGameVersionsStr('1.20.1')->make(['platform' => 'remote']);
-        $version1->setRelation('files', new Collection([File::factory()->withHash(['sha1' => $this->exampleFileSha1])->make()]));
+        $version1->setRelation('files', new Collection([File::factory()->withHash(['sha1' => self::EXAMPLE_FILE_SHA1])->make()]));
         $version2 = Version::factory()->forGameVersionsStr('1.20.1')->make(['platform' => 'local']);
-        $version2->setRelation('files', new Collection([File::factory()->withHash(['sha1' => $this->exampleFileSha1])->make()]));
+        $version2->setRelation('files', new Collection([File::factory()->withHash(['sha1' => self::EXAMPLE_FILE_SHA1])->make()]));
 
         $this->setUpMockedApi([
             'getAllProjectVersions' => fn($projectId) => $projectId === $project1->remote_id

@@ -23,20 +23,16 @@ use Queue;
 use Tests\Constraints\JsonCollectionOrderedByDate;
 use Tests\Laravel\RefreshDatabase;
 use Tests\LocalDBThirdPartyApi;
-use Tests\SettingsServiceFake;
 use Tests\TestCase;
 
 class ProjectApiTest extends TestCase
 {
     use RefreshDatabase;
 
-    private SettingsServiceFake $appSettings;
-
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->appSettings = $this->useAppSettings();
         $manager = app(ApiManager::class);
         $manager->registerApi(LocalDBThirdPartyApi::class);
     }
@@ -293,7 +289,9 @@ class ProjectApiTest extends TestCase
         $this->assertDatabaseCount('archive_rules', 6); // 3 from ruleset + 3 copied
 
         $getRulesRawAttributes = fn(Collection $rules) => $rules->map(
-            fn(ArchiveRule $r) => Arr::except($r->getAttributes(), ['id', 'ruleable_type', 'ruleable_id'])
+            fn(ArchiveRule $r) => Arr::except($r->getAttributes(), [
+                'id', 'ruleable_type', 'ruleable_id', 'created_at', 'updated_at'
+            ])
         );
 
         $this->assertEquals(

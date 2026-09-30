@@ -6,14 +6,17 @@ use App\Services\SettingsService;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use Symfony\Component\Filesystem\Path;
 
 class SettingsServiceFake extends SettingsService
 {
-    private const TEST_DIRECTORY_NAME = '__tests__';
+    private string $workDir;
 
     public function __construct()
     {
         parent::__construct();
+
+        $this->workDir = Path::join(sys_get_temp_dir(), 'mcatest_'.microtime(true));
 
         $this->configureTestPaths();
         $this->settingsLoaded = true;
@@ -31,7 +34,7 @@ class SettingsServiceFake extends SettingsService
 
         // Make new paths for each type
         $new = Arr::mapWithKeys($storages, fn(string $v, string $k) => [
-            $k => storage_path(self::TEST_DIRECTORY_NAME.DIRECTORY_SEPARATOR.Str::afterLast($k, '.'))
+            $k => $this->workDir.DIRECTORY_SEPARATOR.Str::afterLast($k, '.')
         ]);
 
         $this->save($new);
@@ -54,14 +57,8 @@ class SettingsServiceFake extends SettingsService
         return true;
     }
 
-    public function cleanupStorageDirectories()
+    public function __destruct()
     {
-        foreach ($this->getStorageSettings() as $key => $_) {
-            $path = $this->get($key);
-
-            if ($path && is_dir($path) && str_contains($path, self::TEST_DIRECTORY_NAME)) {
-                app(Filesystem::class)->cleanDirectory($path);
-            }
-        }
+        app(Filesystem::class)->deleteDirectory($this->workDir);
     }
 }
