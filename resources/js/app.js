@@ -9,7 +9,7 @@ import {
     faAngleDown, faArrowDownShortWide, faArrowDownWideShort, faArrowRightArrowLeft, faArrowRotateRight,
     faArrowUpRightFromSquare, faBan, faBoxArchive, faArrowsRotate, faCalendar, faClipboard, faCircleInfo, faCheck,
     faCircleCheck, faCode, faCog, faDisplay, faDownload, faDownLong, faEllipsisVertical, faFile, faFilter, faFolder,
-    faFolderOpen, faHourglassHalf, faList, faObjectGroup, faPencil, faServer, faStar, faTriangleExclamation, faUpLong, faXmark
+    faFolderOpen, faHourglassHalf, faList, faObjectGroup, faPencil, faServer, faStar, faTrash, faTriangleExclamation, faUpLong, faXmark
 } from '@fortawesome/free-solid-svg-icons';
 import { imageOff } from "./mdicons";
 
@@ -18,7 +18,7 @@ library.add(
     faAngleDown, faArrowDownShortWide, faArrowDownWideShort, faArrowRightArrowLeft, faArrowRotateRight,
     faArrowUpRightFromSquare, faBan, faBoxArchive, faArrowsRotate, faCalendar, faClipboard, faCircleInfo, faCheck,
     faCircleCheck, faCode, faCog, faDisplay, faDownload, faDownLong, faEllipsisVertical, faFile, faFilter, faFolder,
-    faFolderOpen, faHourglassHalf, faList, faObjectGroup, faPencil, faServer, faStar, faTriangleExclamation, faUpLong, faXmark
+    faFolderOpen, faHourglassHalf, faList, faObjectGroup, faPencil, faServer, faStar, faTrash, faTriangleExclamation, faUpLong, faXmark
 );
 library.add(imageOff);
 

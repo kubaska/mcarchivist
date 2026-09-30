@@ -11,7 +11,7 @@
                         <fa-icon icon="download" />
                     </button>
                     <button class="btn btn-icon" @click="onDeleteFileBtnClick(file)">
-                        <fa-icon icon="xmark" />
+                        <fa-icon icon="trash" />
                     </button>
                 </div>
             </div>
