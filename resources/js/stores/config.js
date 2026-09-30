@@ -64,7 +64,7 @@ export const useConfigStore = defineStore('config', {
                     return _default;
                 }
 
-                return state.settings[key];
+                return state.settings[key].value;
             }
         },
         getSettingsStartingWith: (state) => {
