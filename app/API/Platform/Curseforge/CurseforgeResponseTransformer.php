@@ -93,7 +93,7 @@ class CurseforgeResponseTransformer extends ApiResponseTransformer
         );
     }
 
-    public static function toFileDTO(array $file, $primary = false): FileDTO
+    public static function toFileDTO(array $file, bool $primary = false): FileDTO
     {
         return new FileDTO(
             data_get($file, 'id'),

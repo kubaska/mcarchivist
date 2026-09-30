@@ -18,7 +18,7 @@ class FileDTO extends DTO implements Arrayable
         public readonly ?string $url,
         public readonly ?int $size,
         public readonly HashList $hashes,
-        public ?bool $primary,
+        public readonly bool $primary,
         public bool $local = false
     )
     {
