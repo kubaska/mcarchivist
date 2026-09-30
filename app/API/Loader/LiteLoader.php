@@ -343,6 +343,7 @@ class LiteLoader extends BaseLoader
             $component,
             $component,
             null,
+            null,
             $fileName,
             $url,
             $size,

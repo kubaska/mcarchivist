@@ -65,7 +65,7 @@ class Mojang
         return sprintf('https://resources.download.minecraft.net/%s/%s', substr($assetHash, 0, 2), $assetHash);
     }
 
-    public function getFileSide(string $gameComponentName): FileSide
+    public static function getFileSide(string $gameComponentName): FileSide
     {
         if (str_contains($gameComponentName, 'mappings')) return FileSide::DEVELOPER;
 

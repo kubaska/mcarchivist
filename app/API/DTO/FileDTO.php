@@ -2,6 +2,8 @@
 
 namespace App\API\DTO;
 
+use App\API\Mojang;
+use App\Enums\FileSide;
 use App\Models\File;
 use App\Support\HashList;
 use App\Support\Utils;
@@ -13,6 +15,7 @@ class FileDTO extends DTO implements Arrayable
         public readonly string $id,
         public readonly string $remoteId,
         public readonly ?string $component,
+        public readonly ?FileSide $side,
         public ?string $dir,
         public readonly string $name,
         public readonly ?string $url,
@@ -30,6 +33,7 @@ class FileDTO extends DTO implements Arrayable
             $file->id,
             $file->remote_id,
             $file->component,
+            $file->side,
             $file->path,
             $file->original_file_name,
             route('download', ['id' => $file->id, 'fileName' => $file->original_file_name]),
@@ -46,6 +50,7 @@ class FileDTO extends DTO implements Arrayable
             $component,
             $component,
             $component,
+            Mojang::getFileSide($component),
             null,
             $fileName,
             $file['url'],
@@ -62,6 +67,7 @@ class FileDTO extends DTO implements Arrayable
             $classifier,
             $classifier,
             null,
+            null,
             $filename,
             $url,
             $size,
@@ -76,6 +82,7 @@ class FileDTO extends DTO implements Arrayable
             $classifier,
             $classifier,
             $classifier,
+            null,
             null,
             $filename,
             $url,
@@ -97,6 +104,7 @@ class FileDTO extends DTO implements Arrayable
             $file['id'],
             $file['remote_id'],
             $file['component'],
+            isset($file['side']) ? FileSide::tryFrom($file['side']) : null,
             null,
             $file['name'],
             $file['url'],

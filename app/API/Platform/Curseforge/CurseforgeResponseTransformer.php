@@ -100,6 +100,7 @@ class CurseforgeResponseTransformer extends ApiResponseTransformer
             data_get($file, 'id'),
             null,
             null,
+            null,
             data_get($file, 'fileName'),
             data_get($file, 'downloadUrl'),
             data_get($file, 'fileLength'),

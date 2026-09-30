@@ -96,6 +96,7 @@ class ModrinthResponseTransformer extends ApiResponseTransformer
             $file['filename'],
             null,
             null,
+            null,
             $file['filename'],
             $file['url'],
             $file['size'],
