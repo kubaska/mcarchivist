@@ -143,6 +143,7 @@ export const useProjectsStore = defineStore('projects', () => {
         filters.value.gameVersions = [];
         filters.value.loaders = [];
         filters.value.categories = [];
+        filters.value.unmergedOnly = false;
     }
 
     function replaceProject(oldProject, newProject) {
