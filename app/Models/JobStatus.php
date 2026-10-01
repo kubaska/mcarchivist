@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Enums\JobState;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 
 class JobStatus extends Model
 {

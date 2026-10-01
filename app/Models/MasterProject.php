@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Support\McaFilesystem;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Number;
 
 class MasterProject extends Model

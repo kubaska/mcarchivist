@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Enums\DependencyQualifier;
 use App\Enums\VersionType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
 class ArchiveRule extends Model
 {

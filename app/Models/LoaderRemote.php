@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
 class LoaderRemote extends Model
 {
     protected $fillable = ['remote_id', 'platform'];
