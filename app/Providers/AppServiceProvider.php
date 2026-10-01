@@ -7,6 +7,7 @@ use App\Services\JobService;
 use App\Services\SettingsService;
 use Illuminate\Bus\Events\BatchDispatched;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Queue\Events\JobFailed;
 use Illuminate\Queue\Events\JobProcessed;
 use Illuminate\Queue\Events\JobProcessing;
@@ -36,6 +37,8 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot()
     {
+        Model::preventSilentlyDiscardingAttributes($this->app->environment('local'));
+
         Event::listen(BatchDispatched::class, function (BatchDispatched $event) {
             JobService::onBatchCreated($event->batch);
         });
