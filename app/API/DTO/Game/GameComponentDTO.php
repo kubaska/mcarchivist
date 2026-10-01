@@ -35,9 +35,11 @@ class GameComponentDTO extends DTO
     public function toFileDTO(): FileDTO
     {
         return FileDTO::fromMojang(
-            ['url' => $this->url, 'sha1' => $this->hash, 'size' => $this->size],
             $this->name,
-            $this->getFileName()
+            $this->getFileName(),
+            $this->url,
+            $this->hash,
+            $this->size
         );
     }
 }

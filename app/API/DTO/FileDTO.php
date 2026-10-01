@@ -44,7 +44,7 @@ class FileDTO extends DTO implements Arrayable
         );
     }
 
-    public static function fromMojang(array $file, string $component, string $fileName): FileDTO
+    public static function fromMojang(string $component, string $fileName, string $url, string $hash, int $size): FileDTO
     {
         return new self(
             $component,
@@ -53,9 +53,9 @@ class FileDTO extends DTO implements Arrayable
             Mojang::getFileSide($component),
             null,
             $fileName,
-            $file['url'],
-            $file['size'],
-            new HashList(['sha1' => $file['sha1']]),
+            $url,
+            $size,
+            new HashList(['sha1' => $hash]),
             Utils::isPrimaryComponent($component)
         );
     }
