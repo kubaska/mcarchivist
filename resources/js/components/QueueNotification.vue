@@ -16,7 +16,7 @@
             <div class="queue-notification--desc fs-8 text-truncate pb-1">{{ task.name.split('\n', 2)?.[1] ?? 'unknown' }}</div>
             <div class="queue-notification--controls d-flex">
                 <button class="btn btn-icon btn-icon-sm align-self-center" title="Show details" @click="emit('details', task.id)"
-                        v-if="!!task.details || !!task.exception">
+                        v-if="task.state === JOB_STATE.FAILED && (!!task.details || !!task.exception)">
                     <fa-icon icon="circle-info" />
                 </button>
                 <button class="btn btn-icon btn-icon-sm align-self-center" title="Retry" @click="retryJob(task.id)"

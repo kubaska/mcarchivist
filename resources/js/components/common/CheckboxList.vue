@@ -7,7 +7,7 @@
                     <span class="ps-2" :class="{ 'fw-semibold': isSelected(option) }">{{ option[displayBy] }}</span>
                 </label>
                 <span v-if="displayChildren && option.children.length" @click="toggleExpandCategory(option[trackBy])">
-                    <fa-icon icon="angle-down" :class="{ 'fa-flip-vertical': expandedCategories.indexOf(option[trackBy]) > -1 }" />
+                    <fa-icon icon="angle-down" :rotation="(expandedCategories.indexOf(option[trackBy]) > -1) ? 180 : null" />
                 </span>
             </li>
             <CheckboxList v-if="displayChildren && option.children?.length && expandedCategories.indexOf(option[trackBy]) > -1" class="ps-4"

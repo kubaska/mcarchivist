@@ -110,7 +110,7 @@ const queue = useQueueStore();
 const filesDropdownElement = ref(null);
 const { bsComponent: bsFilesDropdown } = useBsDropdown(filesDropdownElement);
 const components = computed(() => {
-    if (props.version.components === null || props.version.components.length === 0) return [];
+    if (! props.version.components?.length) return [];
     return props.version.components.map(component => {
         const hasComponent = props.version.files.some(file => file.component === component);
         return { name: formatComponentName(component), type: hasComponent ? 'success' : 'danger' };
@@ -145,7 +145,7 @@ const { queueTask, attachTaskStateSpy } = useTaskStateSpy(frontendId, () => {
         platform: route.isArchiveOrBrowse() ? props.version.platform : undefined
     }).then(res => {
         res.data.forEach(file => {
-            const versionFile = props.version.files.find(vf => vf.id === file.remote_id);
+            const versionFile = props.version.files.find(vf => vf.remote_id === file.remote_id);
             if (versionFile) {
                 versionFile.local = true;
             } else {
