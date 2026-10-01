@@ -16,7 +16,7 @@ return new class extends Migration
     public function up()
     {
         Schema::table('files', function (Blueprint $table) {
-            $table->unsignedTinyInteger('storage_area')->after('side');
+            $table->unsignedTinyInteger('storage_area')->default(0)->after('side');
         });
 
         File::query()->chunk(1000, function (Collection $files) {
