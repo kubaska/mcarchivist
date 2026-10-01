@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Enums\StorageArea;
 use App\Mca\McaFile;
 use App\Support\McaFilesystem;
 use GuzzleHttp\Exception\GuzzleException;
@@ -20,11 +19,7 @@ class McaDownloader
     ];
     protected bool $shouldVerify = true;
 
-    public function __construct(
-        protected HttpClient $client,
-        protected McaFilesystem $filesystem,
-        protected SettingsService $settings
-    )
+    public function __construct(protected HttpClient $client, protected McaFilesystem $filesystem)
     {
     }
 
@@ -48,7 +43,7 @@ class McaDownloader
             throw new \RuntimeException(sprintf('File [%s] already exists at [%s]', $filename, $path));
         }
 
-        $tempDir = $this->filesystem->getStoragePath(StorageArea::TEMP, makeDir: true);
+        $tempDir = $this->filesystem->getTemporaryDir();
 
         // Check if file already exists in temporary directory, and if it does and passes checksum verification return it.
         if ($this->filesystem->exists($tempFilePath = Path::join($tempDir, $filename))) {
@@ -75,9 +70,23 @@ class McaDownloader
         }
 
         // Move file to permanent storage
-        $this->filesystem->move($tempFilePath, $target);
+        if (! $this->optEq($options, '__doNotMoveToDestination', true)) {
+            $this->filesystem->move($tempFilePath, $target);
 
-        return new McaFile($target);
+            return new McaFile($target);
+        }
+
+        return new McaFile($tempFilePath);
+    }
+
+    public function downloadToTemporaryDirectory(
+        string $url, string $path, string $filename, ?string $checksumAlgo, ?string $expectedChecksum, ?int $expectedSize, array $options = []
+    ): McaFile
+    {
+        return $this->download(
+            $url, $path, $filename, $checksumAlgo, $expectedChecksum, $expectedSize,
+            [...$options, '__doNotMoveToDestination' => true]
+        );
     }
 
     public function downloadFromMirrorList(array $urls, string $path, string $filename, ?string $checksumAlgo, ?string $expectedChecksum, ?int $expectedSize, array $options = [])

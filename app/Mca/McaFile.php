@@ -35,10 +35,13 @@ class McaFile extends \SplFileInfo
      */
     public function makeHashList(array $knownHashes = []): HashList
     {
-        $list = new HashList($knownHashes);
+        $list = new HashList([]);
 
         foreach (Mca::FILE_HASHES_ALGOS as $algo) {
-            if (! $list->has($algo)) {
+            // If we did not generate our own hash yet, use the provided one.
+            if (isset($this->hashes[$algo]) === false && isset($knownHashes[$algo])) {
+                $list->set($algo, $knownHashes[$algo]);
+            } else {
                 $list->set($algo, $this->getHash($algo));
             }
         }

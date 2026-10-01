@@ -532,16 +532,96 @@ class ProjectApiTest extends TestCase
         $filePath = $fileOnDisk->getRealPath();
 
         $this->delete(route('project.version.files.delete', [
-            'id' => $project->getKey(), 'versionId' => $version->getKey(), 'fileId' => $file->getKey()
+            'id' => $project->getKey(),
+            'versionId' => $version->getKey(),
+            'fileId' => $file->getKey(),
+            'platform' => $version->platform
         ]));
+
         $this->response->assertNoContent();
         $this->assertNull($file->fresh());
         $this->assertNotNull($version->fresh());
         $this->assertFileDoesNotExist($filePath);
         $this->assertDirectoryDoesNotExist(Str::beforeLast($filePath, '\\'));
 
-        $this->delete(route('project.version.files.delete', ['id' => 123, 'versionId' => 345, 'fileId' => 678]));
+        $this->delete(route('project.version.files.delete', ['id' => 123, 'versionId' => 345, 'fileId' => 678, 'platform' => $version->platform]));
         $this->response->assertNotFound();
+    }
+
+    /** @test */
+    public function it_deletes_a_file_by_remote_id()
+    {
+        $project = Project::factory()->has(Version::factory()->has(File::factory(2)))->create();
+        $version = $project->versions->first();
+        $file = $version->files->first();
+
+        $fileOnDisk = $this->makeExampleFile($file);
+        $filePath = $fileOnDisk->getRealPath();
+
+        $this->delete(route('project.version.files.delete', [
+            'id' => $project->getKey(),
+            'versionId' => $version->remote_id,
+            'fileId' => $file->remote_id,
+            'platform' => $version->platform,
+            'id_is_remote' => true
+        ]));
+
+        $this->response->assertNoContent();
+        $this->assertNull($file->fresh());
+        $this->assertNotNull($version->fresh());
+        $this->assertFileDoesNotExist($filePath);
+        $this->assertDirectoryDoesNotExist(Str::beforeLast($filePath, '\\'));
+
+        $this->delete(route('project.version.files.delete', [
+            'id' => 123, 'versionId' => 345, 'fileId' => 678, 'platform' => $version->platform, 'id_is_remote' => true
+        ]));
+        $this->response->assertNotFound();
+    }
+
+    /** @test */
+    public function it_deletes_a_file_and_cleans_up_the_version()
+    {
+        $project = Project::factory()->has(Version::factory()->has(File::factory()))->create();
+        $version = $project->versions->first();
+        $file = $version->files->first();
+
+        $this->delete(route('project.version.files.delete', [
+            'id' => $project->getKey(),
+            'versionId' => $version->getKey(),
+            'fileId' => $file->getKey(),
+            'platform' => $version->platform
+        ]));
+
+        $this->response->assertNoContent();
+        $this->assertNull($file->fresh());
+        $this->assertNull($version->fresh());
+    }
+
+    /** @test */
+    public function it_deletes_a_file_but_leaves_file_on_disk_if_its_used_by_another_model()
+    {
+        $project1 = Project::factory()->has(Version::factory()->has(File::factory()))->create();
+        $version1 = $project1->versions->first();
+        $file1 = $version1->files->first();
+        $project2 = Project::factory()->has(Version::factory())->create();
+        $version2 = $project2->versions->first();
+        $version2->files()->save($file1->replicate());
+        $file2 = $version2->files->first();
+        $this->makeExampleFile($file1);
+
+        $this->delete(route('project.version.files.delete', [
+            'id' => $project1->getKey(),
+            'versionId' => $version1->getKey(),
+            'fileId' => $file1->getKey(),
+            'platform' => $version1->platform
+        ]));
+
+        $this->response->assertNoContent();
+        $this->assertNull($file1->fresh());
+        $this->assertNull($version1->fresh());
+        $this->assertNotNull($file2->fresh());
+        $this->assertNotNull($version2->fresh());
+        $this->assertFileExists($file2->getAbsoluteFilePath());
     }
 
     /** @test */

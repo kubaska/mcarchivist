@@ -2,12 +2,10 @@
 
 namespace App\Support;
 
-use App\API\DTO\FileDTO;
 use App\API\Requests\GetVersionsRequest;
 use App\API\Requests\SearchProjectsRequest;
 use App\Mca;
 use Illuminate\Support\Arr;
-use Symfony\Component\Filesystem\Path;
 
 class Utils
 {
@@ -51,38 +49,6 @@ class Utils
             SearchProjectsRequest::class,
             GetVersionsRequest::class
         ];
-    }
-
-    /**
-     * Determine if remote file exists locally by comparing hash. Makes a file name.
-     *
-     * @param string $path
-     * @param FileDTO $remote
-     * @return array<bool, string>
-     */
-    public static function verifyFileAlreadyExistsAndMakeFileName(string $path, FileDTO $remote): array
-    {
-        $fileName = McaFilesystem::makeFileName($remote->name);
-
-        // File does not exist, return default file name
-        if (! file_exists($fullPath = Path::join($path, $fileName))) {
-            return [false, $fileName];
-        }
-
-        // File with default name exists, but there is no hash to verify if it's the file we want.
-        // We never want to overwrite user files, so generate a unique name and play it safe.
-        if ($remote->hashes->isEmpty()) {
-            return [false, McaFilesystem::makeUniqueFileName($path, $remote->name)];
-        }
-
-        // File exists, and we verified it's the same as remote.
-        [$algo, $hash] = $remote->hashes->getFirstHash();
-        if (hash_file($algo, $fullPath) === $hash) {
-            return [true, $fileName];
-        }
-
-        // File exists, but hash differs. Make a unique name so we don't overwrite user files.
-        return [false, McaFilesystem::makeUniqueFileName($path, $remote->name)];
     }
 
     /**

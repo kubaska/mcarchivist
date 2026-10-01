@@ -33,10 +33,9 @@ trait ManagesLocalVersions
      */
     protected function doDestroyFile(string $model, string $versionId, string $fileId)
     {
-        $file = File::query()->with('version')->findOrFail($fileId);
-        if ($file->version->versionable_type !== $model || $file->version_id !== (int)$versionId) {
-            abort(400);
-        }
+        $file = File::query()
+            ->withWhereHas('version', fn($q) => $q->forMorph($model)->where('id', $versionId))
+            ->findOrFail($fileId);
 
         $file->forceRemove();
 

@@ -92,6 +92,17 @@ class FileDTO extends DTO implements Arrayable
         );
     }
 
+    public static function make(
+        string $id, string $name, array|HashList $hashes, bool $primary,
+        ?string $component = null, ?FileSide $side = null, ?string $dir = null, ?string $url = null, ?int $size = null
+    ): FileDTO
+    {
+        return new self(
+            $id, $id, $component ?? $id, $side, $dir, $name, $url,
+            $size, is_array($hashes) ? new HashList($hashes) : $hashes, $primary
+        );
+    }
+
     public function setLocal(bool $isLocal): static
     {
         $this->local = $isLocal;

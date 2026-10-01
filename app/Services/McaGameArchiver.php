@@ -6,7 +6,6 @@ use App\API\DTO\Game\GameComponentDTO;
 use App\API\DTO\Game\GameVersionDTO;
 use App\API\Mojang;
 use App\Enums\StorageArea;
-use App\Mca\McaFile;
 use App\Models\File;
 use App\Models\GameVersion;
 use App\Models\Version;
@@ -18,7 +17,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Symfony\Component\Filesystem\Path;
 
-class McaGameArchiver
+class McaGameArchiver extends BaseArchiver
 {
     public function __construct(
         protected Mojang $api,
@@ -27,6 +26,7 @@ class McaGameArchiver
         protected McaLibraryArchiver $libraryArchiver
     )
     {
+        parent::__construct($this->downloader, $this->filesystem);
     }
 
     public function importGameVersions(bool $revalidate)
@@ -146,39 +146,9 @@ class McaGameArchiver
     {
         Log::stack(['queue', 'stack'])->info("Archiving $component->name...");
 
-        if ($localFile = $version->files->first(fn(File $f) => $f->component === $component->name)) {
-            return $localFile;
-        }
-
         $versionDir = McaFilesystem::makeDirName($gameVersion->name, extendCharset: true);
-        $versionPath = $this->filesystem->getStoragePath(StorageArea::GAME, $versionDir, makeDir: true);
-        [$alreadyHaveFile, $fileName] = Utils::verifyFileAlreadyExistsAndMakeFileName($versionPath, $component->toFileDTO());
 
-        if ($alreadyHaveFile) {
-            $file = new McaFile(Path::join($versionPath, $fileName));
-        } else {
-            $file = $this->downloader->download(
-                $component->url,
-                $versionPath,
-                $fileName,
-                'sha1',
-                $component->hash,
-                $component->size
-            );
-        }
-
-        return $version->files()->firstOrCreate(
-            ['remote_id' => $component->name],
-            [
-                'storage_area' => StorageArea::GAME,
-                'side' => $this->api->getFileSide($component->name),
-                'path' => $versionDir, 'file_name' => $fileName, 'original_file_name' => $component->getFileName(),
-                'component' => $component->name,
-                'hashes' => $file->makeHashList(['sha1' => $component->hash]),
-                'size' => $component->size,
-                'primary' => Utils::isPrimaryComponent($component->name)
-            ]
-        );
+        return $this->archiveFile($version, $component->toFileDTO(), $versionDir);
     }
 
     private function getSortOrder(string $component): int

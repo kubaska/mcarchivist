@@ -453,7 +453,18 @@ class ModController extends Controller
 
     public function fileDelete($id, $versionId, $fileId, Request $request)
     {
-        $file = File::query()->with('version.dependants_versions')->findOrFail($fileId);
+        $this->validate($request, [
+            'platform' => ['required', 'string', new ValidPlatformRule()]
+        ]);
+
+        /** @var File $file */
+        $file = File::query()
+            ->withWhereHas('version', fn(Builder $q) => $q
+                ->where('platform', $request->input('platform'))
+                ->where($request->boolean('id_is_remote') ? 'remote_id' : 'id', $versionId)
+            )
+            ->where($request->boolean('id_is_remote') ? 'remote_id' : 'id', $fileId)
+            ->firstOrFail();
         $version = $file->version;
 
         if ($version->versionable_type !== Project::class) {
@@ -461,14 +472,6 @@ class ModController extends Controller
                 'error' => 'Bad Request',
                 'description' => 'Only project files can be removed on this endpoint'
             ], 400);
-        }
-
-        if ($request->boolean('id_is_remote')) {
-            if ($version->remote_id !== $versionId && $version->platform !== (int)$request->get('platform'))
-                abort(400);
-        } else {
-            if ($version->id !== (int)$versionId)
-                abort(400);
         }
 
         if ($file->primary && $version->dependants_versions->isNotEmpty()) {

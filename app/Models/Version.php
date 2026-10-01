@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\StorageArea;
 use App\Enums\VersionType;
 use App\Enums\ProjectDependencyType;
 use Illuminate\Database\Eloquent\Builder;
@@ -90,6 +91,16 @@ class Version extends Model
             ->where('platform', $platform)
             ->where('remote_id', $remoteId)
             ->firstOrFail();
+    }
+
+    public function getStorageArea(): StorageArea
+    {
+        return match ($this->versionable_type) {
+            GameVersion::class => StorageArea::GAME,
+            Loader::class => StorageArea::LOADERS,
+            Project::class => StorageArea::PROJECTS,
+            default => throw new \RuntimeException('Invalid file group: '.$this->versionable_type)
+        };
     }
 
     /**

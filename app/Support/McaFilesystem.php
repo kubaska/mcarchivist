@@ -14,10 +14,7 @@ use Symfony\Component\Process\Process;
 
 class McaFilesystem extends Filesystem
 {
-    public function __construct(
-        protected SettingsService $settings,
-        protected SymfonyFilesystem $symfonyFilesystem
-    )
+    public function __construct(protected SymfonyFilesystem $symfonyFilesystem)
     {
     }
 
@@ -26,20 +23,21 @@ class McaFilesystem extends Filesystem
      *
      * @param string $path
      * @param string $target
+     * @param bool   $overwrite
      * @return bool
      */
-    public function move($path, $target): bool
+    public function move($path, $target, bool $overwrite = false): bool
     {
         // Let OS handle the move - PHP built-in fails when source and target destination live on different partitions.
         if (! defined('PHP_WINDOWS_VERSION_BUILD')) {
-            $p = new Process(['mv', $path, $target], timeout: null);
+            $p = new Process(['mv', ...($overwrite ? ['-f'] : []), $path, $target], timeout: null);
             $p->run();
 
             if ($p->getExitCode() === 0) return true;
         }
 
         // Try built-in and if it fails, copy the source to destination and remove source.
-        $this->symfonyFilesystem->rename($path, $target);
+        $this->symfonyFilesystem->rename($path, $target, $overwrite);
         return true;
     }
 
@@ -85,9 +83,18 @@ class McaFilesystem extends Filesystem
         }
     }
 
+    public function getTemporaryDir(): string
+    {
+        $dir = app(SettingsService::class)->getPath(StorageArea::TEMP->getSettingKey());
+
+        $this->ensureDirectoryExists($dir);
+
+        return $dir;
+    }
+
     public function getStoragePath(StorageArea $storageArea, array|string|null $path = null, bool $makeDir = false): string
     {
-        $fullPath = $this->settings->getPath($storageArea->getSettingKey());
+        $fullPath = app(SettingsService::class)->getPath($storageArea->getSettingKey());
 
         if ($path) {
             $fullPath = Path::join($fullPath, ...Arr::wrap($path));

@@ -9,6 +9,11 @@ use Illuminate\Support\Arr;
 
 class AsHashListCast implements CastsAttributes
 {
+    public static function getHashSeparator(): string
+    {
+        return ':';
+    }
+
     /**
      * Cast the given value.
      *
@@ -21,7 +26,7 @@ class AsHashListCast implements CastsAttributes
             if (! $value) return new HashList([]);
 
             $hashes = Arr::mapWithKeys(explode(',', $value), function (string $hash) {
-                $parts = explode(':', $hash, 2);
+                $parts = explode(self::getHashSeparator(), $hash, 2);
                 return [$parts[0] => $parts[1]];
             });
             return new HashList($hashes);
@@ -41,6 +46,9 @@ class AsHashListCast implements CastsAttributes
             throw new \InvalidArgumentException('The given value is not a HashList instance.');
         }
 
-        return implode(',', Arr::map($value->all(), fn(string $hash, string $algo) => "$algo:$hash"));
+        return implode(
+            ',',
+            Arr::map($value->all(), fn(string $hash, string $algo) => $algo.self::getHashSeparator().$hash)
+        );
     }
 }

@@ -7,7 +7,6 @@ use App\API\DTO\FileDTO;
 use App\API\DTO\LoaderDTO;
 use App\API\DTO\LoaderVersionDTO;
 use App\API\Loader\Base\BaseLoader;
-use App\Enums\StorageArea;
 use App\Enums\VersionType;
 use App\Mca\ApiManager;
 use App\Mca\McaFile;
@@ -18,7 +17,6 @@ use App\Models\LoaderRemote;
 use App\Models\ProjectType;
 use App\Models\Version;
 use App\Support\McaFilesystem;
-use App\Support\Utils;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
@@ -28,7 +26,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Symfony\Component\Filesystem\Path;
 
-class McaLoaderArchiver
+class McaLoaderArchiver extends BaseArchiver
 {
     public function __construct(
         protected ApiManager $apiManager,
@@ -38,6 +36,7 @@ class McaLoaderArchiver
         protected SettingsService $settings
     )
     {
+        parent::__construct($this->downloader, $this->filesystem);
     }
 
     public function importRemoteLoaders()
@@ -179,7 +178,6 @@ class McaLoaderArchiver
         Log::stack(['queue', 'stack'])->info(sprintf('Archiving loader: %s %s', $api::name(), $version->remote_id));
 
         $loaderDirName = McaFilesystem::makeDirName($version->remote_id, extendCharset: true);
-        $loaderDir = $this->filesystem->getStoragePath(StorageArea::LOADERS, [$api->slug(), $loaderDirName], makeDir: true);
         $fileDTOs = $api->getVersion($version->remote_id);
         $version->saveAvailableComponentList($fileDTOs->pluck('component')->toArray());
         $fileDTOs = $this->resolveComponentsToArchive($api, $fileDTOs, $components);
@@ -187,32 +185,14 @@ class McaLoaderArchiver
 
         /** @var FileDTO $fileDTO */
         foreach ($fileDTOs as $fileDTO) {
-            // Check if we have this file already
-            if ($localFile = $version->files->first(fn(File $f) => $f->remote_id === $fileDTO->remoteId)) {
-                $files[] = new McaFile($localFile->getAbsoluteFilePath());
-                continue;
-            }
-
-            [$alreadyHaveFile, $fileName] = Utils::verifyFileAlreadyExistsAndMakeFileName($loaderDir, $fileDTO);
-            $file = ArchiverCommons::downloadFileIfMissing($this->downloader, $fileDTO, $loaderDir, $fileName, $alreadyHaveFile);
-
-            $version->files()->firstOrCreate(
-                ['remote_id' => $fileDTO->remoteId],
-                [
-                    'storage_area' => StorageArea::LOADERS,
-                    'component' => $fileDTO->component,
-                    'original_file_name' => $fileDTO->name,
-                    'path' => Path::join($api->slug(), $loaderDirName), 'file_name' => $fileName,
-                    'hashes' => $file->makeHashList($fileDTO->hashes->toArray()),
-                    'size' => $fileDTO->size ?? $file->getSize(),
-                    'primary' => $fileDTO->primary
-                ]
-            );
-
-            $files[] = $file;
+            $files[] = $this->archiveFile($version, $fileDTO, Path::join($api->slug(), $loaderDirName));
         }
 
-        $manifest = $api->getVersionManifest($version->remote_id, collect($files));
+        $manifest = $api->getVersionManifest(
+            $version->remote_id,
+            collect(array_map(fn(File $f) => new McaFile($f->getAbsoluteFilePath()), $files))
+        );
+
         if ($manifest) {
             if ($manifest->releasedAt) {
                 $version->published_at = $manifest->releasedAt;

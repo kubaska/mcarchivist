@@ -23,4 +23,22 @@ trait InteractsWithFilesystem
     {
         return $this->makeFile($file->getAbsoluteDirectoryPath(), $file->file_name, true);
     }
+
+    public function assertEmptyDirectory(string $path): void
+    {
+        $this->assertTrue(!(new \FilesystemIterator($path))->valid(), "Failed asserting that directory $path is empty.");
+    }
+
+    public function assertDirectoryHasOnlyOneFile(string $path)
+    {
+        $this->assertDirectoryFileCount($path, 1);
+    }
+
+    public function assertDirectoryFileCount(string $path, int $count)
+    {
+        $this->assertTrue(
+            count(app(Filesystem::class)->files($path)) === $count,
+            sprintf('Failed asserting that directory "%s" contains %s %s.', $path, $count, $count === 1 ? 'file' : 'files')
+        );
+    }
 }

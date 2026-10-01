@@ -52,7 +52,7 @@ Remember to update the storage directories in application settings too.
 #### Requirements
 - HTTP server
 - PHP 8.2 or newer with following extensions enabled: curl, fileinfo, mbstring, openssl, zip + PDO for database server of your choosing
-- Laravel compatible database server e.g. MariaDB or PostgreSQL
+- Database server. Currently supported: MariaDB, PostgreSQL and SQLite (Support for more might get added in the future, depending on needs.)
 - [Composer](https://getcomposer.org)
 - [Node](https://nodejs.org)
 - Git

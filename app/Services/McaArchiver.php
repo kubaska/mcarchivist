@@ -8,7 +8,6 @@ use App\API\DTO\LoaderDTO;
 use App\API\DTO\VersionDTO;
 use App\API\DTO\ProjectDTO;
 use App\Enums\DependencyQualifier;
-use App\Enums\StorageArea;
 use App\Enums\FileQualifier;
 use App\Enums\ProjectDependencyType;
 use App\Exceptions\RemoteFilesMissingException;
@@ -19,13 +18,12 @@ use App\Models\GameVersion;
 use App\Models\Project;
 use App\Models\Version;
 use App\Support\McaFilesystem;
-use App\Support\Utils;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class McaArchiver
+class McaArchiver extends BaseArchiver
 {
     public function __construct(
         protected ApiManager $apiManager,
@@ -36,6 +34,7 @@ class McaArchiver
         protected McaDownloader $downloader
     )
     {
+        parent::__construct($this->downloader, $this->filesystem);
     }
 
     public function archiveProject(string $platform, string $id): Project
@@ -76,7 +75,7 @@ class McaArchiver
     }
 
     public function archiveProjectFiles(
-        Project             $project, string|VersionDTO $remoteVersion, FileQualifier $fileQualifier = FileQualifier::PRIMARY_ONLY,
+        Project $project, string|VersionDTO $remoteVersion, FileQualifier $fileQualifier = FileQualifier::PRIMARY_ONLY,
         DependencyQualifier $dependencyQualifier = DependencyQualifier::NONE
     ): Version
     {
@@ -154,7 +153,7 @@ class McaArchiver
     }
 
     public function archiveProjectFileDto(
-        Project             $project, VersionDTO $remoteVersion, array $fileIds,
+        Project $project, VersionDTO $remoteVersion, array $fileIds,
         DependencyQualifier $dependencyQualifier = DependencyQualifier::NONE, bool $revalidate = false
     ): Version
     {
@@ -198,10 +197,13 @@ class McaArchiver
             }
         }
 
-        // Check if we already have this version and all files
-        if (! $revalidate) {
+        // If user does not want to revalidate files, return early by checking if we got the files locally.
+        if ($revalidate === false) {
             if ($version = $this->isVersionAlreadyArchived($project, $remoteVersion, $fileIds)) {
+                Log::stack(['queue', 'stack'])->info(sprintf('Skipping archiving version %s: already have all files', $remoteVersion->name));
+
                 $version->fill(['type' => $remoteVersion->type, 'changelog' => $remoteVersion->changelog])->save();
+
                 return $version;
             }
         }
@@ -238,7 +240,7 @@ class McaArchiver
 
             /** @var FileDTO $remoteFile */
             foreach ($files as $remoteFile) {
-                $this->saveFile($project, $version, $remoteFile);
+                $this->archiveFile($version, $remoteFile, $project->master_project->archive_dir);
             }
         } catch (\Exception $e) {
             DB::rollBack();
@@ -321,6 +323,7 @@ class McaArchiver
 
     protected function isVersionAlreadyArchived(Project $project, VersionDTO $remoteVersion, array $fileIds): Version|false
     {
+        /** @var Version $version */
         $version = Version::query()
             ->whereMorphedTo('versionable', $project)
             ->with('files')
@@ -335,7 +338,6 @@ class McaArchiver
                 return false;
         }
 
-        Log::stack(['queue', 'stack'])->info(sprintf('Skipping archiving version %s: already have all files', $remoteVersion->name));
         return $version;
     }
 
@@ -373,32 +375,6 @@ class McaArchiver
         $model->loaders()->sync($localLoaders);
 
         return $model;
-    }
-
-    private function saveFile(Project $project, Version $version, FileDTO $file): File
-    {
-        if ($localFile = $version->files->first(fn(File $f) => $f->remote_id === $file->remoteId)) {
-            return $localFile;
-        }
-
-        $projectDirName = $project->master_project->archive_dir;
-        $projectDir = $this->filesystem->getStoragePath(StorageArea::PROJECTS, $projectDirName, makeDir: true);
-
-        [$alreadyHaveFile, $fileName] = Utils::verifyFileAlreadyExistsAndMakeFileName($projectDir, $file);
-        $fileRef = ArchiverCommons::downloadFileIfMissing($this->downloader, $file, $projectDir, $fileName, $alreadyHaveFile);
-
-        return $version->files()->updateOrCreate(
-            ['remote_id' => $file->id],
-            [
-                'storage_area' => StorageArea::PROJECTS,
-                'path' => $projectDirName,
-                'file_name' => $fileName,
-                'original_file_name' => $file->name,
-                'hashes' => $fileRef->makeHashList($file->hashes->toArray()),
-                'size' => $file->size,
-                'primary' => $file->primary
-            ]
-        );
     }
 
     private function logVersions(Collection $versions)
