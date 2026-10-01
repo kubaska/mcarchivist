@@ -123,7 +123,7 @@ class Modrinth extends BaseThirdPartyApi
                 [
                     'key' => 'game_versions',
                     'target_key' => 'game_versions',
-                    'transform_fn' => fn($v) => Modrinth::transformToFacet('versions', $v)
+                    'transform_fn' => fn($v) => RequestUtils::stringifyArray($v)
                 ],
                 [
                     'key' => 'loaders',
@@ -342,7 +342,7 @@ class Modrinth extends BaseThirdPartyApi
     public function getProjectVersionsForGameVersions(string $projectId, array $gameVersions, array $options = []): ThirdPartyApiResponse
     {
         $result = [];
-        $versions = $this->getProjectVersions($projectId, []);
+        $versions = $this->getProjectVersions($projectId, ['game_versions' => RequestUtils::stringifyArray($gameVersions)]);
 
         /** @var VersionDTO $file */
         foreach ($versions->getData() as $file) {
