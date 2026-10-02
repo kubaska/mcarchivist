@@ -268,7 +268,7 @@ class McaArchiver extends BaseArchiver
                 Log::stack(['queue', 'stack'])->info('Using Curseforge loader workaround');
 
                 $depVersions = $depVersions->filter(
-                    fn(VersionDTO $mv) => $mv->loaders->isEmpty() || $mv->loaders->contains('Forge')
+                    fn(VersionDTO $mv) => $mv->loaders->isEmpty() || $mv->loaders->contains(fn(LoaderDTO $l) => $l->name === 'Forge')
                 );
             } else {
                 if ($version->loaders->isEmpty()) {
