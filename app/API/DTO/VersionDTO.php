@@ -132,7 +132,7 @@ class VersionDTO extends DTO implements Arrayable
      */
     public function hasGameVersions(array $versions): bool
     {
-        return empty(array_diff($this->getGameVersionNames(), $versions));
+        return empty(array_diff($versions, $this->getGameVersionNames()));
     }
 
     public function getPrimaryFile(): ?FileDTO
