@@ -69,6 +69,7 @@ class ModController extends Controller
                 ->whereHas('projects', function (Builder $q) use ($request) {
                     $q->when($request->has('platform'), fn(Builder $q) => $q->where('platform', $request->input('platform')));
                 })
+                ->with('archive_rules')
                 ->with('projects', fn(Builder $q) => $q->with(['archive_rules', 'authors', 'categories', 'project_types']))
                 ->withCount('versions')
                 ->when($request->exists('query'),
@@ -168,7 +169,7 @@ class ModController extends Controller
             $this->validateValues(['id' => $id], ['id' => ['required', 'int']]);
 
             $mp = MasterProject::query()
-                ->with('projects.archive_rules')
+                ->with(['archive_rules', 'projects.archive_rules'])
                 ->findOrFail($id);
 
             $project = match (true) {

@@ -64,7 +64,7 @@ class ProjectDTO extends DTO implements Arrayable
             $project->project_types->map(fn(ProjectType $c) => $c->type),
             $project->categories->map(fn(Category $c) => CategoryDTO::fromLocal($c)),
             $project->platform,
-            $mp->projects->contains(fn(Project $p) => $p->archive_rules->isNotEmpty()),
+            $mp->archive_rules->isNotEmpty() || $mp->projects->contains(fn(Project $p) => $p->archive_rules->isNotEmpty()),
             $mp->preferred_project_id === $project->getKey(),
             $mp->projects->count(),
             null,
