@@ -93,7 +93,7 @@ class McaDownloader
             }
         }
     }
-    
+
     private function downloadFile(string $url, string $path, ?string $checksumAlgo, ?string $expectedChecksum, ?int $expectedSize)
     {
         Log::debug(sprintf('Downloading %s to %s', $url, $path));

@@ -1,6 +1,6 @@
 <template>
     <div class="m-table" :style="sizingCss">
-        <div class="m-table--row py-2 fw-semibold">
+        <div class="m-table--row p-2 fw-semibold">
             <slot name="header">
                 <span v-for="column in columns" class="d-block">{{ column }}</span>
             </slot>
@@ -50,7 +50,7 @@ const sizingCss = computed(() => {
 
 .m-table--row
     display: grid
-    gap: 1rem
+    gap: 0.5rem
     grid-template-columns: inherit
     border-bottom: var(--bs-gray-300) 1px solid
 
