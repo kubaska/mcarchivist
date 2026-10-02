@@ -53,40 +53,33 @@ class McaDownloader
             }
         }
 
-        Log::debug(sprintf('Downloading %s to %s', $url, $target));
-
-        $this->client->get($url, ['sink' => $tempFilePath, ...$this->clientOptions]);
-
-        if ($this->shouldVerify && is_int($expectedSize)) {
-            if (! $this->verifySize($tempFilePath, $expectedSize)) {
-                throw new \RuntimeException(sprintf('File size mismatch while downloading %s', $url));
-            }
-        }
-
-        if ($this->shouldVerify && $checksumAlgo && $expectedChecksum) {
-            if (! $this->verifyChecksum($tempFilePath, $checksumAlgo, $expectedChecksum)) {
-                throw new \RuntimeException(sprintf('File checksum mismatch while downloading %s', $url));
-            }
-        }
+        $this->downloadFile($url, $tempFilePath, $checksumAlgo, $expectedChecksum, $expectedSize);
 
         // Move file to permanent storage
-        if (! $this->optEq($options, '__doNotMoveToDestination', true)) {
-            $this->filesystem->move($tempFilePath, $target);
+        $this->filesystem->move($tempFilePath, $target);
 
-            return new McaFile($target);
-        }
-
-        return new McaFile($tempFilePath);
+        return new McaFile($target);
     }
 
     public function downloadToTemporaryDirectory(
-        string $url, string $path, string $filename, ?string $checksumAlgo, ?string $expectedChecksum, ?int $expectedSize, array $options = []
+        string $url, string $filename, ?string $checksumAlgo, ?string $expectedChecksum, ?int $expectedSize, array $options = []
     ): McaFile
     {
-        return $this->download(
-            $url, $path, $filename, $checksumAlgo, $expectedChecksum, $expectedSize,
-            [...$options, '__doNotMoveToDestination' => true]
-        );
+        $tempDir = $this->filesystem->getTemporaryDir();
+        $tempFilePath = Path::join($tempDir, $filename);
+
+        // Check if file already exists in temporary directory, and if it does and passes checksum verification return it.
+        if ($this->filesystem->exists($tempFilePath)) {
+            if ($checksumAlgo && $expectedChecksum && $this->verifyChecksum($tempFilePath, $checksumAlgo, $expectedChecksum)) {
+                return new McaFile($tempFilePath);
+            } else {
+                $tempFilePath = Path::join($tempDir, $this->filesystem->makeUniqueFileName($tempDir, $filename));
+            }
+        }
+
+        $this->downloadFile($url, $tempFilePath, $checksumAlgo, $expectedChecksum, $expectedSize);
+
+        return new McaFile($tempFilePath);
     }
 
     public function downloadFromMirrorList(array $urls, string $path, string $filename, ?string $checksumAlgo, ?string $expectedChecksum, ?int $expectedSize, array $options = [])
@@ -97,6 +90,25 @@ class McaDownloader
             } catch (GuzzleException $e) {
                 // Rethrow if we exhausted url list
                 if ($urls[count($urls) - 1] === $url) throw $e;
+            }
+        }
+    }
+    
+    private function downloadFile(string $url, string $path, ?string $checksumAlgo, ?string $expectedChecksum, ?int $expectedSize)
+    {
+        Log::debug(sprintf('Downloading %s to %s', $url, $path));
+
+        $this->client->get($url, ['sink' => $path, ...$this->clientOptions]);
+
+        if ($this->shouldVerify && is_int($expectedSize)) {
+            if (! $this->verifySize($path, $expectedSize)) {
+                throw new \RuntimeException(sprintf('File size mismatch while downloading %s', $url));
+            }
+        }
+
+        if ($this->shouldVerify && $checksumAlgo && $expectedChecksum) {
+            if (! $this->verifyChecksum($path, $checksumAlgo, $expectedChecksum)) {
+                throw new \RuntimeException(sprintf('File checksum mismatch while downloading %s', $url));
             }
         }
     }

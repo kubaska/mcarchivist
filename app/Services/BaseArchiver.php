@@ -60,7 +60,6 @@ abstract class BaseArchiver
         [$algo, $hash] = $fileDTO->hashes->getFirstHash();
         $file = $this->downloader->downloadToTemporaryDirectory(
             $fileDTO->url,
-            $versionPath,
             $fileName,
             $algo,
             $hash,
