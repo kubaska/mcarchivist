@@ -45,7 +45,10 @@ class AutomaticArchiveCommand extends Command implements Isolatable
     )
     {
         MasterProject::query()
-            ->whereHas('projects', fn(Builder $q) => $q->has('archive_rules'))
+            ->where(function (Builder $q) {
+                $q->has('archive_rules')
+                    ->orWhereHas('projects', fn(Builder $q) => $q->has('archive_rules'));
+            })
             ->whereHas('projects', fn(Builder $q) => $q
                 ->where('last_version_check', '>', $this->getCheckBoundaryDate($settings, 'projects'))
                 ->orWhere('version_check_available_at', '>', Carbon::now()),
