@@ -83,6 +83,7 @@ class SettingsService
             (new McaSetting($prefix.'.automatic_archive.interval', 1))
                 ->setValidationRules(['required', 'integer:strict', 'min:1', 'max:30'])
         );
+
         $this->registerSetting(
             (new McaSetting($prefix.'.automatic_archive.interval_unit', 'd'))
                 ->setValidationRules(['required', Rule::in(['h', 'd'])])
@@ -126,14 +127,15 @@ class SettingsService
         );
     }
 
-    public function registerSetting(McaSetting $setting)
+    public function registerSetting(McaSetting $setting): bool
     {
         if ($this->has($setting->key)) {
             Log::error(sprintf('Setting [%s] is already registered!', $setting->key));
-            return;
+            return false;
         }
 
         $this->store[$setting->key] = $setting;
+        return true;
     }
 
     protected function hydrate(mixed $value, mixed $default, string $type)
