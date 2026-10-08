@@ -99,8 +99,8 @@ class AutomaticArchiveCommand extends Command implements Isolatable
         }
 
         $manager->eachLoader(function (BaseLoader $loaderApi) use ($loaderArchiver, $settings) {
-            if ($aas = $this->shouldDispatch($settings, $settingPrefix = $loaderApi->getSettingPrefix())) {
-                $loader = Loader::query()->where('slug', $loaderApi->slug())->first();
+            if ($aas = $this->shouldDispatch($settings, $settingPrefix = $loaderApi::getSettingPrefix())) {
+                $loader = Loader::query()->where('slug', $loaderApi::slug())->first();
                 if (! $loader) {
                     Log::error('Missing database instance of loader '.$loaderApi::name());
                     return;

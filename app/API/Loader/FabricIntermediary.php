@@ -20,10 +20,10 @@ class FabricIntermediary extends BaseLoader
 
     public static function registerSettings(SettingsService $settings)
     {
-        $settings->registerAutoArchiveSettings('loaders.fabric-intermediary');
+        $settings->registerAutoArchiveSettings(static::getSettingPrefix());
 
         $settings->registerAutoArchiveReleaseTypesSetting(
-            'loaders.fabric-intermediary',
+            static::getSettingPrefix(),
             ['release'],
             ['release', 'snapshot']
         );

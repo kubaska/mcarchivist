@@ -35,21 +35,21 @@ class NeoForge extends BaseLoader
 
     public static function registerSettings(SettingsService $settings)
     {
-        $settings->registerAutoArchiveSettings('loaders.neoforge');
+        $settings->registerAutoArchiveSettings(static::getSettingPrefix());
 
         $settings->registerArchivingComponentsSettings(
-            'loaders.neoforge',
+            static::getSettingPrefix(),
             ['universal', 'installer'],
             ['universal', 'installer', 'changelog', 'sources', 'userdev']
         );
 
-        $settings->registerAutoArchiveFilterSetting('loaders.neoforge', 'latest', [
+        $settings->registerAutoArchiveFilterSetting(static::getSettingPrefix(), 'latest', [
             ['id' => '*', 'name' => 'All'], 'latest'
         ]);
 
-        $settings->registerAutoArchiveReleaseTypesSetting('loaders.neoforge', ['release'], ['release', 'snapshot']);
+        $settings->registerAutoArchiveReleaseTypesSetting(static::getSettingPrefix(), ['release'], ['release', 'snapshot']);
 
-        $settings->registerAutoArchiveRemoveOldSetting('loaders.neoforge');
+        $settings->registerAutoArchiveRemoveOldSetting(static::getSettingPrefix());
     }
 
     public function isVersionedByGameVersions(): bool

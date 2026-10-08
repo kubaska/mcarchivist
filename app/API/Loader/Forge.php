@@ -36,10 +36,10 @@ class Forge extends BaseLoader
 
     public static function registerSettings(SettingsService $settings)
     {
-        $settings->registerAutoArchiveSettings('loaders.forge');
+        $settings->registerAutoArchiveSettings(static::getSettingPrefix());
 
         $settings->registerArchivingComponentsSettings(
-            'loaders.forge',
+            static::getSettingPrefix(),
             ['client', 'server', 'universal', 'installer'],
             [
                 'client', 'server', 'universal', 'installer', 'changelog',
@@ -49,12 +49,12 @@ class Forge extends BaseLoader
             ]
         );
 
-        $settings->registerAutoArchiveFilterSetting('loaders.forge', 'highlighted', [
+        $settings->registerAutoArchiveFilterSetting(static::getSettingPrefix(), 'highlighted', [
             ['id' => '*', 'name' => 'All'], 'highlighted'
         ]);
 
-        $settings->registerAutoArchiveReleaseTypesSetting('loaders.forge', ['release'], ['release', 'snapshot']);
-        $settings->registerAutoArchiveRemoveOldSetting('loaders.forge');
+        $settings->registerAutoArchiveReleaseTypesSetting(static::getSettingPrefix(), ['release'], ['release', 'snapshot']);
+        $settings->registerAutoArchiveRemoveOldSetting(static::getSettingPrefix());
     }
 
     public function isVersionedByGameVersions(): bool

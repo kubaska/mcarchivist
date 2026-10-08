@@ -21,13 +21,13 @@ class Fabric extends BaseLoader
 
     public static function registerSettings(SettingsService $settings)
     {
-        $settings->registerAutoArchiveSettings('loaders.fabric');
+        $settings->registerAutoArchiveSettings(static::getSettingPrefix());
 
-        $settings->registerAutoArchiveFilterSetting('loaders.fabric', 'latest', [
+        $settings->registerAutoArchiveFilterSetting(static::getSettingPrefix(), 'latest', [
             ['id' => '*', 'name' => 'All'], 'latest'
         ]);
 
-        $settings->registerAutoArchiveRemoveOldSetting('loaders.fabric');
+        $settings->registerAutoArchiveRemoveOldSetting(static::getSettingPrefix());
     }
 
     public function isVersionedByGameVersions(): bool

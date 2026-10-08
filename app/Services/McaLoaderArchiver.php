@@ -42,7 +42,7 @@ class McaLoaderArchiver extends BaseArchiver
     public function importRemoteLoaders()
     {
         $this->apiManager->eachLoader(function (BaseLoader $loader) {
-            Loader::firstOrCreate(['name' => $loader::name(), 'slug' => $loader->slug()]);
+            Loader::firstOrCreate(['name' => $loader::name(), 'slug' => $loader::slug()]);
         });
 
         $this->apiManager->each(function (ThirdPartyApi $api) {
@@ -185,7 +185,7 @@ class McaLoaderArchiver extends BaseArchiver
 
         /** @var FileDTO $fileDTO */
         foreach ($fileDTOs as $fileDTO) {
-            $files[] = $this->archiveFile($version, $fileDTO, Path::join($api->slug(), $loaderDirName));
+            $files[] = $this->archiveFile($version, $fileDTO, Path::join($api::slug(), $loaderDirName));
         }
 
         $manifest = $api->getVersionManifest(
@@ -234,7 +234,7 @@ class McaLoaderArchiver extends BaseArchiver
      */
     public function applyLoaderAutoArchivableVersionsQuery(Builder $query, string $type, Loader $loader, BaseLoader $api)
     {
-        $settingPrefix = $api->getSettingPrefix();
+        $settingPrefix = $api::getSettingPrefix();
         $whereIn = $type === 'whereIn' ? 'whereIn' : 'whereNotIn';
 
         // use subquery in subquery - workaround MariaDB error 42000

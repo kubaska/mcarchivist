@@ -43,20 +43,20 @@ class LiteLoader extends BaseLoader
 
     public static function registerSettings(SettingsService $settings)
     {
-        $settings->registerAutoArchiveSettings('loaders.liteloader');
+        $settings->registerAutoArchiveSettings(static::getSettingPrefix());
 
-        $settings->registerArchivingComponentsSettings('loaders.liteloader', ['universal'], [
+        $settings->registerArchivingComponentsSettings(static::getSettingPrefix(), ['universal'], [
             'universal', 'sources', 'javadoc', 'staging', 'release',
             ['id' => 'mcpnames', 'name' => 'MCP names'],
             ['id' => 'mcpnames-sources', 'name' => 'MCP names sources'],
             ['id' => 'srgnames-sources', 'name' => 'SRG names sources'],
         ]);
 
-        $settings->registerAutoArchiveFilterSetting('loaders.liteloader', 'latest', [
+        $settings->registerAutoArchiveFilterSetting(static::getSettingPrefix(), 'latest', [
             ['id' => '*', 'name' => 'All'], 'latest'
         ]);
 
-        $settings->registerAutoArchiveRemoveOldSetting('loaders.liteloader');
+        $settings->registerAutoArchiveRemoveOldSetting(static::getSettingPrefix());
     }
 
     public function isVersionedByGameVersions(): bool

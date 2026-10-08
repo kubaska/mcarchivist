@@ -17,19 +17,19 @@ abstract class BaseLoader implements LoaderContract
         return Str::slug(static::name());
     }
 
-    public function slug(): string
+    public static function slug(): string
     {
         return Str::slug(static::name());
+    }
+
+    public static function getSettingPrefix(): string
+    {
+        return 'loaders.'.static::slug();
     }
 
     public static function registerSettings(SettingsService $settings)
     {
 
-    }
-
-    public function getSettingPrefix(): string
-    {
-        return 'loaders.'.$this->slug();
     }
 
     public function getMirrorList(): array
