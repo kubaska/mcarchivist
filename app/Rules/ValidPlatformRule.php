@@ -2,6 +2,8 @@
 
 namespace App\Rules;
 
+use App\Exceptions\PlatformDisabledException;
+use App\Exceptions\PlatformNotFoundException;
 use App\Mca\ApiManager;
 use Illuminate\Contracts\Validation\ValidationRule;
 
@@ -11,9 +13,12 @@ class ValidPlatformRule implements ValidationRule
     {
         $manager = app(ApiManager::class);
 
-        if (! $manager->has($value)) {
+        try {
+            $manager->get($value);
+        } catch (PlatformNotFoundException) {
             $fail('Platform does not exist');
-            return;
+        } catch (PlatformDisabledException) {
+            $fail('Platform is disabled');
         }
     }
 }
