@@ -25,9 +25,10 @@ export const showErrorNotification = (title, description = '', timeout = 5) => {
     showNotification('danger', title, description, timeout);
 };
 
-export const showErrorNotificationFromAxiosError = (error, defaultTitle = null, timeout = undefined) => {
+export const showErrorNotificationFromAxiosError = (error, defaultTitle = null, timeout = 5) => {
     showErrorNotification(
         error?.response?.data?.error ?? error.toString() ?? defaultTitle ?? 'Network request failed',
-        error?.response?.data?.description ?? null
+        error?.response?.data?.description ?? null,
+        timeout
     );
 };
