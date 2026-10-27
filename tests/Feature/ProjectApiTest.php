@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Enums\EProjectType;
 use App\Enums\VersionType;
 use App\Jobs\ArchiveProject;
 use App\Jobs\RevalidateVersionJob;
@@ -14,6 +15,7 @@ use App\Models\GameVersion;
 use App\Models\Loader;
 use App\Models\MasterProject;
 use App\Models\Project;
+use App\Models\ProjectType;
 use App\Models\Ruleset;
 use App\Models\Version;
 use Illuminate\Support\Arr;
@@ -41,9 +43,6 @@ class ProjectApiTest extends TestCase
     public function it_lists_projects()
     {
         $project = Project::factory()->create();
-//        $projectTinkers = Project::factory()
-//            ->has(Version::factory(3)->has(GameVersion::factory(), 'game_versions'))
-//            ->create(['name' => 'Tinkers Construct']);
 
         // Test basic
         $this->get(route('project.index', ['archived_only' => true]));
@@ -117,6 +116,52 @@ class ProjectApiTest extends TestCase
             ->assertOk()
             ->assertJsonPath('data.0.name', 'Tinkers Construct')
             ->assertJsonCount(1, 'data');
+    }
+
+    public function test_it_filters_projects_by_project_type()
+    {
+        $project = Project::factory()->has(ProjectType::factory()->fromEnum(EProjectType::MOD), 'project_types')->create();
+        $modpack = Project::factory()->has(ProjectType::factory()->fromEnum(EProjectType::MODPACK), 'project_types')->create();
+
+        // Single
+        $this->get(route('project.index', ['archived_only' => true, 'platform' => 'local', 'project_type' => EProjectType::MOD->value]));
+        $this->response
+            ->assertOk()
+            ->assertJsonPath('data.0.name', $project->name)
+            ->assertJsonCount(1, 'data');
+
+        $this->get(route('project.index', ['archived_only' => true, 'platform' => 'local', 'project_type' => EProjectType::MODPACK->value]));
+        $this->response
+            ->assertOk()
+            ->assertJsonPath('data.0.name', $modpack->name)
+            ->assertJsonCount(1, 'data');
+
+        // Multiple
+        $this->get(route('project.index', [
+            'archived_only' => true, 'platform' => 'local',
+            'project_types' => [EProjectType::MOD->value, EProjectType::MODPACK->value]
+        ]));
+        $this->response
+            ->assertOk()
+            ->assertJsonCount(2, 'data');
+
+        $this->get(route('project.index', [
+            'archived_only' => true, 'platform' => 'local', 'project_types' => [EProjectType::DATAPACK->value]
+        ]));
+        $this->response
+            ->assertOk()
+            ->assertJsonCount(0, 'data');
+
+        // Prioritize "project_types" over "project_type"
+        $this->get(route('project.index', [
+            'archived_only' => true,
+            'platform' => 'local',
+            'project_type' => EProjectType::MODPACK->value,
+            'project_types' => [EProjectType::DATAPACK->value, EProjectType::SHADER->value]
+        ]));
+        $this->response
+            ->assertOk()
+            ->assertJsonCount(0, 'data');
     }
 
     /** @test */

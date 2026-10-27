@@ -103,6 +103,7 @@ async function getProjects() {
         archived_only: true,
         exclude_remote: [project.value.platform, project.value.remote_id],
         query: projectSearchName.value,
+        project_types: project.value.project_types
     });
 
     projects.value = res.data.data;

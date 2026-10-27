@@ -57,6 +57,8 @@ class ModController extends Controller
                 'exclude_remote.0' => ['string', new ValidPlatformRule()],
                 'exclude_remote.1' => ['string'],
                 'project_type' => ['int', new Enum(EProjectType::class)],
+                'project_types' => ['array'],
+                'project_types.*' => ['int', new Enum(EProjectType::class)],
                 'game_versions' => ['array'],
                 'game_versions.*' => ['string'],
                 'loaders' => ['array'],
@@ -84,10 +86,12 @@ class ModController extends Controller
                         $q->where('platform', $exclude[0])->where('remote_id', $exclude[1])
                     );
                 })
-                ->when($request->exists('project_type'), function (Builder $q) {
-                    $q->whereHas('projects', function (Builder $q) {
+                ->when($request->hasAny(['project_type', 'project_types']), function (Builder $q) {
+                    $projectTypes = request()->has('project_types') ? request()->array('project_types') : [request()->input('project_type')];
+
+                    $q->whereHas('projects', function (Builder $q) use ($projectTypes) {
                         $q->whereHas('project_types', fn(Builder $q) =>
-                            $q->where('type', request()->get('project_type'))
+                            $q->whereIn('type', $projectTypes)
                         );
                     });
                 })
