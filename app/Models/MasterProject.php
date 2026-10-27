@@ -40,10 +40,22 @@ class MasterProject extends Model
     {
         $projectToMerge->load('projects');
 
-        \DB::transaction(function () use ($projectToMerge) {
+        $extra = [];
+
+        if ($this->archive_dir !== McaFilesystem::makeDirName($this->name)) {
+            if ($projectToMerge->archive_dir === McaFilesystem::makeDirName($projectToMerge->name)) {
+                $extra = ['archive_dir' => $projectToMerge->archive_dir];
+            }
+        }
+
+        \DB::transaction(function () use ($projectToMerge, $extra) {
             $projectToMerge->projects->map(fn(Project $p) => $p->update(['master_project_id' => $this->getKey()]));
             $projectToMerge->archive_rules()->delete();
             $projectToMerge->delete();
+
+            if (! empty($extra)) {
+                $this->update($extra);
+            }
         });
     }
 
