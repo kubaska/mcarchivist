@@ -2,7 +2,6 @@
 
 namespace App\Logging;
 
-use Illuminate\Support\Facades\Log;
 use Monolog\Handler\Handler;
 use Monolog\Level;
 use Monolog\LogRecord;
@@ -18,9 +17,31 @@ class QueueLogHandler extends Handler implements ResettableInterface
         $this->enabled = app()->runningInConsole();
     }
 
-    public function getMessages(): array
+    /**
+     * @return LogRecord[]
+     */
+    public function getRecords(): array
     {
         return $this->buffer;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getMessages(): array
+    {
+        return array_map(function (LogRecord $record) {
+            if (is_null($record->formatted)) {
+                $record->formatted = sprintf(
+                    '[%s] %s: %s',
+                    $record->datetime->format('Y-m-d H:i:s'),
+                    $record->level->getName(),
+                    $record->message
+                );
+            }
+
+            return $record->formatted;
+        }, $this->buffer);
     }
 
     public function isHandling(LogRecord $record): bool
@@ -36,12 +57,7 @@ class QueueLogHandler extends Handler implements ResettableInterface
             array_shift($this->buffer);
         }
 
-        $this->buffer[] = sprintf(
-            '[%s] %s: %s',
-            $record->datetime->format('Y-m-d H:i:s'),
-            $record->level->getName(),
-            $record->message
-        );
+        $this->buffer[] = $record;
 
         // Supporting helper, should always bubble higher
         return false;

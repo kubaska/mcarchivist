@@ -21,7 +21,7 @@ class QueueController extends Controller
             $jobs = collect([
                 JobStatus::query()->whereIn('state', [JobState::CREATED, JobState::RUNNING])->get(),
                 JobStatus::query()->withException()->where('state', JobState::FAILED)->limit(20)->get()
-            ])->flatten(1)->sortBy('created_at');
+            ])->flatten(1)->sortByDesc('created_at');
         }
 
         return JobStatusResource::collection($jobs);
@@ -31,7 +31,7 @@ class QueueController extends Controller
     {
         $tasks = JobStatus::query()
             ->withException()
-            ->whereIn('state', [JobState::CANCELLED, JobState::FAILED, JobState::FINISHED])
+            ->whereIn('state', [JobState::CANCELLED, JobState::FAILED, JobState::FINISHED, JobState::FINISHED_WITH_ERRORS, JobState::FINISHED_WITH_WARNINGS])
             ->when($request->input('exclude'), fn(Builder $q) => $q->whereNotIn('job_statuses.id', $request->array('exclude')))
             ->when($request->input('cursor'), fn(Builder $q) => $q->where('job_statuses.id', '<', (int)$request->input('cursor')))
             ->limit(20)
@@ -66,18 +66,27 @@ class QueueController extends Controller
     {
         $status = JobStatus::query()->findOrFail($id);
 
-        if ($status->state === JobState::FAILED && $status->uuid) {
-            Artisan::call('queue:retry '.$status->uuid);
-
-            $status->state = JobState::CREATED;
-            $status->save();
-
-            return new JobStatusResource($status);
+        if (! $status->uuid) {
+            return response()->json([
+                'error' => 'Could not retry job',
+                'description' => 'The given job is missing UUID'
+            ], 400);
         }
 
-        return response()->json([
-            'error' => 'Could not retry job',
-            'description' => 'The given job did not fail, or is missing UUID'
-        ], 400);
+        if ($status->state === JobState::FAILED) {
+            Artisan::call('queue:retry '.$status->uuid);
+        } elseif ($status->payload && ($status->state === JobState::FINISHED_WITH_WARNINGS || $status->state === JobState::FINISHED_WITH_ERRORS)) {
+            \Queue::pushRaw($status->payload);
+        } else {
+            return response()->json([
+                'error' => 'Could not retry job',
+                'description' => 'The given job did not fail, or cannot be retried.'
+            ], 400);
+        }
+
+        $status->state = JobState::CREATED;
+        $status->save();
+
+        return new JobStatusResource($status);
     }
 }

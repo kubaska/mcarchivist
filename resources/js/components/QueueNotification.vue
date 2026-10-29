@@ -1,30 +1,30 @@
 <template>
     <div class="queue-notification fs-7 border-bottom">
         <div class="queue-notification--badge">
-            <div class="notification--badge h-100 d-flex align-items-center justify-content-center" :class="queueNotificationJobStyle[task.state]" :title="getJobState(task.state).name">
+            <div class="notification--badge h-100 d-flex align-items-center justify-content-center" :class="jobStyle[task.state]" :title="getJobState(task.state).name">
                 <div class="spinner-border spinner-border-sm" v-if="task.state === JOB_STATE.RUNNING"></div>
-                <fa-icon :icon="queueNotificationJobIcon[task.state]" :class="{ 'text-white': ! [JOB_STATE.QUEUED, JOB_STATE.RUNNING].includes(task.state) }" v-else />
+                <fa-icon :icon="jobIcon[task.state]" :class="{ 'text-white': iconColorShouldBeWhite(task.state) }" v-else />
             </div>
         </div>
         <div class="queue-notification--upper mx-1">
             <span class="queue-notification--name fw-semibold text-truncate">{{ task.name.split('\n', 1)[0] }}</span>
             <span class="queue-notification--time text-muted" :title="dateFormatter.format(new Date(task.updated_at))">
-                {{ formatTimeAgoIntl(new Date(task.updated_at), queueNotificationTimeFormatterOptions) }}
+                {{ formatTimeAgoIntl(new Date(task.updated_at), timeFormatterOptions) }}
             </span>
         </div>
         <div class="queue-notification--down mx-1">
             <div class="queue-notification--desc fs-8 text-truncate pb-1">{{ task.name.split('\n', 2)?.[1] ?? 'unknown' }}</div>
             <div class="queue-notification--controls d-flex">
                 <button class="btn btn-icon btn-icon-sm align-self-center" title="Show details" @click="emit('details', task.id)"
-                        v-if="task.state === JOB_STATE.FAILED && (!!task.details || !!task.exception)">
+                        v-if="taskHasDetails(task)">
                     <fa-icon icon="circle-info" />
                 </button>
                 <button class="btn btn-icon btn-icon-sm align-self-center" title="Retry" @click="retryJob(task.id)"
-                        v-if="task.state === JOB_STATE.FAILED">
+                        v-if="canRetryTask(task.state)">
                     <fa-icon icon="arrow-rotate-right" />
                 </button>
-                <button class="btn btn-icon btn-icon-sm align-self-center" title="Cancel" @click="tryCancelJob(task.id)"
-                        v-if="task.cancellable && (task.state === JOB_STATE.QUEUED || task.state === JOB_STATE.FAILED)">
+                <button class="btn btn-icon btn-icon-sm align-self-center" :title="taskCancelTitle(task.state)" @click="tryCancelJob(task.id)"
+                        v-if="canCancelTask(task)">
                     <fa-icon icon="ban" />
                 </button>
             </div>
@@ -32,12 +32,39 @@
     </div>
 </template>
 
+<script>
+import {JOB_STATE} from "../utils/utils";
+
+const timeFormatterOptions = { relativeTimeFormatOptions: { style: 'narrow', numeric: 'auto' }, insertSpace: false };
+const jobStyle = {
+    [JOB_STATE.FINISHED]: 'bg-success',
+    [JOB_STATE.FAILED]: 'bg-danger',
+    [JOB_STATE.CANCELLED]: 'bg-secondary',
+    [JOB_STATE.FINISHED_WITH_ERRORS]: 'bg-warning',
+    [JOB_STATE.FINISHED_WITH_WARNINGS]: ['bg-warning', 'bg-opacity-50']
+};
+const jobIcon = {
+    [JOB_STATE.QUEUED]: 'hourglass-half',
+    [JOB_STATE.FINISHED]: 'check',
+    [JOB_STATE.FAILED]: 'xmark',
+    [JOB_STATE.CANCELLED]: 'ban',
+    [JOB_STATE.FINISHED_WITH_ERRORS]: 'triangle-exclamation',
+    [JOB_STATE.FINISHED_WITH_WARNINGS]: 'exclamation'
+};
+const iconColorShouldBeWhite = jobState => ! [JOB_STATE.QUEUED, JOB_STATE.RUNNING, JOB_STATE.FINISHED_WITH_ERRORS, JOB_STATE.FINISHED_WITH_WARNINGS].includes(jobState);
+const taskHasDetails = task => [
+    JOB_STATE.FAILED, JOB_STATE.FINISHED_WITH_ERRORS, JOB_STATE.FINISHED_WITH_WARNINGS
+].includes(task.state) && (!!task.details || !!task.exception);
+const canRetryTask = jobState => [
+    JOB_STATE.FAILED, JOB_STATE.FINISHED_WITH_ERRORS, JOB_STATE.FINISHED_WITH_WARNINGS
+].includes(jobState);
+const canCancelTask = task => task.cancellable && [JOB_STATE.QUEUED, JOB_STATE.FAILED, JOB_STATE.FINISHED_WITH_ERRORS, JOB_STATE.FINISHED_WITH_WARNINGS].includes(task.state);
+const taskCancelTitle = jobState => jobState === JOB_STATE.QUEUED ? 'Cancel' : 'Dismiss';
+</script>
+
 <script setup>
 import {formatTimeAgoIntl} from "@vueuse/core";
-import {
-    getJobState, JOB_STATE,
-    queueNotificationJobIcon, queueNotificationJobStyle, queueNotificationTimeFormatterOptions
-} from "../utils/utils";
+import {getJobState, JOB_STATE} from "../utils/utils";
 import {useDateFormatter} from "../hooks/date";
 import {showErrorNotificationFromAxiosError} from "../utils/notifications";
 import {useQueueStore} from "../stores/queue";

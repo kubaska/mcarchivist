@@ -322,7 +322,7 @@ class LiteLoader extends BaseLoader
         $snapshots = Arr::get(data_get($versionManifest, 'snapshots'), 'com.mumfrey:liteloader');
 
         if ($artifacts === null && $snapshots === null) {
-            Log::stack(['queue', 'stack'])->warning('Failed to extract artifacts from LiteLoader version manifest');
+            Log::stack(['queue', 'stack'])->error('Failed to extract artifacts from LiteLoader version manifest');
             return collect();
         }
 

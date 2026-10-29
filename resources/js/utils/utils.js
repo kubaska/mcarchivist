@@ -85,31 +85,43 @@ export const getLoaderReleaseTypes = (loader) => {
     }
 };
 
+export const JOB_TYPE = {
+    ARCHIVING: 0,
+    REVALIDATING: 1,
+    UPDATING_INDEX: 2,
+    EXCLUSIVE: 3
+};
 const JOB_TYPES = {
-    0: { id: 0, name: 'Archiving' },
-    1: { id: 1, name: 'Revalidating' },
-    2: { id: 2, name: 'Updating Index' },
-    3: { id: 3, name: 'Exclusive' }
+    [JOB_TYPE.ARCHIVING]: { id: JOB_TYPE.ARCHIVING, name: 'Archiving' },
+    [JOB_TYPE.REVALIDATING]: { id: JOB_TYPE.REVALIDATING, name: 'Revalidating' },
+    [JOB_TYPE.UPDATING_INDEX]: { id: JOB_TYPE.UPDATING_INDEX, name: 'Updating Index' },
+    [JOB_TYPE.EXCLUSIVE]: { id: JOB_TYPE.EXCLUSIVE, name: 'Exclusive' }
 };
 export const JOB_STATE = {
     QUEUED: 0,
     RUNNING: 1,
     FINISHED: 2,
     FAILED: 3,
-    CANCELLED: 4
+    CANCELLED: 4,
+    FINISHED_WITH_WARNINGS: 5,
+    FINISHED_WITH_ERRORS: 6,
 };
 const JOB_STATE_DETAILS = {
-    0: { id: 0, name: 'Queued' },
-    1: { id: 1, name: 'Running' },
-    2: { id: 2, name: 'Finished' },
-    3: { id: 3, name: 'Failed' },
-    4: { id: 4, name: 'Cancelled' },
+    [JOB_STATE.QUEUED]: { id: JOB_STATE.QUEUED, name: 'Queued' },
+    [JOB_STATE.RUNNING]: { id: JOB_STATE.RUNNING, name: 'Running' },
+    [JOB_STATE.FINISHED]: { id: JOB_STATE.FINISHED, name: 'Finished' },
+    [JOB_STATE.FAILED]: { id: JOB_STATE.FAILED, name: 'Failed' },
+    [JOB_STATE.CANCELLED]: { id: JOB_STATE.CANCELLED, name: 'Cancelled' },
+    [JOB_STATE.FINISHED_WITH_WARNINGS]: { id: JOB_STATE.FINISHED_WITH_WARNINGS, name: 'Finished with warnings' },
+    [JOB_STATE.FINISHED_WITH_ERRORS]: { id: JOB_STATE.FINISHED_WITH_ERRORS, name: 'Finished with errors' },
 };
 
 export const getJobTypeName = (type) => JOB_TYPES[type]?.name;
 export const getJobState = (jobState) => JOB_STATE_DETAILS[jobState];
 
-export const isJobFinished = (jobState) => [JOB_STATE.FINISHED, JOB_STATE.FAILED, JOB_STATE.CANCELLED].includes(jobState);
+export const isJobFinished = (jobState) => [
+    JOB_STATE.FINISHED, JOB_STATE.FAILED, JOB_STATE.CANCELLED, JOB_STATE.FINISHED_WITH_ERRORS, JOB_STATE.FINISHED_WITH_WARNINGS
+].includes(jobState);
 
 export const getProjectTypes = () => [
     { id: 0, name: 'Mod', name_plural: 'Mods' },
@@ -163,7 +175,3 @@ export const getDefaultSearchRequestInfo = () => {
         page: {}
     };
 }
-
-export const queueNotificationTimeFormatterOptions = { relativeTimeFormatOptions: { style: 'narrow', numeric: 'auto' }, insertSpace: false };
-export const queueNotificationJobStyle = { [JOB_STATE.FINISHED]: 'bg-success', [JOB_STATE.FAILED]: 'bg-danger', [JOB_STATE.CANCELLED]: 'bg-secondary' };
-export const queueNotificationJobIcon = { [JOB_STATE.QUEUED]: 'hourglass-half', [JOB_STATE.FINISHED]: 'check', [JOB_STATE.FAILED]: 'xmark', [JOB_STATE.CANCELLED]: 'ban' };

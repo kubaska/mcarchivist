@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Monolog\Level;
+use Monolog\LogRecord;
 
 class JobService
 {
@@ -85,7 +87,7 @@ class JobService
 
             // Update job status and fill UUID if missing
             $status->fill(array_merge(
-                ['state' => JobState::RUNNING],
+                ['payload' => $event->job->payload(), 'state' => JobState::RUNNING],
                 (is_null($status->uuid) && $event->job->uuid()) ? ['uuid' => $event->job->uuid()] : []
             ))->save();
         });
@@ -95,20 +97,55 @@ class JobService
 
     public static function onAfterQueueEvent(JobProcessed $event)
     {
-        DB::transaction(function () use ($event) {
-            self::updateJobState($event->job->uuid(), JobState::FINISHED);
-        });
+        self::onJobComplete($event->job->uuid(), JobState::FINISHED);
     }
 
     public static function onFailedQueueEvent(JobFailed $event)
     {
-        DB::transaction(function () use ($event) {
-            $status = self::updateJobState($event->job->uuid(), JobState::FAILED);
+        self::onJobComplete($event->job->uuid(), JobState::FAILED);
+    }
 
-            if ($status && $messages = self::getQueueLogHandler()?->getMessages()) {
-                $status->fill(['details' => Arr::join($messages, PHP_EOL)])->save();
-                self::getQueueLogHandler()?->reset();
+    private static function onJobComplete(?string $uuid, JobState $state)
+    {
+        if (is_null($uuid)) {
+            return;
+        }
+
+        $records = self::getQueueLogHandler()?->getRecords();
+
+        if ($records && $state === JobState::FINISHED) {
+            $hasErrors = Arr::some($records, fn(LogRecord $record) => $record->level >= Level::Error);
+
+            if ($hasErrors) {
+                $state = JobState::FINISHED_WITH_ERRORS;
+            } else {
+                $hasWarnings = Arr::some($records, fn(LogRecord $record) => $record->level >= Level::Warning);
+
+                if ($hasWarnings) {
+                    $state = JobState::FINISHED_WITH_WARNINGS;
+                }
             }
+        }
+
+        DB::transaction(function () use ($uuid, $state) {
+            /** @var JobStatus $status */
+            $status = JobStatus::query()->where('uuid', $uuid)->lockForUpdate()->first();
+
+            if ($status) {
+                $status->state = $state;
+
+                if ($state === JobState::FINISHED) {
+                    $status->payload = null;
+                } else {
+                    if ($details = self::getQueueLogHandler()?->getMessages()) {
+                        $status->details = Arr::join($details, PHP_EOL);
+                    }
+                }
+
+                $status->save();
+            }
+
+            return $status;
         });
     }
 
@@ -157,25 +194,6 @@ class JobService
 
             self::updateBatchState(Arr::pluck($batches, 'id'), JobState::FINISHED);
         });
-    }
-
-    /**
-     * Updates Job state.
-     * Should run in transaction.
-     *
-     * @param string|null $uuid
-     * @param JobState $state
-     * @return JobStatus|null
-     */
-    private static function updateJobState(?string $uuid, JobState $state): ?JobStatus
-    {
-        if (is_null($uuid)) {
-            return null;
-        }
-
-        $status = JobStatus::query()->where('uuid', $uuid)->lockForUpdate()->first();
-        $status?->fill(['state' => $state])->save();
-        return $status;
     }
 
     private static function updateBatchState(array|string $batchId, JobState $state)

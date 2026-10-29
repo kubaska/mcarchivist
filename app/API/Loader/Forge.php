@@ -72,7 +72,7 @@ class Forge extends BaseLoader
         try {
             $mirrors = $this->http->get(self::MIRRORLIST_URL);
         } catch (\Exception $e) {
-            Log::stack(['queue', 'stack'])->error('Unable to download Forge mirror list', [$e]);
+            Log::stack(['queue', 'stack'])->warning('Unable to download Forge mirror list', [$e]);
             return [];
         }
 
@@ -168,7 +168,7 @@ class Forge extends BaseLoader
             try {
                 $index = $this->http->getText("https://files.minecraftforge.net/net/minecraftforge/forge/index_{$gameVersion}.html");
             } catch (McaHttpException $e) {
-                Log::stack(['queue', 'stack'])->error('Failed to query Forge release date info for version '.$gameVersion);
+                Log::stack(['queue', 'stack'])->warning('Failed to query Forge release date info for version '.$gameVersion);
                 continue;
             }
 
