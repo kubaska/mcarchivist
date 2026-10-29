@@ -206,9 +206,8 @@ class McaLoaderArchiver extends BaseArchiver
 
             Log::stack(['queue', 'stack'])->info('Downloading libraries');
             foreach ($manifest->libraries as $library) {
-                Log::stack(['queue', 'stack'])->info('Downloading library: '.$library->name);
                 $libraryModels = $this->libraryArchiver->archiveLibrary($library, $mirrorList);
-                $version->libraries()->syncWithoutDetaching($libraryModels->pluck('id'));
+                $version->libraries()->sync($libraryModels->pluck('id'));
             }
         }
     }

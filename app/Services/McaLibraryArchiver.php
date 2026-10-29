@@ -22,8 +22,6 @@ class McaLibraryArchiver
 
     public function archiveLibrary(LibraryDTO $library, array $mirrorList = []): Collection
     {
-        Log::info("Archiving library: $library->name");
-
         $libraries = collect();
         $localLibrary = $this->_archiveLibrary($library, $mirrorList);
         if ($localLibrary) $libraries->push($localLibrary);
@@ -48,6 +46,7 @@ class McaLibraryArchiver
             return $local;
         }
 
+        Log::stack(['queue', 'stack'])->info("Archiving library: $library->name");
         $libraryDir = $this->filesystem->getStoragePath(StorageArea::LIBRARIES, $library->getPathWithoutFile(), makeDir: true);
 
         if ($fileExists = $this->filesystem->exists($libraryPath = Path::join($libraryDir, $library->getFileName()))) {
