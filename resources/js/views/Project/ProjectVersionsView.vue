@@ -118,7 +118,7 @@ function onVersionAction(type, data) {
         case 'archive':
             return api.archiveProjectVersion(route.params.id, data.id, {
                 platform: projectsStore.project.platform, project_name: projectsStore.project.name,
-                project_version: data.name, file_ids: ['*']
+                project_version: data.name
             });
         case 'archive-components':
             return api.archiveProjectVersion(route.params.id, data.model.id, {

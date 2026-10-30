@@ -117,9 +117,7 @@ function onVersionAction(type, data) {
         case 'get-archivable-components':
             return api.getGameVersionFiles(data.id);
         case 'archive':
-            return api.archiveGameVersion(data.id, {
-                components: config.getSetting(settingNamePrefix+'manual_archive.components', ['*'])
-            });
+            return api.archiveGameVersion(data.id);
         case 'archive-components':
             return api.archiveGameVersion(data.model.id, { components: data.components });
         case 'changelog':

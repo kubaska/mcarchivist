@@ -3,8 +3,10 @@
 namespace App\Settings;
 
 use App\Rules\ArrayStrictRule;
+use App\Support\Utils;
 use Illuminate\Support\Arr;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Enum;
 
 class McaSetting
 {
@@ -70,17 +72,21 @@ class McaSetting
     }
 
     /**
-     * @param array $options
-     * @param bool $allowMultiple
-     * @param bool $strict
+     * Set available options and configure validation rules.
+     *
+     * @param array $options The options.
+     *                       Can be an array of strings, or array that contain at least "id" key.
+     *                       Can additionally contain "name" and "hint" keys.
+     * @param bool $multiple Determines if multiple options are allowed to be selected.
+     * @param bool $strict   Determines if options outside provided ones should be allowed.
      * @return $this
      */
-    public function setOptions(array $options, bool $allowMultiple = false, bool $strict = true): static
+    public function setOptions(array $options, bool $multiple = false, bool $strict = true): static
     {
         $this->options = array_map(fn($option) => $this->normalizeOption($option), $options);
         $optionIds = array_map(fn(array $option) => $option['id'], $this->options);
 
-        if ($allowMultiple) {
+        if ($multiple) {
             $this->addValidationRule([new ArrayStrictRule]);
 
             if ($strict) {
@@ -100,6 +106,45 @@ class McaSetting
         }
 
         return $this;
+    }
+
+    /**
+     * Set available options and configure validation rules from an Enum.
+     *
+     * @param class-string<\BackedEnum> $enumClass
+     * @param bool $multiple Determines if multiple options are allowed to be selected.
+     * @return $this
+     */
+    public function setOptionsFromEnum(string $enumClass, bool $multiple = false): static
+    {
+        if (! enum_exists($enumClass) || ! method_exists($enumClass, 'tryFrom')) {
+            throw new \TypeError('Tried to register setting options from Enum, but provided class is not a BackedEnum.');
+        }
+
+        $options = array_map(fn($v) => [
+            'id' => Utils::getEnumValue($v),
+            'name' => $this->getNameFromBackedEnum($v)
+        ], $enumClass::cases());
+
+        $this->options = array_map(fn($option) => $this->normalizeOption($option), $options);
+
+        if ($multiple) {
+            $this->addValidationRule([new ArrayStrictRule, 'required']);
+        } else {
+            $this->addValidationRule('required');
+        }
+        $this->addValidationRule([new Enum($enumClass)], $multiple ? '*' : '');
+
+        return $this;
+    }
+
+    private function getNameFromBackedEnum($enum)
+    {
+        return match (true) {
+            method_exists($enum, 'settingName') => $enum->settingName(),
+            method_exists($enum, 'name') => $enum->name(),
+            default => $enum->name
+        };
     }
 
     public function hasValidationRules(): bool
@@ -137,7 +182,7 @@ class McaSetting
             $this->validationRules[$key] = [];
         }
 
-        foreach ($rules as $rule) {
+        foreach ((array) $rules as $rule) {
             if (! in_array($rule, $this->validationRules[$key])) {
                 $this->validationRules[$key][] = $rule;
             }

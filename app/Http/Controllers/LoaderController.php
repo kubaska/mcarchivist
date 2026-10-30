@@ -7,11 +7,13 @@ use App\API\DTO\VersionDTO;
 use App\Http\Controllers\Concerns\ManagesLocalVersions;
 use App\Jobs\ArchiveLoaderJob;
 use App\Jobs\UpdateLoaderIndexJob;
+use App\Mca\ApiManager;
 use App\Models\File;
 use App\Models\Loader;
 use App\Models\Version;
 use App\Resources\JobStatusResource;
 use App\Resources\LoaderResource;
+use App\Rules\ValidLoaderRule;
 use App\Services\JobService;
 use App\Services\McaLoaderArchiver;
 use Illuminate\Database\Eloquent\Builder;
@@ -55,11 +57,11 @@ class LoaderController extends Controller
             ->when($request->boolean('archived_only'), fn(Builder $q) => $q->has('files'))
             ->when($request->has('game_versions'),
                 fn(Builder $q) => $q->whereHas('game_versions', fn(Builder $q) =>
-                    $q->whereIn('name', (array)$request->get('game_versions'))
+                    $q->whereIn('name', $request->array('game_versions'))
                 )
             )
             ->when($request->has('release_types'),
-                fn(Builder $q) => $q->whereIn('type', (array)$request->get('release_types'))
+                fn(Builder $q) => $q->whereIn('type', $request->array('release_types'))
             )
             ->orderByRaw('published_at IS NULL DESC')
             ->orderByDesc('published_at')
@@ -94,7 +96,19 @@ class LoaderController extends Controller
             ->forMorph(Loader::class)
             ->findOrFail($request->integer('version_id'));
 
-        return $this->doArchive($version, $request->get('components', []));
+        if ($request->has('components')) {
+            $components = $request->array('components');
+        } else {
+            $loader = app(ApiManager::class)->getLoader($version->versionable->name);
+
+            if ($loader->hasSetting('manual_archive.components')) {
+                $components = $loader->getSetting('manual_archive.components');
+            } else {
+                $components = ['*'];
+            }
+        }
+
+        return $this->doArchive($version, $components);
     }
 
     public function revalidate($id, $versionId)

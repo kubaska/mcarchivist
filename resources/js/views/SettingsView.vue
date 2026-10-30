@@ -41,8 +41,15 @@
                                    @openDirectorySelector="onOpenDirectorySelector('general.storage.temp')"
             />
         </div>
-
         <hr/>
+
+        <SelectSetting v-model="settings['projects.manual_archive.components']"
+                       :options="settingsDetails['projects.manual_archive.components'].options"
+                       title="Project component archive"
+                       description="Choose which components will be archived when clicking 'Archive' button."
+        />
+        <hr/>
+
         <InputSetting title="Curseforge API Key" v-model="settings['platforms.curseforge.api_key']" />
 
         <div class="d-grid d-md-block float-md-end my-3">
@@ -55,6 +62,7 @@
 import {ref} from "vue";
 import MButton from "../components/base/MButton.vue";
 import InputSetting from "../components/settings/InputSetting.vue";
+import SelectSetting from "../components/settings/SelectSetting.vue";
 import DirectorySelectModal from "../components/modals/DirectorySelectModal.vue";
 import DirectoryInputSetting from "../components/settings/DirectoryInputSetting.vue";
 import {useConfigStore} from "../stores/config";
@@ -64,8 +72,8 @@ import {useTaskSpy} from "../hooks/queue";
 
 const directorySelectModal = ref();
 const {
-    settings, settingsLoading, areSettingsChanged, settingsErrors, onSettingChange, saveSettings
-} = useSettings(['general', 'platforms']);
+    settings, settingsDetails, settingsLoading, areSettingsChanged, settingsErrors, onSettingChange, saveSettings
+} = useSettings(['general', 'platforms', 'projects']);
 
 onSettingChange(onSettingChanged);
 

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\FileQualifier;
 use App\Enums\StorageArea;
 use App\Enums\VersionType;
 use App\Enums\ProjectDependencyType;
@@ -116,10 +117,14 @@ class Version extends Model
         return empty(array_diff($this->components ?? [], $components));
     }
 
-    public function markFilesCreatedByUser(array $fileIds): int
+    public function markFilesCreatedByUser(array|FileQualifier $fileIds): int
     {
         return $this->files()
-            ->when(! in_array('*', $fileIds), fn(Builder $q) => $q->whereIn('remote_id', $fileIds))
+            ->when(
+                $fileIds instanceof FileQualifier,
+                fn(Builder $q) => $q->when($fileIds === FileQualifier::PRIMARY_ONLY, fn(Builder $q) => $q->where('primary', true)),
+                fn(Builder $q) => $q->when(! in_array('*', $fileIds), fn(Builder $q) => $q->whereIn('remote_id', $fileIds))
+            )
             ->update(['created_by' => 1]);
     }
 

@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Enums\DependencyQualifier;
 use App\Enums\EProjectType;
+use App\Enums\FileQualifier;
 use App\Enums\JobType;
 use App\Models\ProjectType;
 use App\Services\McaArchiver;
@@ -20,7 +21,7 @@ class ArchiveProject extends Job
         protected string $platform,
         protected string $id,
         protected string $versionId,
-        protected array $fileIds,
+        protected array|FileQualifier $fileIds,
         protected bool $requestedByUser
     )
     {
@@ -48,13 +49,13 @@ class ArchiveProject extends Job
     public function handle(McaArchiver $archiver): int
     {
         $project = $archiver->archiveProject($this->platform, $this->id);
+        $args = [$project, $this->versionId, $this->fileIds, DependencyQualifier::REQUIRED_ONLY];
 
-        $version = $archiver->archiveProjectFile(
-            $project,
-            $this->versionId,
-            $this->fileIds,
-            DependencyQualifier::REQUIRED_ONLY
-        );
+        if ($this->fileIds instanceof FileQualifier) {
+            $version = $archiver->archiveProjectFiles(...$args);
+        } else {
+            $version = $archiver->archiveProjectFile(...$args);
+        }
 
         if ($project->project_types->contains(fn(ProjectType $type) => $type->type === EProjectType::MODPACK)) {
             dispatch_now(new ArchiveModpack($project, $version, $this->requestedByUser));

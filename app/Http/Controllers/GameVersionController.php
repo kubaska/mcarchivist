@@ -13,6 +13,7 @@ use App\Models\Version;
 use App\Resources\JobStatusResource;
 use App\Services\JobService;
 use App\Services\McaGameArchiver;
+use App\Services\SettingsService;
 use Illuminate\Http\Request;
 
 class GameVersionController extends Controller
@@ -73,7 +74,10 @@ class GameVersionController extends Controller
             ->forMorph(GameVersion::class)
             ->findOrFail($versionId);
 
-        return $this->doArchive($version->version, $request->get('components', []));
+        return $this->doArchive(
+            $version->version,
+            $request->input('components', app(SettingsService::class)->get('game_versions.manual_archive.components'))
+        );
     }
 
     public function revalidate(string $versionId)

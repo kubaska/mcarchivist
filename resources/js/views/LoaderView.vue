@@ -152,9 +152,7 @@ function onVersionAction(type, data) {
         case 'get-archivable-components':
             return api.getLoaderFiles(activeLoader.value.id, data.id);
         case 'archive':
-            return api.archiveLoaderVersion(activeLoader.value.id, data.id, {
-                components: config.getSetting(settingNamePrefix.value+'manual_archive.components', ['*'])
-            });
+            return api.archiveLoaderVersion(activeLoader.value.id, data.id);
         case 'archive-components':
             return api.archiveLoaderVersion(activeLoader.value.id, data.model.id, {
                 components: data.components

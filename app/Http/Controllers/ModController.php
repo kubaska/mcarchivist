@@ -30,6 +30,7 @@ use App\Rules\ValidPlatformRule;
 use App\Services\JobService;
 use App\Services\McaArchiver;
 use App\Services\RulesetService;
+use App\Services\SettingsService;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -378,24 +379,25 @@ class ModController extends Controller
         );
         $this->validate($request, [
             'platform' => ['required', 'string', new ValidPlatformRule()],
-            'file_ids' => ['required', 'array'],
+            'file_ids' => ['array'],
+            'file_ids.*' => ['string'],
             'project_name' => ['string', 'max:100'],
             'project_version' => ['string', 'max:100']
         ]);
 
         $status = $jobService->dispatch(
             new ArchiveProject(
-                $this->apiManager->get($request->get('platform'))::id(),
+                $this->apiManager->get($request->input('platform'))::id(),
                 $id,
                 $versionId,
-                $request->get('file_ids'),
+                $request->input('file_ids', app(SettingsService::class)->get('projects.manual_archive.components')),
                 true
             ),
             sprintf("%s\n%s",
-                Str::limit($request->get('project_name', sprintf('unknown (%s)', $id))),
-                Str::limit($request->get('project_version', sprintf('unknown (%s)', $versionId)))
+                Str::limit($request->input('project_name', sprintf('unknown (%s)', $id))),
+                Str::limit($request->input('project_version', sprintf('unknown (%s)', $versionId)))
             ),
-            sprintf('%s;%s', $request->get('platform'), $versionId)
+            sprintf('%s;%s', $request->input('platform'), $versionId)
         );
 
         return new JobStatusResource($status);

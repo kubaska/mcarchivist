@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Enums\AutomaticArchiveSetting;
+use App\Enums\FileQualifier;
 use App\Exceptions\McaValidationException;
 use App\Models\Setting;
 use App\Rules\WritableDirectoryPathRule;
@@ -38,6 +39,10 @@ class SettingsService
         $this->registerPathSetting('temp', 'temp');
 
         // === Projects
+        $this->registerSetting(
+            (new McaSetting('projects.manual_archive.components', FileQualifier::PRIMARY_ONLY))
+                ->setOptionsFromEnum(FileQualifier::class)
+        );
         $this->registerAutoArchiveIntervalSettings('projects');
 
         // === Game versions

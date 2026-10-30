@@ -32,6 +32,16 @@ abstract class BaseLoader implements LoaderContract
 
     }
 
+    public function hasSetting(string $key): bool
+    {
+        return app(SettingsService::class)->has(self::getSettingPrefix().'.'.$key);
+    }
+
+    public function getSetting(string $key): mixed
+    {
+        return app(SettingsService::class)->get(self::getSettingPrefix().'.'.$key);
+    }
+
     public function getMirrorList(): array
     {
         return [];
