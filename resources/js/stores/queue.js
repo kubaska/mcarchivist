@@ -1,7 +1,7 @@
 import {defineStore} from "pinia";
 import api from "../api/api";
 import {groupBy} from "lodash-es";
-import {isJobFinished} from "../utils/utils";
+import {isJobFinished, JOB_TYPE} from "../utils/utils";
 import {useConfigStore} from "./config";
 
 export const useQueueStore = defineStore('queue', {
@@ -47,7 +47,7 @@ export const useQueueStore = defineStore('queue', {
 
             const groupedTasks = groupBy(res.data.data, task => isJobFinished(task.state) ? 'finished' : 'running');
             if (groupedTasks['finished']) {
-                if (groupedTasks['finished'].find(job => job.job_type === 3)) {
+                if (! firstFetch && groupedTasks['finished'].find(job => job.job_type === JOB_TYPE.EXCLUSIVE)) {
                     useConfigStore().fetchSettings();
                 }
 
