@@ -86,7 +86,7 @@ class McaArchiver extends BaseArchiver
         }
 
         if ($fileQualifier === FileQualifier::ALL) {
-            $files = $api->getVersionFiles($project->remote_id, $remoteVersion->remoteId);
+            $files = $api->getVersionFiles($project->remote_id, $remoteVersion->remoteId)->getData();
         }
         elseif($fileQualifier === FileQualifier::PRIMARY_ONLY) {
             $findPrimaryFiles = fn(Collection $files) => $files->filter(fn(FileDTO $file) => $file->primary);
